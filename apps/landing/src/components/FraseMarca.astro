@@ -1,0 +1,52 @@
+---
+// Lockups de frase del manual de marca (SVG vectorial, del PDF oficial).
+// Se inyectan inline para que tomen el color de la banda (currentColor) y,
+// en el caso de "Heaven", la fuente Queen Serif del @font-face.
+import heaven from '../svg/heaven.svg?raw';
+import waves from '../svg/waves.svg?raw';
+import amor from '../svg/amor.svg?raw';
+
+const lockups: Record<string, string> = { heaven, waves, amor };
+
+interface Props {
+  frase: 'heaven' | 'waves' | 'amor';
+  tono?: 'cobre' | 'cacao' | 'arena' | 'crema';
+}
+const { frase, tono = 'cobre' } = Astro.props;
+---
+
+<section class:list={['frase', tono]}>
+  <div class="lockup reveal" set:html={lockups[frase]}></div>
+</section>
+
+<style>
+  .frase {
+    display: grid;
+    place-items: center;
+    padding-block: clamp(64px, 10vw, 110px);
+    padding-inline: clamp(22px, 6vw, 40px);
+  }
+
+  .cobre {
+    background: var(--cobre);
+    color: var(--blanco);
+  }
+  .cacao {
+    background: var(--cacao);
+    color: var(--crema);
+  }
+  .arena {
+    background: var(--arena);
+    color: var(--cacao);
+  }
+  .crema {
+    background: var(--crema);
+    color: var(--cobre);
+  }
+
+  .lockup :global(svg) {
+    display: block;
+    width: min(540px, 86vw);
+    height: auto;
+  }
+</style>

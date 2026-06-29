@@ -16,7 +16,7 @@ import { enlaceWhatsApp, MENSAJES, TAGLINE } from '../lib/site';
 
     <p class="bajada reveal">
       Bolsos de autor, diseñados e impresos en 3D y terminados a mano, con
-      materiales locales de Colombia. Piezas únicas inspiradas en el mar.
+      materiales colombianos. Piezas exclusivas inspiradas en el mar.
     </p>
 
     <div class="acciones reveal">
@@ -68,12 +68,14 @@ import { enlaceWhatsApp, MENSAJES, TAGLINE } from '../lib/site';
   }
 
   .logo-hero :global(img) {
-    height: clamp(150px, 30vw, 270px);
+    /* !important para ganarle al height inline de LogoMarca y ser responsive */
+    height: clamp(140px, 38vw, 260px) !important;
+    max-width: 100%;
   }
 
   .tagline {
     margin-top: 20px;
-    font-family: var(--fuente-titulo);
+    font-family: var(--fuente-cita);
     font-style: italic;
     font-weight: 400;
     font-size: clamp(20px, 3vw, 28px);

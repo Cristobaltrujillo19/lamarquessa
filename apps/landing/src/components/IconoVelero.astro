@@ -1,6 +1,20 @@
 ---
-// Velero del manual de marca (extraído del PDF).
+// Velero del manual de marca (vector oficial del PDF, currentColor).
+import velero from '../svg/velero.svg?raw';
 interface Props { tamano?: number; class?: string; }
 const { tamano = 64, class: clase } = Astro.props;
 ---
-<img src="/marca/velero.png" alt="" width={tamano} class={clase} aria-hidden="true" loading="lazy" />
+<span class:list={['marca-icono', clase]} style={`--t:${tamano}px`} set:html={velero} aria-hidden="true"></span>
+
+<style>
+  .marca-icono {
+    display: inline-block;
+    line-height: 0;
+    color: inherit;
+  }
+  .marca-icono :global(svg) {
+    display: block;
+    width: var(--t);
+    height: auto;
+  }
+</style>

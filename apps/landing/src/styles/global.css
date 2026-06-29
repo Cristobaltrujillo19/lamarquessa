@@ -1,7 +1,25 @@
 /* ---- Sistema de diseño La Marquessa ----
    Tomado del manual de marca: paleta costera (crema, arena, cobre, cielo)
-   y tipografías elegantes. Las fuentes display son equivalentes web de
-   Beauty Angelique (script) y Queen Serif (serif). */
+   y las tipografías del manual: Beauty Angelique (script) y Queen Serif (serif). */
+
+/* Fuentes del manual. Cargan primero; Cormorant/Pinyon/Jost quedan como
+   respaldo POR-GLIFO (Queen Serif FREE no trae acentos ni puntuación, así que
+   esos signos se toman del respaldo automáticamente). */
+@font-face {
+  font-family: 'Queen Serif';
+  src: url('/fonts/queen-serif.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Beauty Angelique';
+  src: url('/fonts/beauty-angelique.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   /* Paleta de marca (hex exactos del manual) */
   --crema: #f4e8d7; /* fondo principal */
@@ -17,10 +35,12 @@
   --blanco: #fbf7f1; /* "blanco" cálido */
   --wa-verde: #25d366;
 
-  /* Tipografías */
+  /* Tipografías — fuente del manual primero, respaldo después */
   --fuente-cuerpo: 'Jost', ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --fuente-titulo: 'Cormorant Garamond', 'Times New Roman', serif;
-  --fuente-script: 'Pinyon Script', 'Cormorant Garamond', cursive;
+  --fuente-titulo: 'Queen Serif', 'Cormorant Garamond', 'Times New Roman', serif;
+  --fuente-script: 'Beauty Angelique', 'Pinyon Script', 'Cormorant Garamond', cursive;
+  /* Itálicas largas, citas y precios (Queen Serif no trae acentos/puntuación) */
+  --fuente-cita: 'Cormorant Garamond', 'Times New Roman', serif;
 
   --ancho: 1120px;
   --radio: 4px; /* esquinas casi rectas: estética editorial/lujo */
@@ -57,7 +77,8 @@ h1,
 h2,
 h3 {
   font-family: var(--fuente-titulo);
-  font-weight: 500;
+  font-weight: 400; /* Queen Serif es de un solo peso: evitamos falso negrita */
+  font-synthesis: none;
   line-height: 1.1;
   margin: 0;
   text-wrap: balance;

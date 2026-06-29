@@ -33,13 +33,16 @@ const { frase = 'Del amor, del mar<br />y del amor al mar.', etiqueta = 'Foto de
 
   .marca-agua {
     position: absolute;
-    top: 10%;
-    opacity: 0.22;
+    top: 8%;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--blanco);
+    opacity: 0.2;
   }
 
   .frase {
     position: relative;
-    font-family: var(--fuente-titulo);
+    font-family: var(--fuente-cita);
     font-style: italic;
     font-weight: 400;
     font-size: clamp(30px, 6vw, 58px);
