@@ -1,0 +1,25 @@
+---
+// Logo real de La Marquessa (extraído del manual de marca).
+//  · cobre      → wordmark cobre, para fondos claros (header).
+//  · claro      → wordmark crema, para fondos oscuros (footer).
+//  · imagotipo  → concha + wordmark, para el hero.
+interface Props {
+  /** Altura en px. */
+  tamano?: number;
+  variante?: 'cobre' | 'claro' | 'imagotipo';
+}
+const { tamano = 26, variante = 'cobre' } = Astro.props;
+const src = {
+  cobre: '/marca/logo-cobre.png',
+  claro: '/marca/logo-claro.png',
+  imagotipo: '/marca/logo-imagotipo.png',
+}[variante];
+---
+<img src={src} alt="La Marquessa" class="logo" style={`height:${tamano}px`} />
+
+<style>
+  .logo {
+    width: auto;
+    display: block;
+  }
+</style>

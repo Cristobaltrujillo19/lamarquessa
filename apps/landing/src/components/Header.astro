@@ -1,0 +1,190 @@
+---
+import LogoMarca from './LogoMarca.astro';
+import { enlaceWhatsApp, MENSAJES } from '../lib/site';
+
+// URL de la tienda (fase 2). En local: PUBLIC_SHOP_URL=http://localhost:3000
+const tiendaUrl = import.meta.env.PUBLIC_SHOP_URL ?? null;
+---
+
+<header>
+  <div class="contenedor barra">
+    <a href="/#inicio" class="marca" aria-label="La Marquessa — inicio">
+      <LogoMarca tamano={26} />
+    </a>
+
+    <button
+      class="menu-toggle"
+      aria-label="Abrir menú"
+      aria-expanded="false"
+      aria-controls="menu"
+    >
+      <span class="hamburguesa" aria-hidden="true"></span>
+    </button>
+
+    <div class="opciones" id="menu">
+      <nav aria-label="Secciones">
+        <a href="/#coleccion">Colección</a>
+        <a href="/#concepto">Concepto</a>
+        <a href="/nosotros">Nosotros</a>
+        {tiendaUrl && <a href={tiendaUrl} class="enlace-tienda">Tienda</a>}
+      </nav>
+      <a class="boton boton-primario" href={enlaceWhatsApp(MENSAJES.general)} target="_blank" rel="noopener">
+        Escríbenos
+      </a>
+    </div>
+  </div>
+</header>
+
+<script>
+  const toggle = document.querySelector('.menu-toggle');
+  const menu = document.getElementById('menu');
+  if (toggle && menu) {
+    toggle.addEventListener('click', () => {
+      const abierto = menu.classList.toggle('abierto');
+      toggle.setAttribute('aria-expanded', String(abierto));
+    });
+    menu.querySelectorAll('a').forEach((a) =>
+      a.addEventListener('click', () => {
+        menu.classList.remove('abierto');
+        toggle.setAttribute('aria-expanded', 'false');
+      }),
+    );
+  }
+</script>
+
+<style>
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--crema) 85%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid color-mix(in srgb, var(--cacao) 8%, transparent);
+  }
+
+  .barra {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-block: 16px;
+  }
+
+  .marca {
+    text-decoration: none;
+    color: var(--cacao);
+  }
+
+  .opciones {
+    display: contents;
+  }
+
+  nav {
+    display: flex;
+    align-items: center;
+    gap: clamp(20px, 3vw, 36px);
+  }
+
+  nav a {
+    text-decoration: none;
+    font-size: 12.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--cacao);
+    transition: color 0.2s ease;
+  }
+
+  nav a:hover {
+    color: var(--cobre);
+  }
+
+  .enlace-tienda {
+    color: var(--cobre) !important;
+  }
+
+  .menu-toggle {
+    display: none;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    place-items: center;
+  }
+
+  .hamburguesa,
+  .hamburguesa::before,
+  .hamburguesa::after {
+    display: block;
+    width: 24px;
+    height: 1.5px;
+    background: var(--cacao);
+    transition:
+      transform 0.25s ease,
+      top 0.25s ease,
+      background 0.2s ease;
+  }
+
+  .hamburguesa::before,
+  .hamburguesa::after {
+    content: '';
+    position: absolute;
+    left: 0;
+  }
+
+  .hamburguesa::before {
+    top: -7px;
+  }
+  .hamburguesa::after {
+    top: 7px;
+  }
+
+  .menu-toggle[aria-expanded='true'] .hamburguesa {
+    background: transparent;
+  }
+  .menu-toggle[aria-expanded='true'] .hamburguesa::before {
+    top: 0;
+    transform: rotate(45deg);
+  }
+  .menu-toggle[aria-expanded='true'] .hamburguesa::after {
+    top: 0;
+    transform: rotate(-45deg);
+  }
+
+  @media (max-width: 720px) {
+    .menu-toggle {
+      display: inline-grid;
+    }
+    .hamburguesa {
+      position: relative;
+    }
+    .opciones {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 22px;
+      background: var(--crema);
+      padding: 26px 30px 30px;
+      box-shadow: var(--sombra);
+      border-top: 1px solid color-mix(in srgb, var(--cacao) 8%, transparent);
+    }
+    .opciones.abierto {
+      display: flex;
+    }
+    nav {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 22px;
+      width: 100%;
+    }
+    nav a {
+      font-size: 14px;
+    }
+  }
+</style>

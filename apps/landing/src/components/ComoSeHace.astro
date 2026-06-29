@@ -1,0 +1,97 @@
+---
+import IconoConcha from './IconoConcha.astro';
+import IconoVelero from './IconoVelero.astro';
+import IconoHibisco from './IconoHibisco.astro';
+
+const pasos = [
+  {
+    Icono: IconoConcha,
+    n: '01',
+    titulo: 'Lo diseñamos',
+    texto: 'Cada bolso parte de un diseño propio, dibujado a mano e inspirado en el mar.',
+  },
+  {
+    Icono: IconoVelero,
+    n: '02',
+    titulo: 'Lo imprimimos en 3D',
+    texto: 'Pieza por pieza, con impresión 3D y materiales locales de Colombia.',
+  },
+  {
+    Icono: IconoHibisco,
+    n: '03',
+    titulo: 'Lo terminamos a mano',
+    texto: 'Ensamblado y rematado a mano. Una pieza única, hecha para durar.',
+  },
+];
+---
+
+<section id="proceso" class="seccion proceso">
+  <div class="contenedor">
+    <header class="encabezado reveal">
+      <p class="kicker">Diseñado y hecho en Colombia</p>
+      <h2 class="titulo-seccion">Cómo nace <span class="script">cada bolso</span></h2>
+    </header>
+
+    <ol class="pasos">
+      {
+        pasos.map(({ Icono, n, titulo, texto }) => (
+          <li class="paso reveal">
+            <Icono tamano={76} class="icono" />
+            <span class="num">{n}</span>
+            <h3>{titulo}</h3>
+            <p>{texto}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .proceso {
+    background: var(--arena-clara);
+  }
+
+  .encabezado {
+    text-align: center;
+    margin-bottom: clamp(44px, 6vw, 70px);
+  }
+
+  .pasos {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: clamp(32px, 5vw, 56px);
+  }
+
+  .paso {
+    text-align: center;
+  }
+
+  .icono {
+    margin: 0 auto 12px;
+  }
+
+  .num {
+    display: block;
+    font-family: var(--fuente-titulo);
+    font-size: 18px;
+    letter-spacing: 0.3em;
+    color: var(--cobre);
+  }
+
+  h3 {
+    margin-top: 4px;
+    font-size: 28px;
+    color: var(--cacao);
+  }
+
+  p {
+    margin-top: 10px;
+    color: var(--cacao-suave);
+    max-width: 32ch;
+    margin-inline: auto;
+  }
+</style>

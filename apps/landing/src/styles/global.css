@@ -1,0 +1,197 @@
+/* ---- Sistema de diseño La Marquessa ----
+   Tomado del manual de marca: paleta costera (crema, arena, cobre, cielo)
+   y tipografías elegantes. Las fuentes display son equivalentes web de
+   Beauty Angelique (script) y Queen Serif (serif). */
+:root {
+  /* Paleta de marca (hex exactos del manual) */
+  --crema: #f4e8d7; /* fondo principal */
+  --arena-clara: #e8decd; /* secciones alternas / tarjetas */
+  --arena: #c1ab99; /* taupe medio */
+  --cobre: #b38561; /* acento principal */
+  --cielo: #c2c9d3; /* acento frío (mar/cielo) */
+
+  /* Derivados para texto y estados (mantienen la familia cálida) */
+  --cobre-hondo: #946545; /* cobre más oscuro: hover, detalles */
+  --cacao: #4a3a2c; /* texto principal */
+  --cacao-suave: #6f5a48; /* texto secundario */
+  --blanco: #fbf7f1; /* "blanco" cálido */
+  --wa-verde: #25d366;
+
+  /* Tipografías */
+  --fuente-cuerpo: 'Jost', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --fuente-titulo: 'Cormorant Garamond', 'Times New Roman', serif;
+  --fuente-script: 'Pinyon Script', 'Cormorant Garamond', cursive;
+
+  --ancho: 1120px;
+  --radio: 4px; /* esquinas casi rectas: estética editorial/lujo */
+  --sombra: 0 18px 50px rgba(74, 58, 44, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--crema);
+  color: var(--cacao);
+  font-family: var(--fuente-cuerpo);
+  font-size: 17px;
+  font-weight: 300;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--fuente-titulo);
+  font-weight: 500;
+  line-height: 1.1;
+  margin: 0;
+  text-wrap: balance;
+  letter-spacing: 0.01em;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--cobre);
+  outline-offset: 3px;
+}
+
+/* Etiqueta superior de sección: versalitas espaciadas, muy editorial */
+.kicker {
+  font-family: var(--fuente-cuerpo);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.32em;
+  font-size: 12.5px;
+  color: var(--cobre);
+}
+
+.contenedor {
+  max-width: var(--ancho);
+  margin-inline: auto;
+  padding-inline: clamp(22px, 6vw, 40px);
+}
+
+.seccion {
+  padding-block: clamp(70px, 11vw, 130px);
+}
+
+/* Título de sección con "La" o palabra clave en script */
+.titulo-seccion {
+  font-size: clamp(30px, 5.4vw, 54px);
+}
+
+.titulo-seccion .script {
+  font-family: var(--fuente-script);
+  font-weight: 400;
+  color: var(--cobre);
+  font-size: 1.5em;
+  line-height: 0.8;
+}
+
+/* Botones */
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6em;
+  font-family: var(--fuente-cuerpo);
+  font-weight: 400;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-size: 13px;
+  text-decoration: none;
+  cursor: pointer;
+  padding: 1em 2em;
+  border-radius: var(--radio);
+  border: 1px solid transparent;
+  transition:
+    transform 0.25s ease,
+    background 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.boton-primario {
+  background: var(--cobre);
+  color: var(--blanco);
+}
+
+.boton-primario:hover {
+  background: var(--cobre-hondo);
+  transform: translateY(-2px);
+}
+
+.boton-fantasma {
+  background: transparent;
+  color: var(--cacao);
+  border-color: color-mix(in srgb, var(--cacao) 35%, transparent);
+}
+
+.boton-fantasma:hover {
+  border-color: var(--cobre);
+  color: var(--cobre-hondo);
+}
+
+/* Aparición suave al hacer scroll (script en Base.astro) */
+.js .reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 0.9s ease,
+    transform 0.9s ease;
+}
+
+.js .reveal.visible {
+  opacity: 1;
+  transform: none;
+}
+
+@keyframes flotar {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.flota {
+  animation: flotar 7s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .js .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .flota {
+    animation: none;
+  }
+}

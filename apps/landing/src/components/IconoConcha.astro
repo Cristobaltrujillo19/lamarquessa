@@ -1,0 +1,6 @@
+---
+// Concha del manual de marca (extraída del PDF). Símbolo de la primera pieza.
+interface Props { tamano?: number; class?: string; }
+const { tamano = 64, class: clase } = Astro.props;
+---
+<img src="/marca/concha.png" alt="" width={tamano} class={clase} aria-hidden="true" loading="lazy" />

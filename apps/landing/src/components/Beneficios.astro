@@ -1,0 +1,76 @@
+---
+// Franja de confianza: razones para comprar, de un vistazo.
+const items = [
+  { t: 'Pieza única', d: 'Ninguna igual a otra' },
+  { t: 'Impreso en 3D', d: 'Tecnología propia, detalle a mano' },
+  { t: 'Hecho en Colombia', d: 'Con materiales locales' },
+  { t: 'Envíos a todo el país', d: 'Directo a tu puerta' },
+];
+---
+
+<section id="beneficios" class="beneficios">
+  <div class="contenedor grid">
+    {
+      items.map((i) => (
+        <div class="item">
+          <span class="t">{i.t}</span>
+          <span class="d">{i.d}</span>
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .beneficios {
+    background: var(--crema);
+    border-block: 1px solid color-mix(in srgb, var(--cacao) 10%, transparent);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    padding-block: clamp(28px, 4vw, 40px);
+  }
+
+  .item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    text-align: center;
+    padding-inline: 16px;
+  }
+
+  .item + .item {
+    border-left: 1px solid color-mix(in srgb, var(--cacao) 10%, transparent);
+  }
+
+  .t {
+    font-family: var(--fuente-cuerpo);
+    font-size: 13px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--cobre-hondo);
+  }
+
+  .d {
+    font-size: 13.5px;
+    color: var(--cacao-suave);
+  }
+
+  @media (max-width: 640px) {
+    .grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 26px 0;
+    }
+    .item:nth-child(odd) {
+      border-left: 0;
+    }
+    .item:nth-child(3),
+    .item:nth-child(4) {
+      padding-top: 26px;
+      border-top: 1px solid color-mix(in srgb, var(--cacao) 10%, transparent);
+    }
+  }
+</style>

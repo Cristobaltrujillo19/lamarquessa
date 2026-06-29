@@ -1,0 +1,19 @@
+# dependencies
+node_modules
+
+# builds
+dist
+.next
+.astro
+.turbo
+
+# env
+.env
+.env*.local
+
+# deploy
+.vercel
+
+# os / editor
+.DS_Store
+Thumbs.db

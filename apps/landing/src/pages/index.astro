@@ -1,0 +1,42 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import Beneficios from '../components/Beneficios.astro';
+import Editorial from '../components/Editorial.astro';
+import Coleccion from '../components/Coleccion.astro';
+import ComoSeHace from '../components/ComoSeHace.astro';
+import Statement from '../components/Statement.astro';
+import Concepto from '../components/Concepto.astro';
+import BandaFoto from '../components/BandaFoto.astro';
+import ListaEspera from '../components/ListaEspera.astro';
+import Footer from '../components/Footer.astro';
+import FabWhatsApp from '../components/FabWhatsApp.astro';
+---
+
+<Base
+  titulo="La Marquessa — Bolsos impresos en 3D, hechos en Colombia"
+  descripcion="Bolsos de autor diseñados e impresos en 3D y terminados a mano, con materiales locales de Colombia. Piezas únicas inspiradas en el mar."
+>
+  <Header />
+  <main>
+    <Hero />
+    <Beneficios />
+    <Editorial
+      kicker="Hecho para el mar"
+      titulo='El lujo de lo <span class="script">único</span>'
+      texto="Cada bolso de La Marquessa se imprime en 3D y se termina a mano en Colombia. No hay dos iguales: el tuyo lleva el mar contigo, a tu manera."
+      lado="izquierda"
+      simbolo="concha"
+      cta={{ texto: 'Ver los bolsos', href: '#coleccion' }}
+    />
+    <Coleccion />
+    <ComoSeHace />
+    <Statement tono="cobre">Heaven is the place where the sea is.</Statement>
+    <Concepto />
+    <BandaFoto />
+    <ListaEspera />
+  </main>
+  <Footer />
+  <FabWhatsApp />
+</Base>

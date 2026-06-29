@@ -1,0 +1,19 @@
+---
+// Olas — línea decorativa para separar secciones. "El encuentro de las olas".
+interface Props { class?: string; }
+const { class: clase } = Astro.props;
+---
+<svg
+  class={clase}
+  width="120"
+  height="16"
+  viewBox="0 0 120 16"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.6"
+  stroke-linecap="round"
+  aria-hidden="true"
+  preserveAspectRatio="none"
+>
+  <path d="M0 8 Q10 0 20 8 T40 8 T60 8 T80 8 T100 8 T120 8" />
+</svg>

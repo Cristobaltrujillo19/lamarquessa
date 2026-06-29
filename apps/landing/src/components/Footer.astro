@@ -1,0 +1,132 @@
+---
+import LogoMarca from './LogoMarca.astro';
+import IconoWhatsApp from './IconoWhatsApp.astro';
+import {
+  enlaceWhatsApp,
+  MENSAJES,
+  TAGLINE,
+  EMAIL,
+  INSTAGRAM_URL,
+  INSTAGRAM_HANDLE,
+} from '../lib/site';
+
+const anio = new Date().getFullYear();
+---
+
+<footer>
+  <div class="contenedor rejilla">
+    <div class="marca-col">
+      <LogoMarca tamano={30} variante="claro" />
+      <p class="tagline">{TAGLINE}</p>
+    </div>
+
+    <nav class="enlaces" aria-label="Pie de página">
+      <a href="/#coleccion">Colección</a>
+      <a href="/#concepto">Concepto</a>
+      <a href="/nosotros">Nosotros</a>
+      <a href="/privacidad">Privacidad</a>
+    </nav>
+
+    <div class="contacto">
+      <a href={INSTAGRAM_URL} target="_blank" rel="noopener">Instagram {INSTAGRAM_HANDLE}</a>
+      <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
+      <a class="wa" href={enlaceWhatsApp(MENSAJES.general)} target="_blank" rel="noopener">
+        <IconoWhatsApp tamano={16} /> WhatsApp
+      </a>
+    </div>
+  </div>
+
+  <div class="contenedor base">
+    <p>© {anio} La Marquessa · Hecho con amor frente al mar 🐚</p>
+  </div>
+</footer>
+
+<style>
+  footer {
+    position: relative;
+    overflow: hidden;
+    background: var(--cacao);
+    color: color-mix(in srgb, var(--crema) 88%, transparent);
+    padding-top: clamp(48px, 7vw, 72px);
+  }
+
+  /* Patrón de olas del manual (versión clara), muy sutil */
+  footer::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background-image: url('/marca/patron-claro.png');
+    background-size: 460px;
+    opacity: 0.07;
+    pointer-events: none;
+  }
+
+  footer .contenedor {
+    position: relative;
+    z-index: 1;
+  }
+
+  .rejilla {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr;
+    gap: 40px;
+    padding-bottom: 40px;
+  }
+
+  .marca-col {
+    color: var(--crema);
+  }
+
+  .tagline {
+    margin-top: 14px;
+    font-family: var(--fuente-titulo);
+    font-style: italic;
+    font-size: 18px;
+    color: color-mix(in srgb, var(--crema) 75%, transparent);
+  }
+
+  .enlaces,
+  .contacto {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  footer a {
+    color: color-mix(in srgb, var(--crema) 82%, transparent);
+    text-decoration: none;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    transition: color 0.2s ease;
+    width: fit-content;
+  }
+
+  footer a:hover {
+    color: var(--cobre);
+  }
+
+  .wa {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .base {
+    border-top: 1px solid color-mix(in srgb, var(--crema) 14%, transparent);
+    padding-block: 22px;
+  }
+
+  .base p {
+    font-size: 12.5px;
+    letter-spacing: 0.06em;
+    color: color-mix(in srgb, var(--crema) 60%, transparent);
+  }
+
+  @media (max-width: 680px) {
+    .rejilla {
+      grid-template-columns: 1fr;
+      gap: 30px;
+    }
+  }
+</style>

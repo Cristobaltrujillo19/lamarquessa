@@ -1,0 +1,179 @@
+---
+import IconoConcha from './IconoConcha.astro';
+import IconoVelero from './IconoVelero.astro';
+import IconoHibisco from './IconoHibisco.astro';
+import { coleccion, formatCop } from '../lib/coleccion';
+import { enlaceWhatsApp, MENSAJES } from '../lib/site';
+
+const iconos = { concha: IconoConcha, velero: IconoVelero, hibisco: IconoHibisco };
+---
+
+<section id="coleccion" class="seccion coleccion">
+  <div class="contenedor">
+    <header class="encabezado reveal">
+      <p class="kicker">La colección</p>
+      <h2 class="titulo-seccion">Nuestros <span class="script">bolsos</span></h2>
+      <p class="sub">
+        Cada bolso es una pieza única: impresa en 3D y terminada a mano en
+        Colombia. Lanzamiento muy pronto — reserva el tuyo.
+      </p>
+    </header>
+
+    <div class="grilla">
+      {
+        coleccion.map((p) => {
+          const Icono = iconos[p.simbolo];
+          return (
+            <article class="pieza reveal">
+              <div class="lienzo">
+                {p.insignia && <span class="insignia">{p.insignia}</span>}
+                <Icono tamano={92} class="simbolo" />
+              </div>
+              <div class="datos">
+                <h3>{p.nombre}</h3>
+                <p class="desc">{p.descripcion}</p>
+                <p class="variantes">{p.variantes}</p>
+                <div class="fila">
+                  <span class="precio">{formatCop(p.precioCop)}</span>
+                  <a
+                    class="pedir"
+                    href={enlaceWhatsApp(MENSAJES.reserva)}
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    Reservar →
+                  </a>
+                </div>
+              </div>
+            </article>
+          );
+        })
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .coleccion {
+    background: var(--arena-clara);
+  }
+
+  .encabezado {
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto clamp(40px, 6vw, 64px);
+  }
+
+  .titulo-seccion {
+    margin-top: 10px;
+  }
+
+  .sub {
+    margin-top: 18px;
+    color: var(--cacao-suave);
+  }
+
+  .grilla {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: clamp(20px, 3vw, 32px);
+  }
+
+  .pieza {
+    background: var(--crema);
+    border-radius: var(--radio);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 1px 0 color-mix(in srgb, var(--cacao) 6%, transparent);
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
+  }
+
+  .pieza:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--sombra);
+  }
+
+  .lienzo {
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 4 / 3;
+    background:
+      radial-gradient(circle at 50% 40%, var(--blanco), transparent 70%),
+      var(--arena);
+    color: color-mix(in srgb, var(--cobre) 70%, var(--cacao));
+  }
+
+  .insignia {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    background: var(--cobre);
+    color: var(--blanco);
+    padding: 5px 10px;
+    border-radius: 999px;
+  }
+
+  .datos {
+    padding: 22px 22px 24px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  h3 {
+    font-size: 25px;
+    color: var(--cacao);
+  }
+
+  .desc {
+    margin-top: 8px;
+    font-size: 15px;
+    color: var(--cacao-suave);
+    flex: 1;
+  }
+
+  .variantes {
+    margin-top: 14px;
+    font-size: 11.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--cobre-hondo);
+  }
+
+  .fila {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid color-mix(in srgb, var(--cacao) 10%, transparent);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .precio {
+    font-family: var(--fuente-titulo);
+    font-size: 21px;
+    color: var(--cacao);
+  }
+
+  .pedir {
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--cobre-hondo);
+    white-space: nowrap;
+    transition: color 0.2s ease;
+  }
+
+  .pedir:hover {
+    color: var(--cobre);
+  }
+</style>

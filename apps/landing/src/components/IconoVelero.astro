@@ -1,0 +1,6 @@
+---
+// Velero del manual de marca (extraído del PDF).
+interface Props { tamano?: number; class?: string; }
+const { tamano = 64, class: clase } = Astro.props;
+---
+<img src="/marca/velero.png" alt="" width={tamano} class={clase} aria-hidden="true" loading="lazy" />

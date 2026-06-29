@@ -1,0 +1,60 @@
+---
+// Banda ancha con espacio para una foto de ambiente y una frase de marca encima.
+// Para usar una foto real: poner background-image en .banda y quitar el placeholder.
+import IconoConcha from './IconoConcha.astro';
+
+interface Props {
+  /** Frase encima (puede traer <br/>). */
+  frase?: string;
+  etiqueta?: string;
+}
+const { frase = 'Del amor, del mar<br />y del amor al mar.', etiqueta = 'Foto de ambiente próximamente' } = Astro.props;
+---
+
+<section class="banda">
+  <IconoConcha tamano={150} class="marca-agua" />
+  <p class="frase" set:html={frase}></p>
+  <span class="etq">{etiqueta}</span>
+</section>
+
+<style>
+  .banda {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: clamp(360px, 52vw, 560px);
+    padding: clamp(40px, 8vw, 90px);
+    text-align: center;
+    overflow: hidden;
+    background:
+      radial-gradient(ellipse 60% 60% at 50% 30%, color-mix(in srgb, var(--cielo) 45%, transparent), transparent 70%),
+      linear-gradient(150deg, var(--arena), color-mix(in srgb, var(--cobre) 55%, var(--arena)));
+  }
+
+  .marca-agua {
+    position: absolute;
+    top: 10%;
+    opacity: 0.22;
+  }
+
+  .frase {
+    position: relative;
+    font-family: var(--fuente-titulo);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(30px, 6vw, 58px);
+    line-height: 1.1;
+    color: var(--blanco);
+    text-shadow: 0 2px 20px rgba(74, 58, 44, 0.25);
+  }
+
+  .etq {
+    position: absolute;
+    bottom: 16px;
+    right: 18px;
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--blanco) 75%, transparent);
+  }
+</style>
