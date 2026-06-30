@@ -1,0 +1,63 @@
+---
+// Placeholder de foto: ocupa el espacio donde irá una imagen real.
+// Cuando llegue la foto, se reemplaza por <img> (o background-image).
+import IconoConcha from './IconoConcha.astro';
+import IconoVelero from './IconoVelero.astro';
+import IconoHibisco from './IconoHibisco.astro';
+
+interface Props {
+  etiqueta?: string;
+  simbolo?: 'concha' | 'velero' | 'hibisco';
+  /** p. ej. "4 / 5". Si no se pasa, ocupa el alto del contenedor. */
+  ratio?: string;
+}
+const { etiqueta = 'Foto', simbolo = 'concha', ratio } = Astro.props;
+const Icono = { concha: IconoConcha, velero: IconoVelero, hibisco: IconoHibisco }[simbolo];
+---
+
+<figure class="ph" style={ratio ? `aspect-ratio:${ratio};` : ''}>
+  <Icono tamano={128} class="ph-marca" />
+  <span class="ph-tag">
+    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+      <rect x="3" y="6" width="18" height="14" rx="2"></rect>
+      <circle cx="12" cy="13" r="3.4"></circle>
+      <path d="M8.5 6 10 3.6h4L15.5 6"></path>
+    </svg>
+    {etiqueta}
+  </span>
+</figure>
+
+<style>
+  .ph {
+    position: relative;
+    margin: 0;
+    height: 100%;
+    min-height: 320px;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 50% 36%, var(--perla), transparent 70%),
+      linear-gradient(155deg, var(--aqua), color-mix(in srgb, var(--aqua-hondo) 50%, var(--aqua)));
+  }
+
+  .ph-marca {
+    color: color-mix(in srgb, var(--cobre) 60%, var(--blanco));
+    opacity: 0.5;
+  }
+
+  .ph-tag {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--cacao) 55%, transparent);
+    white-space: nowrap;
+  }
+</style>

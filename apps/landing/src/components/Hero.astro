@@ -1,15 +1,14 @@
 ---
 import LogoMarca from './LogoMarca.astro';
-import IconoOlas from './IconoOlas.astro';
 import { enlaceWhatsApp, MENSAJES, TAGLINE } from '../lib/site';
 ---
 
-<section id="inicio" class="hero">
-  <div class="contenedor centro">
+<section id="inicio" class="hero shimmer">
+  <div class="hero-inner">
     <p class="kicker reveal">Bolsos impresos en 3D · Hechos en Colombia</p>
 
     <h1 class="logo-hero reveal">
-      <LogoMarca variante="imagotipo" tamano={270} />
+      <LogoMarca variante="cobre" tamano={120} />
     </h1>
 
     <p class="tagline reveal">{TAGLINE}</p>
@@ -29,86 +28,95 @@ import { enlaceWhatsApp, MENSAJES, TAGLINE } from '../lib/site';
       >
     </div>
   </div>
-
-  <a href="#beneficios" class="bajar" aria-label="Bajar">
-    <IconoOlas class="olas-bajar" />
-  </a>
 </section>
 
 <style>
+  /* Hero firma: luz nácar a todo el ancho con el wordmark de la marca encima.
+     Sin foto (la fotografía va en otras secciones), sin destellos ni motivos. */
   .hero {
     position: relative;
     overflow: hidden;
+    min-height: clamp(540px, 78vh, 840px);
+    display: grid;
+    place-items: center;
+    text-align: center;
+    padding: clamp(72px, 9vh, 130px) clamp(22px, 6vw, 40px);
     background:
       radial-gradient(
-        ellipse 70% 55% at 50% 0%,
-        color-mix(in srgb, var(--cielo) 40%, transparent),
-        transparent 70%
+        58% 48% at 50% 46%,
+        color-mix(in srgb, var(--blanco) 48%, transparent),
+        transparent 76%
       ),
       radial-gradient(
-        ellipse 90% 60% at 50% 115%,
-        color-mix(in srgb, var(--arena) 55%, transparent),
-        transparent 70%
+        80% 60% at 14% 4%,
+        color-mix(in srgb, var(--rosa-nacar) 88%, transparent),
+        transparent 60%
       ),
-      var(--crema);
+      radial-gradient(
+        78% 58% at 88% 2%,
+        color-mix(in srgb, var(--aqua) 92%, transparent),
+        transparent 62%
+      ),
+      radial-gradient(
+        120% 70% at 50% 122%,
+        color-mix(in srgb, var(--lila-nacar) 76%, transparent),
+        transparent 60%
+      ),
+      linear-gradient(180deg, var(--blanco), var(--espuma));
   }
 
-  .centro {
+  /* Patrón de veleros del manual, apenas perceptible */
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background-image: url('/marca/patron-cobre.png');
+    background-size: 340px;
+    opacity: 0.04;
+    pointer-events: none;
+  }
+
+  .hero-inner {
     position: relative;
     z-index: 1;
-    text-align: center;
-    max-width: 860px;
-    padding-block: clamp(56px, 11vw, 110px) clamp(80px, 14vw, 150px);
+    max-width: 1000px;
   }
 
   .logo-hero {
-    margin: 26px 0 4px;
+    margin: 22px 0 6px;
     display: flex;
     justify-content: center;
   }
 
   .logo-hero :global(img) {
-    /* !important para ganarle al height inline de LogoMarca y ser responsive */
-    height: clamp(140px, 38vw, 260px) !important;
-    max-width: 100%;
+    /* wordmark ancho y horizontal: dimensionamos por ancho para llenar los lados */
+    width: min(720px, 90%);
+    height: auto !important;
   }
 
   .tagline {
-    margin-top: 20px;
+    margin-top: 18px;
     font-family: var(--fuente-cita);
     font-style: italic;
     font-weight: 400;
-    font-size: clamp(20px, 3vw, 28px);
-    color: var(--cobre-hondo);
+    font-size: clamp(21px, 2.6vw, 30px);
+    color: color-mix(in srgb, var(--aqua-hondo) 82%, var(--cacao));
   }
 
   .bajada {
-    max-width: 50ch;
+    max-width: 52ch;
     margin: 18px auto 0;
     color: var(--cacao-suave);
-    font-size: clamp(16px, 2vw, 18px);
+    font-size: clamp(16px, 1.5vw, 18px);
   }
 
   .acciones {
-    margin-top: 38px;
+    margin-top: 36px;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
     gap: 16px;
-  }
-
-  .bajar {
-    position: absolute;
-    left: 50%;
-    bottom: 24px;
-    transform: translateX(-50%);
-    width: 70px;
-    color: color-mix(in srgb, var(--cacao) 40%, transparent);
-  }
-
-  .olas-bajar {
-    width: 70px;
-    height: 12px;
   }
 </style>

@@ -43,6 +43,17 @@ const { frase, tono = 'cobre' } = Astro.props;
     background: var(--crema);
     color: var(--cobre);
   }
+  .nacar {
+    background:
+      radial-gradient(80% 80% at 18% 12%, color-mix(in srgb, var(--rosa-nacar) 82%, transparent), transparent 60%),
+      radial-gradient(80% 80% at 85% 88%, color-mix(in srgb, var(--aqua) 82%, transparent), transparent 60%),
+      var(--blanco);
+    color: var(--cobre-hondo);
+  }
+  .aqua {
+    background: var(--aqua);
+    color: var(--cacao);
+  }
 
   .lockup :global(svg) {
     display: block;

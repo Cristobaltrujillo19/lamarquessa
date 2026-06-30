@@ -55,7 +55,7 @@ const iconos = { concha: IconoConcha, velero: IconoVelero, hibisco: IconoHibisco
 
 <style>
   .coleccion {
-    background: var(--arena-clara);
+    background: var(--espuma);
   }
 
   .encabezado {
@@ -75,7 +75,7 @@ const iconos = { concha: IconoConcha, velero: IconoVelero, hibisco: IconoHibisco
 
   .grilla {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: clamp(20px, 3vw, 32px);
   }
 
@@ -102,9 +102,9 @@ const iconos = { concha: IconoConcha, velero: IconoVelero, hibisco: IconoHibisco
     place-items: center;
     aspect-ratio: 4 / 3;
     background:
-      radial-gradient(circle at 50% 40%, var(--blanco), transparent 70%),
-      var(--arena);
-    color: color-mix(in srgb, var(--cobre) 70%, var(--cacao));
+      radial-gradient(circle at 50% 38%, var(--perla), transparent 70%),
+      linear-gradient(160deg, var(--aqua), color-mix(in srgb, var(--aqua-hondo) 48%, var(--aqua)));
+    color: var(--cobre-hondo);
   }
 
   .insignia {
