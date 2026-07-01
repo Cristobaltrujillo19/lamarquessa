@@ -1,0 +1,143 @@
+---
+// Carrusel de fotos horizontales (placeholders por ahora).
+// Cuando lleguen las fotos, reemplazar cada PlaceholderFoto por <img>.
+import PlaceholderFoto from './PlaceholderFoto.astro';
+
+const slides: { simbolo: 'concha' | 'velero' | 'hibisco'; etiqueta: string }[] = [
+  { simbolo: 'concha', etiqueta: 'Foto horizontal · próximamente' },
+  { simbolo: 'velero', etiqueta: 'Foto horizontal · próximamente' },
+  { simbolo: 'hibisco', etiqueta: 'Foto horizontal · próximamente' },
+];
+---
+
+<div class="carrusel" data-carrusel aria-roledescription="carrusel">
+  <div class="viewport">
+    <div class="pista" data-pista>
+      {
+        slides.map((s) => (
+          <div class="slide">
+            <PlaceholderFoto etiqueta={s.etiqueta} simbolo={s.simbolo} />
+          </div>
+        ))
+      }
+    </div>
+  </div>
+
+  <div class="controles">
+    <button class="flecha" data-prev aria-label="Foto anterior">‹</button>
+    <div class="puntos" data-puntos>
+      {slides.map((_, i) => <button class="punto" data-i={i} aria-label={`Ir a la foto ${i + 1}`} />)}
+    </div>
+    <button class="flecha" data-next aria-label="Foto siguiente">›</button>
+  </div>
+</div>
+
+<style>
+  .carrusel {
+    width: 100%;
+  }
+
+  .viewport {
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .pista {
+    display: flex;
+    transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .slide {
+    min-width: 100%;
+    height: clamp(340px, 56vh, 620px);
+  }
+
+  .controles {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    margin-top: 20px;
+  }
+
+  .puntos {
+    display: flex;
+    gap: 9px;
+  }
+
+  .punto {
+    width: 9px;
+    height: 9px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--cacao) 22%, transparent);
+    cursor: pointer;
+    transition:
+      background 0.25s ease,
+      transform 0.25s ease;
+  }
+
+  .punto.activo {
+    background: var(--cobre);
+    transform: scale(1.25);
+  }
+
+  .flecha {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid color-mix(in srgb, var(--cacao) 20%, transparent);
+    background: transparent;
+    color: var(--cacao-suave);
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    transition:
+      color 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  .flecha:hover {
+    color: var(--cobre);
+    border-color: var(--cobre);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pista {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll('[data-carrusel]').forEach((c) => {
+    const pista = c.querySelector('[data-pista]') as HTMLElement | null;
+    const puntos = Array.from(c.querySelectorAll('.punto'));
+    const n = puntos.length;
+    if (!pista || n === 0) return;
+
+    let i = 0;
+    let timer: ReturnType<typeof setInterval> | undefined;
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const ir = (k: number) => {
+      i = (k + n) % n;
+      pista.style.transform = `translateX(-${i * 100}%)`;
+      puntos.forEach((p, j) => p.classList.toggle('activo', j === i));
+    };
+
+    const auto = () => {
+      if (reduce) return;
+      clearInterval(timer);
+      timer = setInterval(() => ir(i + 1), 5000);
+    };
+
+    puntos.forEach((p, j) => p.addEventListener('click', () => { ir(j); auto(); }));
+    c.querySelector('[data-prev]')?.addEventListener('click', () => { ir(i - 1); auto(); });
+    c.querySelector('[data-next]')?.addEventListener('click', () => { ir(i + 1); auto(); });
+
+    ir(0);
+    auto();
+  });
+</script>

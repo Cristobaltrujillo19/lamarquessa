@@ -1,7 +1,7 @@
 ---
 // Banda ancha con espacio para una foto de ambiente y una frase de marca encima.
 // Para usar una foto real: poner background-image en .banda y quitar el placeholder.
-import IconoConcha from './IconoConcha.astro';
+import IconoVelero from './IconoVelero.astro';
 
 interface Props {
   /** Frase encima (puede traer <br/>). */
@@ -12,7 +12,7 @@ const { frase = 'Del amor, del mar<br />y del amor al mar.', etiqueta = 'Foto de
 ---
 
 <section class="banda">
-  <IconoConcha tamano={150} class="marca-agua" />
+  <IconoVelero tamano={140} class="marca-agua" />
   <p class="frase" set:html={frase}></p>
   <span class="etq">{etiqueta}</span>
 </section>

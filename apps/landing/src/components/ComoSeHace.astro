@@ -6,19 +6,16 @@ import IconoHibisco from './IconoHibisco.astro';
 const pasos = [
   {
     Icono: IconoConcha,
-    n: '01',
     titulo: 'Lo diseñamos',
-    texto: 'Cada bolso parte de un diseño propio, dibujado a mano e inspirado en el mar.',
+    texto: 'Cada bolso parte de un trazo propio, dibujado a mano e inspirado en el mar.',
   },
   {
     Icono: IconoVelero,
-    n: '02',
     titulo: 'Lo imprimimos en 3D',
-    texto: 'Pieza por pieza, con impresión 3D y materiales locales de Colombia.',
+    texto: 'Capa sobre capa, la impresión deja surcos como los que el mar dibuja en la arena.',
   },
   {
     Icono: IconoHibisco,
-    n: '03',
     titulo: 'Lo terminamos a mano',
     texto: 'Ensamblado y rematado a mano. Una pieza única, hecha para durar.',
   },
@@ -28,16 +25,17 @@ const pasos = [
 <section id="proceso" class="seccion proceso">
   <div class="contenedor">
     <header class="encabezado reveal">
-      <p class="kicker">Diseñado y hecho en Colombia</p>
-      <h2 class="titulo-seccion">Cómo nace <span class="script">cada bolso</span></h2>
+      <p class="kicker">Capa sobre capa</p>
+      <h2 class="titulo-seccion">Cada capa, una <span class="script">ola</span></h2>
     </header>
 
     <ol class="pasos">
       {
-        pasos.map(({ Icono, n, titulo, texto }) => (
+        pasos.map(({ Icono, titulo, texto }) => (
           <li class="paso reveal">
-            <Icono tamano={76} class="icono" />
-            <span class="num">{n}</span>
+            <div class="icono-slot">
+              <Icono tamano={76} class="icono" />
+            </div>
             <h3>{titulo}</h3>
             <p>{texto}</p>
           </li>
@@ -70,21 +68,25 @@ const pasos = [
     text-align: center;
   }
 
-  .icono {
-    margin: 0 auto 12px;
-    color: var(--cobre);
+  .icono-slot {
+    height: 84px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
   }
 
-  .num {
-    display: block;
-    font-family: var(--fuente-titulo);
-    font-size: 18px;
-    letter-spacing: 0.3em;
+  .icono-slot :global(svg) {
+    width: auto !important;
+    height: 74px !important;
+    max-width: 100%;
+  }
+
+  .icono {
     color: var(--cobre);
   }
 
   h3 {
-    margin-top: 4px;
     font-size: 28px;
     color: var(--cacao);
   }

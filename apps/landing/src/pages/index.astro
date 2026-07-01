@@ -3,7 +3,6 @@ import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
 import Hero from '../components/Hero.astro';
 import Beneficios from '../components/Beneficios.astro';
-import Editorial from '../components/Editorial.astro';
 import Coleccion from '../components/Coleccion.astro';
 import ComoSeHace from '../components/ComoSeHace.astro';
 import BandaFoto from '../components/BandaFoto.astro';
@@ -19,16 +18,8 @@ import FabWhatsApp from '../components/FabWhatsApp.astro';
   <Header />
   <main>
     <Hero />
-    <Beneficios />
-    <Editorial
-      kicker="Hecho para el mar"
-      titulo='El lujo de lo <span class="script">exclusivo</span>'
-      texto="Cada bolso de La Marquessa se diseña, se imprime en 3D y se termina a mano en Colombia, en ediciones limitadas. El tuyo lleva el mar contigo, a tu manera."
-      lado="izquierda"
-      simbolo="concha"
-      cta={{ texto: 'Ver los bolsos', href: '#coleccion' }}
-    />
     <Coleccion />
+    <Beneficios />
     <ComoSeHace />
     <BandaFoto />
     <ListaEspera />
