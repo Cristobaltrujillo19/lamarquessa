@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+/* Fuentes del manual (local). Respaldo por-glifo vía next/font (Google):
+   Queen Serif FREE no trae acentos/puntuación, se toman del fallback. */
+@font-face {
+  font-family: "Queen Serif";
+  src: url("/fonts/queen-serif.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Beauty Angelique";
+  src: url("/fonts/beauty-angelique.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Sistema de diseño La Marquessa (paleta y tipografías del manual) */
+@theme inline {
+  --color-crema: #f4e8d7;
+  --color-arena-clara: #e8decd;
+  --color-arena: #c1ab99;
+  --color-cobre: #b38561;
+  --color-cobre-hondo: #946545;
+  --color-cielo: #c2c9d3;
+  --color-cacao: #4a3a2c;
+  --color-cacao-suave: #6f5a48;
+  --color-blanco: #fbf7f1;
+
+  --font-cuerpo: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
+  --font-titulo: "Queen Serif", var(--font-cormorant), "Times New Roman", serif;
+  --font-script: "Beauty Angelique", var(--font-pinyon), cursive;
+  --font-cita: var(--font-cormorant), "Times New Roman", serif;
+}
+
+body {
+  background: var(--color-crema);
+  color: var(--color-cacao);
+  font-family: var(--font-cuerpo);
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-titulo);
+  font-weight: 400;
+  font-synthesis: none;
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
+/* Palabra clave en script cobre (como en la landing) */
+.script {
+  font-family: var(--font-script);
+  color: var(--color-cobre);
+  font-weight: 400;
+}
+
+/* Etiqueta superior versalita, muy editorial */
+.kicker {
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  font-size: 12px;
+  color: var(--color-cobre);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-cobre);
+  outline-offset: 3px;
+}

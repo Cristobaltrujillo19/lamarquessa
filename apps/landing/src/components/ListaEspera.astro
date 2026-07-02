@@ -4,7 +4,7 @@
 import { WAITLIST_ENDPOINT, enlaceWhatsApp, MENSAJES } from '../lib/site';
 ---
 
-<section id="lista-espera" class="lista iridiscente">
+<section id="lista-espera" class="lista">
   <div class="contenedor centro reveal">
     <p class="kicker">Lista de espera</p>
     <h2 class="titulo-seccion">Sé la primera en <span class="script">tenerlo</span></h2>
@@ -61,6 +61,7 @@ import { WAITLIST_ENDPOINT, enlaceWhatsApp, MENSAJES } from '../lib/site';
   .lista {
     position: relative;
     overflow: hidden;
+    background: var(--arena-clara);
     padding-block: clamp(70px, 11vw, 120px);
     text-align: center;
   }

@@ -1,0 +1,44 @@
+---
+// Franja delgada divisoria: los 3 símbolos de marca (concha, velero, hibisco),
+// sin texto. Puramente decorativa.
+import IconoConcha from './IconoConcha.astro';
+import IconoVelero from './IconoVelero.astro';
+import IconoHibisco from './IconoHibisco.astro';
+---
+
+<section class="franja" aria-hidden="true">
+  <div class="contenedor iconos">
+    <span class="fr-slot"><IconoConcha tamano={88} /></span>
+    <span class="fr-slot"><IconoVelero tamano={88} /></span>
+    <span class="fr-slot"><IconoHibisco tamano={88} /></span>
+  </div>
+</section>
+
+<style>
+  .franja {
+    background: var(--crema);
+    padding-block: clamp(20px, 3vw, 36px);
+    border-block: 1px solid color-mix(in srgb, var(--cacao) 7%, transparent);
+  }
+
+  .iconos {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(48px, 12vw, 150px);
+    color: var(--cobre);
+  }
+
+  .fr-slot {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* Altura uniforme (los íconos tienen distinta relación de aspecto).
+     El override va sobre .fr-slot —elemento propio de este componente— para
+     que reciba el scope y aplique (una clase pasada al hijo no lo recibe). */
+  .fr-slot :global(svg) {
+    width: auto !important;
+    height: clamp(68px, 9vw, 88px) !important;
+  }
+</style>

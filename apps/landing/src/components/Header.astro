@@ -1,6 +1,6 @@
 ---
 import LogoMarca from './LogoMarca.astro';
-import { enlaceWhatsApp, MENSAJES } from '../lib/site';
+import { enlaceTienda } from '../lib/site';
 
 // URL de la tienda (fase 2). En local: PUBLIC_SHOP_URL=http://localhost:3000
 const tiendaUrl = import.meta.env.PUBLIC_SHOP_URL ?? null;
@@ -28,12 +28,7 @@ const tiendaUrl = import.meta.env.PUBLIC_SHOP_URL ?? null;
     </a>
 
     <div class="cab-acc">
-      <a
-        class="boton boton-primario cab-cta"
-        href={enlaceWhatsApp(MENSAJES.general)}
-        target="_blank"
-        rel="noopener">Escríbenos</a
-      >
+      <a class="boton boton-primario cab-cta" href={enlaceTienda()}>Ir a la tienda</a>
     </div>
   </div>
 
@@ -41,12 +36,7 @@ const tiendaUrl = import.meta.env.PUBLIC_SHOP_URL ?? null;
     <a href="/#coleccion">Colección</a>
     <a href="/nosotros">Historia</a>
     {tiendaUrl && <a href={tiendaUrl}>Tienda</a>}
-    <a
-      class="boton boton-primario"
-      href={enlaceWhatsApp(MENSAJES.general)}
-      target="_blank"
-      rel="noopener">Escríbenos</a
-    >
+    <a class="boton boton-primario" href={enlaceTienda()}>Ir a la tienda</a>
   </div>
 </header>
 

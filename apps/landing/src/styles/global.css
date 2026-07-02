@@ -1,8 +1,6 @@
-/* ---- Sistema de diseño La Marquessa · "Agua Cristalina Nácar" ----
-   Reglas del manual (intactas): logos, patrón de veleros y las tipografías
-   Beauty Angelique (script) + Queen Serif (serif). Lo que evoluciona desde el
-   mood board es la ATMÓSFERA: una base luminosa de agua clara con destellos
-   nácar (rosa/lila/turquesa) y el cobre como acento metálico. */
+/* ---- Sistema de diseño La Marquessa ----
+   Paleta y tipografías tomadas del manual de marca: crema/arena/cobre/cielo
+   y las fuentes Beauty Angelique (script) + Queen Serif (serif). */
 
 /* Fuentes del manual. Cargan primero; Cormorant/Pinyon/Jost quedan como
    respaldo POR-GLIFO (Queen Serif FREE no trae acentos ni puntuación, así que
@@ -23,26 +21,18 @@
 }
 
 :root {
-  /* Base luminosa (agua cristalina) */
-  --blanco: #fefcf9; /* blanco cálido, casi puro */
-  --crema: #f7f0e6; /* fondo principal, más aireado que el sand original */
-  --espuma: #edf4f0; /* espuma de mar: fondo alterno claro y fresco */
-  --arena-clara: #efe6d9; /* tarjetas/superficies cálidas suaves */
-  --arena: #d9c7b4; /* taupe medio */
-
-  /* Agua y nácar (del mood board) */
-  --aqua: #cfe7e2; /* turquesa nácar claro */
-  --aqua-hondo: #7bbcb4; /* turquesa medio: acento frío, líneas, citas */
-  --rosa-nacar: #f4dce1; /* rosa concha */
-  --lila-nacar: #e6d6e8; /* lila perlado */
-  --perla: #f3f8f5; /* highlight perla */
-  --cielo: #c2c9d3; /* acento frío del manual */
-
-  /* Marca: cobre + cacao (hex exactos del manual, intactos) */
+  /* Paleta de marca (hex exactos del manual) */
+  --crema: #f4e8d7; /* fondo principal */
+  --arena-clara: #e8decd; /* secciones alternas / tarjetas */
+  --arena: #c1ab99; /* taupe medio */
   --cobre: #b38561; /* acento principal */
+  --cielo: #c2c9d3; /* acento frío (mar/cielo) */
+
+  /* Derivados para texto y estados (mantienen la familia cálida) */
   --cobre-hondo: #946545; /* cobre más oscuro: hover, detalles */
   --cacao: #4a3a2c; /* texto principal */
   --cacao-suave: #6f5a48; /* texto secundario */
+  --blanco: #fbf7f1; /* "blanco" cálido */
   --wa-verde: #25d366;
 
   /* Tipografías — fuente del manual primero, respaldo después */
@@ -55,7 +45,6 @@
   --ancho: 1520px;
   --radio: 4px; /* esquinas casi rectas: estética editorial/lujo */
   --sombra: 0 18px 50px rgba(74, 58, 44, 0.12);
-  --sombra-agua: 0 22px 60px rgba(95, 138, 132, 0.18);
 }
 
 * {
@@ -174,7 +163,7 @@ a {
 .boton-primario:hover {
   background: var(--cobre-hondo);
   transform: translateY(-2px);
-  box-shadow: var(--sombra-agua);
+  box-shadow: var(--sombra);
 }
 
 .boton-fantasma {
@@ -186,58 +175,6 @@ a {
 .boton-fantasma:hover {
   border-color: var(--cobre);
   color: var(--cobre-hondo);
-}
-
-/* ---- Iridiscencia nácar (luz de agua con destellos rosa/lila/turquesa) ----
-   Base luminosa reutilizable en hero, lista de espera y bandas. */
-.iridiscente {
-  background:
-    radial-gradient(
-      90% 75% at 12% -10%,
-      color-mix(in srgb, var(--rosa-nacar) 88%, transparent),
-      transparent 55%
-    ),
-    radial-gradient(
-      80% 70% at 90% -6%,
-      color-mix(in srgb, var(--aqua) 92%, transparent),
-      transparent 58%
-    ),
-    radial-gradient(
-      120% 85% at 50% 122%,
-      color-mix(in srgb, var(--lila-nacar) 70%, transparent),
-      transparent 60%
-    ),
-    linear-gradient(180deg, var(--blanco), var(--espuma));
-}
-
-/* Veladura de luz diagonal: el brillo nácar que cruza el hero */
-.shimmer {
-  position: relative;
-  overflow: hidden;
-}
-
-.shimmer::after {
-  content: '';
-  position: absolute;
-  top: -25%;
-  left: 24%;
-  width: 170px;
-  height: 150%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    color-mix(in srgb, var(--blanco) 60%, transparent),
-    transparent
-  );
-  transform: rotate(18deg);
-  pointer-events: none;
-}
-
-/* Chispas de sol sobre el agua (se colocan con top/left inline) */
-.destello {
-  position: absolute;
-  opacity: 0.75;
-  pointer-events: none;
 }
 
 /* Aparición suave al hacer scroll (script en Base.astro) */
@@ -268,22 +205,6 @@ a {
   animation: flotar 7s ease-in-out infinite;
 }
 
-@keyframes brillar {
-  0%,
-  100% {
-    opacity: 0.35;
-    transform: scale(0.9);
-  }
-  50% {
-    opacity: 0.9;
-    transform: scale(1.05);
-  }
-}
-
-.titila {
-  animation: brillar 5.5s ease-in-out infinite;
-}
-
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -293,8 +214,7 @@ a {
     transform: none;
     transition: none;
   }
-  .flota,
-  .titila {
+  .flota {
     animation: none;
   }
 }

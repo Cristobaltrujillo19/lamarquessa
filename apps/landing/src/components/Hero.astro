@@ -1,7 +1,7 @@
 ---
 import LogoMarca from './LogoMarca.astro';
 import Carrusel from './Carrusel.astro';
-import { enlaceWhatsApp, MENSAJES, TAGLINE } from '../lib/site';
+import { enlaceTienda, TAGLINE } from '../lib/site';
 ---
 
 <section id="inicio" class="hero">
@@ -16,12 +16,7 @@ import { enlaceWhatsApp, MENSAJES, TAGLINE } from '../lib/site';
 
   <div class="hero-cta">
     <a class="boton boton-primario" href="#coleccion">Ver los bolsos</a>
-    <a
-      class="boton boton-fantasma"
-      href={enlaceWhatsApp(MENSAJES.general)}
-      target="_blank"
-      rel="noopener">Escríbenos</a
-    >
+    <a class="boton boton-fantasma" href={enlaceTienda()}>Ir a la tienda</a>
   </div>
 </section>
 
@@ -29,19 +24,14 @@ import { enlaceWhatsApp, MENSAJES, TAGLINE } from '../lib/site';
   .hero {
     position: relative;
     padding-top: clamp(20px, 3vh, 40px);
-    padding-bottom: clamp(40px, 6vh, 72px);
+    padding-bottom: clamp(12px, 1.6vh, 26px);
     background:
       radial-gradient(
-        72% 42% at 50% 0%,
-        color-mix(in srgb, var(--rosa-nacar) 52%, transparent),
-        transparent 62%
+        70% 42% at 50% 0%,
+        color-mix(in srgb, var(--cielo) 42%, transparent),
+        transparent 64%
       ),
-      radial-gradient(
-        62% 40% at 90% 0%,
-        color-mix(in srgb, var(--aqua) 58%, transparent),
-        transparent 62%
-      ),
-      linear-gradient(180deg, var(--blanco), var(--espuma));
+      linear-gradient(180deg, var(--blanco), var(--crema));
   }
 
   .hero-top {
@@ -72,7 +62,7 @@ import { enlaceWhatsApp, MENSAJES, TAGLINE } from '../lib/site';
     font-family: var(--fuente-cita);
     font-style: italic;
     font-size: clamp(18px, 2vw, 24px);
-    color: color-mix(in srgb, var(--aqua-hondo) 82%, var(--cacao));
+    color: var(--cobre-hondo);
   }
 
   .hero-cta {

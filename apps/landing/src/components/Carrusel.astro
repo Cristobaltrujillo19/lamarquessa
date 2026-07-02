@@ -1,12 +1,10 @@
 ---
-// Carrusel de fotos horizontales (placeholders por ahora).
-// Cuando lleguen las fotos, reemplazar cada PlaceholderFoto por <img>.
-import PlaceholderFoto from './PlaceholderFoto.astro';
-
-const slides: { simbolo: 'concha' | 'velero' | 'hibisco'; etiqueta: string }[] = [
-  { simbolo: 'concha', etiqueta: 'Foto horizontal · próximamente' },
-  { simbolo: 'velero', etiqueta: 'Foto horizontal · próximamente' },
-  { simbolo: 'hibisco', etiqueta: 'Foto horizontal · próximamente' },
+// Carrusel de fotos horizontales del hero.
+const slides = [
+  { src: '/fotos/hero-1.jpg', alt: 'Atardecer dorado en la orilla del mar' },
+  { src: '/fotos/hero-2.jpg', alt: 'Jugando entre las olas al atardecer' },
+  { src: '/fotos/hero-3.jpg', alt: 'Retrato junto al mar con luz cálida' },
+  { src: '/fotos/hero-4.jpg', alt: 'Caminando descalza por la playa' },
 ];
 ---
 
@@ -14,9 +12,9 @@ const slides: { simbolo: 'concha' | 'velero' | 'hibisco'; etiqueta: string }[] =
   <div class="viewport">
     <div class="pista" data-pista>
       {
-        slides.map((s) => (
+        slides.map((s, i) => (
           <div class="slide">
-            <PlaceholderFoto etiqueta={s.etiqueta} simbolo={s.simbolo} />
+            <img src={s.src} alt={s.alt} loading={i === 0 ? 'eager' : 'lazy'} decoding="async" />
           </div>
         ))
       }
@@ -50,6 +48,13 @@ const slides: { simbolo: 'concha' | 'velero' | 'hibisco'; etiqueta: string }[] =
   .slide {
     min-width: 100%;
     height: clamp(340px, 56vh, 620px);
+  }
+
+  .slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 
   .controles {

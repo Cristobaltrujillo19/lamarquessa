@@ -18,6 +18,15 @@ export function enlaceWhatsApp(mensaje: string): string {
   return `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(mensaje)}`;
 }
 
+// URL del storefront (tienda). En local: PUBLIC_SHOP_URL=http://localhost:3000.
+// Si no está configurada (p. ej. en prod antes de desplegar la tienda), los CTAs
+// de tienda caen al ancla de la colección para no romper.
+export const SHOP_URL = import.meta.env.PUBLIC_SHOP_URL ?? '';
+export const enlaceTienda = (): string =>
+  SHOP_URL ? `${SHOP_URL}/tienda` : '/#coleccion';
+export const enlaceProducto = (slug: string): string =>
+  SHOP_URL ? `${SHOP_URL}/producto/${slug}` : '/#coleccion';
+
 // Cada botón usa un mensaje distinto para saber desde dónde escribió la clienta.
 export const MENSAJES = {
   general: 'Hola La Marquessa, quiero conocer más de los bolsos 🐚',

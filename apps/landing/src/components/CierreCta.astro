@@ -1,6 +1,6 @@
 ---
 import IconoConcha from './IconoConcha.astro';
-import { enlaceWhatsApp, MENSAJES, INSTAGRAM_URL, INSTAGRAM_HANDLE } from '../lib/site';
+import { enlaceTienda, INSTAGRAM_URL, INSTAGRAM_HANDLE } from '../lib/site';
 ---
 
 <section class="cierre">
@@ -9,8 +9,8 @@ import { enlaceWhatsApp, MENSAJES, INSTAGRAM_URL, INSTAGRAM_HANDLE } from '../li
     <h2 class="frase">Del amor, del mar<br />y del amor al mar.</h2>
     <p class="sub">Sé de las primeras en llevar el tuyo.</p>
     <div class="acciones">
-      <a class="boton boton-primario" href={enlaceWhatsApp(MENSAJES.reserva)} target="_blank" rel="noopener">
-        Reservar mi bolso
+      <a class="boton boton-primario" href={enlaceTienda()}>
+        Ir a la tienda
       </a>
       <a class="boton boton-fantasma" href={INSTAGRAM_URL} target="_blank" rel="noopener">
         Síguenos {INSTAGRAM_HANDLE}

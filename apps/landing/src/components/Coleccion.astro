@@ -3,7 +3,7 @@ import IconoConcha from './IconoConcha.astro';
 import IconoVelero from './IconoVelero.astro';
 import IconoHibisco from './IconoHibisco.astro';
 import { coleccion, formatCop } from '../lib/coleccion';
-import { enlaceWhatsApp, MENSAJES } from '../lib/site';
+import { enlaceProducto, enlaceTienda } from '../lib/site';
 
 const iconos = { concha: IconoConcha, velero: IconoVelero, hibisco: IconoHibisco };
 ---
@@ -14,8 +14,8 @@ const iconos = { concha: IconoConcha, velero: IconoVelero, hibisco: IconoHibisco
       <p class="kicker">La colección</p>
       <h2 class="titulo-seccion">Nuestros <span class="script">bolsos</span></h2>
       <p class="sub">
-        Cada bolso es una pieza exclusiva: impresa en 3D y terminada a mano en
-        Colombia. Lanzamiento muy pronto — reserva el tuyo.
+        Cada bolso es una pieza exclusiva impresa en 3D con materiales
+        colombianos. Elige el tuyo en la tienda.
       </p>
     </header>
 
@@ -24,10 +24,14 @@ const iconos = { concha: IconoConcha, velero: IconoVelero, hibisco: IconoHibisco
         coleccion.map((p) => {
           const Icono = iconos[p.simbolo];
           return (
-            <article class="pieza reveal">
+            <a class="pieza reveal" href={enlaceProducto(p.slug)}>
               <div class="lienzo">
                 {p.insignia && <span class="insignia">{p.insignia}</span>}
-                <Icono tamano={92} class="simbolo" />
+                {p.foto ? (
+                  <img src={p.foto} alt={p.nombre} class="foto" loading="lazy" decoding="async" />
+                ) : (
+                  <Icono tamano={92} class="simbolo" />
+                )}
               </div>
               <div class="datos">
                 <h3>{p.nombre}</h3>
@@ -35,27 +39,24 @@ const iconos = { concha: IconoConcha, velero: IconoVelero, hibisco: IconoHibisco
                 <p class="variantes">{p.variantes}</p>
                 <div class="fila">
                   <span class="precio">{formatCop(p.precioCop)}</span>
-                  <a
-                    class="pedir"
-                    href={enlaceWhatsApp(MENSAJES.reserva)}
-                    target="_blank"
-                    rel="noopener"
-                  >
-                    Reservar →
-                  </a>
+                  <span class="pedir">Ver en la tienda →</span>
                 </div>
               </div>
-            </article>
+            </a>
           );
         })
       }
+    </div>
+
+    <div class="ver-tienda reveal">
+      <a class="boton boton-primario" href={enlaceTienda()}>Ir a la tienda</a>
     </div>
   </div>
 </section>
 
 <style>
   .coleccion {
-    background: var(--espuma);
+    background: var(--arena-clara);
   }
 
   .encabezado {
@@ -85,6 +86,8 @@ const iconos = { concha: IconoConcha, velero: IconoVelero, hibisco: IconoHibisco
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    text-decoration: none;
+    color: inherit;
     box-shadow: 0 1px 0 color-mix(in srgb, var(--cacao) 6%, transparent);
     transition:
       transform 0.3s ease,
@@ -100,11 +103,24 @@ const iconos = { concha: IconoConcha, velero: IconoVelero, hibisco: IconoHibisco
     position: relative;
     display: grid;
     place-items: center;
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
     background:
-      radial-gradient(circle at 50% 38%, var(--perla), transparent 70%),
-      linear-gradient(160deg, var(--aqua), color-mix(in srgb, var(--aqua-hondo) 48%, var(--aqua)));
-    color: var(--cobre-hondo);
+      radial-gradient(circle at 50% 40%, var(--blanco), transparent 70%),
+      var(--arena);
+    color: color-mix(in srgb, var(--cobre) 70%, var(--cacao));
+  }
+
+  .foto {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+  }
+
+  .pieza:hover .foto {
+    transform: scale(1.03);
   }
 
   .insignia {
@@ -167,13 +183,17 @@ const iconos = { concha: IconoConcha, velero: IconoVelero, hibisco: IconoHibisco
     font-size: 12px;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    text-decoration: none;
     color: var(--cobre-hondo);
     white-space: nowrap;
     transition: color 0.2s ease;
   }
 
-  .pedir:hover {
+  .pieza:hover .pedir {
     color: var(--cobre);
+  }
+
+  .ver-tienda {
+    margin-top: clamp(36px, 5vw, 56px);
+    text-align: center;
   }
 </style>
