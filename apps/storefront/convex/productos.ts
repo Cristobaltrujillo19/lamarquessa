@@ -53,6 +53,10 @@ export const crear = mutation({
     tamanos: v.array(tamanoV),
     fotos: v.array(v.string()),
     insignia: v.optional(v.string()),
+    altoCm: v.optional(v.number()),
+    anchoCm: v.optional(v.number()),
+    profundidadCm: v.optional(v.number()),
+    material: v.optional(v.string()),
   },
   handler: async (ctx, a) => {
     exigirSecreto(a.secret);
@@ -77,6 +81,10 @@ export const crear = mutation({
       tamanos: a.tamanos,
       fotos: a.fotos,
       insignia: a.insignia,
+      altoCm: a.altoCm,
+      anchoCm: a.anchoCm,
+      profundidadCm: a.profundidadCm,
+      material: a.material,
       activo: true,
       orden: total,
     });
@@ -94,18 +102,17 @@ export const actualizar = mutation({
     tamanos: v.array(tamanoV),
     fotos: v.array(v.string()),
     insignia: v.optional(v.string()),
+    altoCm: v.optional(v.number()),
+    anchoCm: v.optional(v.number()),
+    profundidadCm: v.optional(v.number()),
+    material: v.optional(v.string()),
   },
   handler: async (ctx, a) => {
     exigirSecreto(a.secret);
-    await ctx.db.patch(a.id, {
-      nombre: a.nombre,
-      descripcion: a.descripcion,
-      categoria: a.categoria,
-      colores: a.colores,
-      tamanos: a.tamanos,
-      fotos: a.fotos,
-      insignia: a.insignia,
-    });
+    // Solo se tocan los campos enviados: las medidas no se borran si el
+    // formulario del panel todavía no las incluye.
+    const { secret: _s, id, ...campos } = a;
+    await ctx.db.patch(id, campos);
   },
 });
 
@@ -125,76 +132,111 @@ export const eliminar = mutation({
   },
 });
 
-// Siembra idempotente de los 4 bolsos placeholder. Solo inserta si está vacío,
-// así correrla dos veces no duplica nada. Se puede borrar cuando haya datos reales.
-export const sembrarPlaceholders = mutation({
-  args: {},
-  handler: async (ctx) => {
-    const yaHay = await ctx.db.query("productos").first();
-    if (yaHay) return { creados: 0, nota: "Ya había productos, no se sembró." };
+// Catálogo REAL de La Marquessa. Reemplaza por completo lo que haya en la
+// tabla (los 4 bolsos placeholder), así que es la única fuente de verdad.
+// Datos tomados del documento de producto de la marca.
+export const sembrarCatalogoReal = mutation({
+  args: { secret: v.string() },
+  handler: async (ctx, { secret }) => {
+    exigirSecreto(secret);
 
-    const C = {
-      arena: { id: "arena", nombre: "Arena", hex: "#c1ab99" },
-      marfil: { id: "marfil", nombre: "Marfil", hex: "#efe6d9" },
-      cobre: { id: "cobre", nombre: "Cobre", hex: "#b38561" },
-      cacao: { id: "cacao", nombre: "Cacao", hex: "#6f5a48" },
-    };
-    const tam = (mid: number, mini: number) => [
-      { id: "mid", nombre: "Mid", precioCop: mid },
-      { id: "mini", nombre: "Mini", precioCop: mini },
+    // Los 3 acabados disponibles, iguales para los cuatro bolsos.
+    const ACABADOS = [
+      { id: "amanecer", nombre: "Amanecer", hex: "#e8bca6" },
+      { id: "caribe", nombre: "Caribe", hex: "#bcc1d2" },
+      // [PENDIENTE: los dos colores reales del seda bicolor]
+      { id: "horizonte", nombre: "Horizonte", hex: "#b38561" },
     ];
+    const MATERIAL = "PLA de origen colombiano, impreso en 3D y terminado a mano";
 
     const data = [
       {
-        slug: "bolso-venera",
-        nombre: "Bolso Venera",
+        slug: "menorca",
+        nombre: "Menorca",
         descripcion:
-          "Clutch de noche con textura de concha, impreso en 3D y terminado a mano. Tu pieza statement frente al mar.",
-        categoria: "Bolsos",
-        colores: [C.arena, C.marfil, C.cobre, C.cacao],
-        tamanos: tam(299_000, 219_000),
-        fotos: ["/fotos/bolso-venera.jpg", "/fotos/hero-3.jpg", "/fotos/hero-1.jpg"],
-        insignia: "La primera pieza" as string | undefined,
+          "Menorca no necesita anunciarse. Su silueta nace de una curva continua —sin costuras, sin interrupciones— como una ola detenida justo antes de romper. La textura que la recorre no es un patrón repetido: es el relieve irregular de la espuma, distinto en cada centímetro, imposible de copiar dos veces.\n\nEs un bolso de mano de asa integrada, del tamaño exacto de un día bien planeado: entra lo que necesitas y nada que sobre. Cada Menorca se crea individualmente combinando impresión 3D con acabado artesanal a mano, así que la que llegue a ti es literalmente la única que existe.\n\nDisponible también en talla grande: Mallorca.",
+        precioCop: 210_000,
+        altoCm: 20,
+        anchoCm: 19.2,
+        profundidadCm: 8.7,
+        fotos: [
+          "/fotos/bolso-menorca-impresion-3d-frente.jpg",
+          "/fotos/bolso-menorca-en-uso.jpg",
+          "/fotos/bolso-menorca-ambiente.jpg",
+          "/fotos/bolso-menorca-impresion-3d-angulo.jpg",
+        ],
+        insignia: undefined as string | undefined,
       },
       {
-        slug: "bolso-marea",
-        nombre: "Bolso Marea",
+        slug: "mallorca",
+        nombre: "Mallorca",
         descripcion:
-          "Tote amplio y liviano para el día, la playa o la ciudad sin esfuerzo. Materiales colombianos.",
-        categoria: "Bolsos",
-        colores: [C.arena, C.marfil, C.cobre],
-        tamanos: tam(259_000, 189_000),
-        fotos: ["/fotos/bolso-marea.jpg", "/fotos/hero-1.jpg", "/fotos/hero-4.jpg"],
+          "Mallorca tiene la presencia de una pieza pensada para ser mirada. Una curva continua que se cierra en un arco abierto, y sobre toda su superficie el relieve irregular de la espuma, tallado a mano: la luz nunca cae dos veces igual sobre él.\n\nSu volumen la vuelve el bolso de los días largos —los que empiezan en una mesa y terminan en otra. Como toda pieza de La Marquessa, se crea una por una uniendo impresión 3D y trabajo manual, para lograr una forma que hasta hace poco no se podía fabricar.\n\nEs la talla grande de Menorca. Misma silueta, más cuerpo.",
+        precioCop: 255_000,
+        altoCm: 23.7,
+        anchoCm: 22.8,
+        profundidadCm: 10.4,
+        fotos: [
+          "/fotos/bolso-mallorca-impresion-3d-frente.jpg",
+          "/fotos/bolso-mallorca-en-uso.jpg",
+          "/fotos/bolso-mallorca-ambiente.jpg",
+          "/fotos/bolso-mallorca-impresion-3d-angulo.jpg",
+        ],
+        insignia: undefined as string | undefined,
+      },
+      {
+        slug: "kruta",
+        nombre: "Kruta",
+        descripcion:
+          "Kruta se levanta. Su cuerpo es vertical y estrecho, de base casi cuadrada: una silueta que se sostiene sola sobre cualquier mesa, sin recostarse ni pedir permiso. La superficie es lisa y luminosa, y sobre ella corre un solo pliegue —el trazo de una corriente que envuelve la pieza de lado a lado y termina justo donde nace el asa.\n\nEs el bolso de las noches y de los planes cortos: lo esencial, llevado con intención. Cada Kruta se crea individualmente uniendo impresión 3D y acabado artesanal a mano, así que el pliegue que la recorre no se repite en ninguna otra.",
+        precioCop: 230_000,
+        altoCm: 20.5,
+        anchoCm: 12.8,
+        profundidadCm: 12.8,
+        fotos: [
+          "/fotos/bolso-kruta-impresion-3d-frente.jpg",
+          "/fotos/bolso-kruta-en-uso.jpg",
+          "/fotos/bolso-kruta-ambiente.jpg",
+          "/fotos/bolso-kruta-impresion-3d-angulo.jpg",
+        ],
         insignia: undefined,
       },
       {
-        slug: "bolso-brisa",
-        nombre: "Bolso Brisa",
+        slug: "montt",
+        nombre: "Montt",
         descripcion:
-          "Crossbody compacto, manos libres, para llevar contigo lo esencial con la pureza del mar.",
-        categoria: "Bolsos",
-        colores: [C.marfil, C.cobre, C.cacao],
-        tamanos: tam(219_000, 159_000),
-        fotos: ["/fotos/bolso-brisa.jpg", "/fotos/hero-2.jpg"],
-        insignia: undefined,
-      },
-      {
-        slug: "bolso-coral",
-        nombre: "Bolso Coral",
-        descripcion:
-          "Bucket bag con caída suave y carácter; el favorito para todos los días, hecho para durar.",
-        categoria: "Bolsos",
-        colores: [C.arena, C.marfil, C.cobre, C.cacao],
-        tamanos: tam(279_000, 199_000),
-        fotos: ["/fotos/bolso-coral.jpg", "/fotos/hero-4.jpg", "/fotos/hero-2.jpg"],
+          "Montt se recuesta. Es ancha, baja, de líneas horizontales, y sobre el frente le cruza un pliegue en diagonal: la tela que cede, la ola que ya rompió. El asa se abre en un arco limpio y deja aire entre el mango y el cuerpo, como el vano de un puente.\n\nEs el bolso de la vida diaria: el que se agarra sin pensarlo y funciona con todo. Cada Montt se crea individualmente uniendo impresión 3D y acabado artesanal a mano, así que el pliegue cae distinto en cada pieza. No hay dos iguales.",
+        precioCop: 195_000,
+        altoCm: 17.5,
+        anchoCm: 18.2,
+        profundidadCm: 12.3,
+        fotos: [
+          "/fotos/bolso-montt-impresion-3d-frente.jpg",
+          "/fotos/bolso-montt-en-uso.jpg",
+          "/fotos/bolso-montt-ambiente.jpg",
+          "/fotos/bolso-montt-impresion-3d-angulo.jpg",
+        ],
         insignia: undefined,
       },
     ];
 
+    // Fuera lo anterior (los placeholders), para no dejar catálogo mezclado.
+    const previos = await ctx.db.query("productos").collect();
+    for (const p of previos) await ctx.db.delete(p._id);
+
     let orden = 0;
     for (const p of data) {
-      await ctx.db.insert("productos", { ...p, activo: true, orden: orden++ });
+      const { precioCop, ...resto } = p;
+      await ctx.db.insert("productos", {
+        ...resto,
+        categoria: "Bolsos",
+        colores: ACABADOS,
+        tamanos: [{ id: "unica", nombre: "Talla única", precioCop }],
+        material: MATERIAL,
+        activo: true,
+        orden: orden++,
+      });
     }
-    return { creados: data.length };
+    return { eliminados: previos.map((p) => p.slug), creados: data.map((p) => p.slug) };
   },
 });

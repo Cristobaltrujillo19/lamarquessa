@@ -1,0 +1,51 @@
+.beneficios {
+  background: var(--blanco);
+  border-block: 1px solid color-mix(in srgb, var(--cacao) 8%, transparent);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding-block: clamp(28px, 4vw, 40px);
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+  padding-inline: 16px;
+}
+
+.item + .item {
+  border-left: 1px solid color-mix(in srgb, var(--cacao) 10%, transparent);
+}
+
+.t {
+  font-family: var(--fuente-cuerpo);
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--cobre-texto);
+}
+
+.d {
+  font-size: 13.5px;
+  color: var(--cacao-suave);
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 26px 0;
+  }
+  .item:nth-child(odd) {
+    border-left: 0;
+  }
+  .item:nth-child(3),
+  .item:nth-child(4) {
+    padding-top: 26px;
+    border-top: 1px solid color-mix(in srgb, var(--cacao) 10%, transparent);
+  }
+}

@@ -36,24 +36,27 @@ export default function ComprarPanel({ producto }: { producto: Producto }) {
         </div>
       </div>
 
-      <div className="mt-6">
-        <p className="text-xs uppercase tracking-[0.14em] text-cacao-suave">Tamaño</p>
-        <div className="mt-2 flex gap-2">
-          {producto.tamanos.map((t) => (
-            <button
-              key={t.id}
-              onClick={() => setTamanoId(t.id)}
-              className={`rounded-sm border px-6 py-2 text-sm transition-colors ${
-                t.id === tamanoId
-                  ? "border-cobre bg-cobre text-blanco"
-                  : "border-cacao/25 text-cacao hover:border-cobre"
-              }`}
-            >
-              {t.nombre}
-            </button>
-          ))}
+      {/* Con una sola talla el selector sobra: solo añade ruido a la decisión. */}
+      {producto.tamanos.length > 1 && (
+        <div className="mt-6">
+          <p className="text-xs uppercase tracking-[0.14em] text-cacao-suave">Tamaño</p>
+          <div className="mt-2 flex gap-2">
+            {producto.tamanos.map((t) => (
+              <button
+                key={t.id}
+                onClick={() => setTamanoId(t.id)}
+                className={`rounded-sm border px-6 py-2 text-sm transition-colors ${
+                  t.id === tamanoId
+                    ? "border-cobre-texto bg-cobre-texto text-blanco"
+                    : "border-cacao/25 text-cacao hover:border-cobre-texto"
+                }`}
+              >
+                {t.nombre}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       <button
         onClick={() =>

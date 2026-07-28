@@ -1,0 +1,54 @@
+.hero {
+  position: relative;
+  padding-top: clamp(20px, 3vh, 40px);
+  padding-bottom: clamp(12px, 1.6vh, 26px);
+  background:
+    radial-gradient(
+      70% 42% at 50% 0%,
+      color-mix(in srgb, var(--cielo) 42%, transparent),
+      transparent 64%
+    ),
+    linear-gradient(180deg, var(--blanco), var(--crema));
+}
+
+.top {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding-inline: clamp(22px, 6vw, 40px);
+  margin-bottom: clamp(20px, 3vh, 34px);
+}
+
+.logo {
+  height: clamp(58px, 9vw, 92px);
+  width: auto;
+  max-width: 90%;
+}
+
+/* El titular dice qué es el producto y qué lo hace distinto, en una línea.
+   La poesía va debajo, no encima. */
+.titular {
+  margin-top: 6px;
+  font-size: clamp(26px, 4.4vw, 46px);
+  color: var(--cacao);
+  max-width: 18ch;
+}
+
+.tagline {
+  font-family: var(--fuente-cita);
+  font-style: italic;
+  font-size: clamp(17px, 1.9vw, 22px);
+  color: var(--cobre-texto);
+}
+
+.cta {
+  margin-top: clamp(22px, 3vh, 34px);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding-inline: clamp(22px, 6vw, 40px);
+}

@@ -1,21 +1,22 @@
 import Link from "next/link";
+import Foto, { altDeFoto } from "./Foto";
 import { type Producto, precioDesde, formatCop } from "@/lib/productos";
 
 export default function ProductCard({ producto }: { producto: Producto }) {
+  const portada = producto.fotos[0];
+
   return (
     <Link href={`/producto/${producto.slug}`} className="group block">
       <div className="relative aspect-[4/5] overflow-hidden rounded-sm bg-arena-clara">
-        {producto.insignia && (
-          <span className="absolute left-3 top-3 z-10 rounded-full bg-cobre px-3 py-1 text-[10px] uppercase tracking-[0.14em] text-blanco">
-            {producto.insignia}
-          </span>
+        {portada && (
+          <Foto
+            src={portada}
+            alt={altDeFoto(portada, producto.nombre)}
+            ancho={1600}
+            alto={1600}
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+          />
         )}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={producto.fotos[0]}
-          alt={producto.nombre}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-        />
       </div>
 
       <div className="mt-3">
@@ -31,7 +32,7 @@ export default function ProductCard({ producto }: { producto: Producto }) {
           ))}
         </div>
         <p className="mt-2 font-cita text-lg text-cacao">
-          Desde {formatCop(precioDesde(producto))}
+          {formatCop(precioDesde(producto))}
         </p>
       </div>
     </Link>

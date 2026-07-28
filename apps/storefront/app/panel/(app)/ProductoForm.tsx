@@ -157,7 +157,7 @@ export default function ProductoForm({
           name="fotos"
           defaultValue={producto?.fotos.join("\n")}
           rows={3}
-          placeholder={"/fotos/bolso-venera.jpg"}
+          placeholder={"/fotos/bolso-menorca-impresion-3d-frente.jpg"}
           className={`${input} font-mono text-xs`}
         />
       </label>

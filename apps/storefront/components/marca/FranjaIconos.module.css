@@ -1,0 +1,18 @@
+.franja {
+  background: var(--crema);
+  padding-block: clamp(20px, 3vw, 36px);
+  border-block: 1px solid color-mix(in srgb, var(--cacao) 7%, transparent);
+}
+
+.iconos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(48px, 12vw, 150px);
+}
+
+/* Altura uniforme: los tres símbolos tienen distinta relación de aspecto. */
+.iconos img {
+  width: auto !important;
+  height: clamp(68px, 9vw, 88px) !important;
+}

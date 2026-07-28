@@ -1,0 +1,62 @@
+.proceso {
+  background: var(--blanco);
+}
+
+.encabezado {
+  text-align: center;
+  margin-bottom: clamp(44px, 6vw, 70px);
+}
+
+.sub {
+  margin: 18px auto 0;
+  max-width: 62ch;
+  color: var(--cacao-suave);
+}
+
+.pasos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: clamp(32px, 5vw, 56px);
+}
+
+.paso {
+  text-align: center;
+}
+
+.iconoSlot {
+  height: 84px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.iconoSlot img {
+  width: auto !important;
+  height: 74px !important;
+  max-width: 100%;
+}
+
+.paso h3 {
+  font-size: 28px;
+  color: var(--cacao);
+}
+
+.paso p {
+  margin-top: 10px;
+  color: var(--cacao-suave);
+  max-width: 34ch;
+  margin-inline: auto;
+}
+
+.dato {
+  display: block;
+  margin-top: 10px;
+  font-size: 12.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cobre-texto);
+}

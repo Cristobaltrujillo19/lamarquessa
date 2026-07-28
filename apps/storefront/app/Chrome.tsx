@@ -3,17 +3,19 @@
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 
-// Muestra el header/footer/carrito de la TIENDA en las rutas públicas,
+// Muestra el header/footer/carrito/WhatsApp de la TIENDA en las rutas públicas,
 // pero no en /panel (que tiene su propio chrome).
 export default function Chrome({
   header,
   footer,
   drawer,
+  fab,
   children,
 }: {
   header: ReactNode;
   footer: ReactNode;
   drawer: ReactNode;
+  fab: ReactNode;
   children: ReactNode;
 }) {
   const path = usePathname();
@@ -24,6 +26,7 @@ export default function Chrome({
       {children}
       {footer}
       {drawer}
+      {fab}
     </>
   );
 }

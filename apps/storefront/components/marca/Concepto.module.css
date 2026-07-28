@@ -1,0 +1,41 @@
+.concepto {
+  background: var(--crema);
+}
+
+.centro {
+  max-width: 760px;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.olas {
+  width: 90px;
+  height: 14px;
+  color: var(--cobre);
+  margin: 18px auto 34px;
+  display: block;
+}
+
+.intro {
+  font-family: var(--fuente-cita);
+  font-size: clamp(22px, 3.4vw, 32px);
+  line-height: 1.4;
+  color: var(--cacao);
+}
+
+.cuerpo {
+  margin-top: 24px;
+  font-size: clamp(16px, 2vw, 18px);
+  color: var(--cacao-suave);
+  max-width: 56ch;
+  margin-inline: auto;
+}
+
+.cierre {
+  margin-top: 32px;
+  font-family: var(--fuente-cita);
+  font-style: italic;
+  font-size: clamp(18px, 2.4vw, 22px);
+  line-height: 1.5;
+  color: var(--cobre-texto);
+}

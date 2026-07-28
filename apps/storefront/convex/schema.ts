@@ -55,6 +55,12 @@ export default defineSchema({
     insignia: v.optional(v.string()),
     activo: v.boolean(),
     orden: v.number(),
+    // Ficha técnica: responde objeciones reales de compra ("¿cabe mi celular?")
+    // y alimenta el schema Product. Opcionales: los productos viejos no los tienen.
+    altoCm: v.optional(v.number()),
+    anchoCm: v.optional(v.number()),
+    profundidadCm: v.optional(v.number()),
+    material: v.optional(v.string()),
   })
     .index("by_slug", ["slug"])
     .index("by_activo", ["activo"]),
