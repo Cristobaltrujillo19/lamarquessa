@@ -144,8 +144,10 @@ export const sembrarCatalogoReal = mutation({
     const ACABADOS = [
       { id: "amanecer", nombre: "Amanecer", hex: "#e8bca6" },
       { id: "caribe", nombre: "Caribe", hex: "#bcc1d2" },
-      // [PENDIENTE: los dos colores reales del seda bicolor]
-      { id: "horizonte", nombre: "Horizonte", hex: "#b38561" },
+      // Horizonte es un seda bicolor negro y rojo. La muestra del selector solo
+      // admite un color plano (el panel la edita con <input type="color">), así
+      // que se usa el negro como base; el rojo se cuenta en la ficha y en la FAQ.
+      { id: "horizonte", nombre: "Horizonte", hex: "#111111" },
     ];
     const MATERIAL = "PLA de origen colombiano, impreso en 3D y terminado a mano";
 

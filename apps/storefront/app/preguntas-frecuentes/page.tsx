@@ -108,9 +108,14 @@ export default async function PreguntasFrecuentesPage() {
           id: "acabados",
           pregunta: "¿Qué acabados existen?",
           respuesta: [
-            "Tres, iguales para los cuatro modelos: Amanecer, un rosa nude cálido; Caribe, un azul con destellos; y Horizonte, un bicolor con caída de seda.",
-            "Cada acabado se comporta distinto según la luz, así que ninguna foto lo cuenta del todo. Si dudas entre dos, escríbenos y te mandamos fotos reales del que te interese.",
+            "Tres, iguales para los cuatro modelos: Amanecer, un rosa nude cálido; Caribe, un azul con destellos; y Horizonte, un bicolor en negro y rojo con caída de seda.",
+            "Cada acabado se comporta distinto según la luz, así que ninguna foto lo cuenta del todo. Si dudas entre dos, escríbenos y te mandamos fotos reales del que te interese. Y si el color que buscas no está, se puede pedir a la medida.",
           ],
+          extra: (
+            <p className={css.enlace}>
+              <Link href="#personalizacion">Ver cómo se personaliza →</Link>
+            </p>
+          ),
         },
         {
           id: "capacidad",
@@ -239,11 +244,11 @@ export default async function PreguntasFrecuentesPage() {
         {
           id: "personalizacion",
           pregunta: "¿Puedo pedirlo personalizado?",
-          // ⚠️ [PENDIENTE: qué se puede personalizar exactamente y desde cuánto].
-          // Hasta tener esos datos, la respuesta manda a cotizar sin prometer
-          // ni alcances ni precios.
+          // ⚠️ [PENDIENTE: desde cuánto cuesta cada personalización]. Mientras
+          // no haya precios, la respuesta manda a cotizar sin prometer cifras.
           respuesta: [
-            "Sí, se puede. La personalización tiene un costo adicional según lo que pidas, así que se cotiza antes de empezar: nos escribes por WhatsApp, nos cuentas qué tienes en mente y te decimos si es posible y cuánto suma.",
+            "Sí, de dos formas: puedes pedir un color específico, aunque no esté entre los tres acabados, y puedes agregar tus iniciales en la parte inferior del bolso.",
+            "Cada personalización tiene un costo adicional según lo que pidas, así que se cotiza antes de empezar: nos escribes por WhatsApp, nos cuentas qué tienes en mente y te confirmamos precio y tiempos.",
             "Ten en cuenta que una pieza personalizada se hace solo para ti, así que no aplica el derecho de retracto. La garantía por defectos de fabricación sí, siempre.",
           ],
           extra: (
