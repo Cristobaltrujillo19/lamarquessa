@@ -244,12 +244,14 @@ export default async function PreguntasFrecuentesPage() {
         {
           id: "personalizacion",
           pregunta: "¿Puedo pedirlo personalizado?",
-          // ⚠️ [PENDIENTE: desde cuánto cuesta cada personalización]. Mientras
-          // no haya precios, la respuesta manda a cotizar sin prometer cifras.
+          // No se anuncia precio porque no hay lista: cada pedido se cotiza en
+          // el momento. Tampoco se promete garantía sobre la personalización,
+          // pero no se publica una renuncia a la garantía legal: la Ley 1480
+          // no permite excluirla y una cláusula así sería ineficaz.
           respuesta: [
             "Sí, de dos formas: puedes pedir un color específico, aunque no esté entre los tres acabados, y puedes agregar tus iniciales en la parte inferior del bolso.",
-            "Cada personalización tiene un costo adicional según lo que pidas, así que se cotiza antes de empezar: nos escribes por WhatsApp, nos cuentas qué tienes en mente y te confirmamos precio y tiempos.",
-            "Ten en cuenta que una pieza personalizada se hace solo para ti, así que no aplica el derecho de retracto. La garantía por defectos de fabricación sí, siempre.",
+            "El costo depende de lo que pidas y te lo cotizamos en el momento: nos escribes por WhatsApp, nos cuentas qué tienes en mente y te confirmamos precio y tiempos ahí mismo.",
+            "Una pieza personalizada se fabrica solo para ti, así que no aplica el derecho de retracto ni aceptamos cambios una vez apruebas el diseño. Por eso confirmamos contigo el color y las iniciales antes de empezar a imprimir.",
           ],
           extra: (
             <p className={css.enlace}>
@@ -294,7 +296,7 @@ export default async function PreguntasFrecuentesPage() {
           respuesta: [
             "Si el bolso tiene un defecto de fabricación, la devolución es totalmente gratis: lo reponemos o lo reparamos sin ningún costo para ti, envío incluido. Escríbenos con una foto y lo resolvemos.",
             "Si simplemente te arrepentiste, también puedes devolverlo: al ser una compra a distancia tienes derecho de retracto dentro de los cinco (5) días hábiles siguientes a la entrega, devolviendo el bolso en el mismo estado en que lo recibiste. En ese caso el flete de la devolución lo asumes tú, y te reembolsamos a más tardar treinta (30) días calendario después.",
-            "Las piezas personalizadas quedan por fuera del retracto, porque se fabrican solo para ti. La garantía por defectos las cubre igual.",
+            "Las piezas personalizadas quedan por fuera de todo esto: se fabrican solo para ti, así que no aceptamos retracto ni cambios una vez apruebas el diseño.",
           ],
         },
       ],
