@@ -3,7 +3,15 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import css from "./Carrusel.module.css";
 
-type Slide = { src: string; alt: string; ancho: number; alto: number };
+type Slide = {
+  src: string;
+  alt: string;
+  ancho: number;
+  alto: number;
+  /** Dónde está el bolso en la foto (object-position). El hero es muy ancho y
+   *  las fotos son verticales: sin esto el recorte deja el producto fuera. */
+  enfoque?: string;
+};
 
 // Carrusel de fotos del hero. Sin librerías: es una pista con translateX.
 // La primera foto carga con prioridad (es el LCP de la home); el resto, lazy.
@@ -55,7 +63,7 @@ export default function Carrusel({
                 loading={i === 0 ? "eager" : "lazy"}
                 fetchPriority={i === 0 ? "high" : undefined}
                 decoding="async"
-                style={{ objectFit: ajuste }}
+                style={{ objectFit: ajuste, objectPosition: s.enfoque ?? "center" }}
               />
             </div>
           ))}

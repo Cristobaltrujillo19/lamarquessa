@@ -1,5 +1,10 @@
+/* Las fotos de producto son verticales. Si el carrete ocupa todo el ancho, la
+   franja visible queda más baja que el bolso y lo corta, así que se limita el
+   ancho y se gana altura: el bolso entra completo y se ve más editorial. */
 .carrusel {
   width: 100%;
+  max-width: 1100px;
+  margin-inline: auto;
 }
 
 .viewport {
@@ -14,8 +19,7 @@
 
 .slide {
   min-width: 100%;
-  height: clamp(340px, 56vh, 620px);
-  /* El fondo de los renders es crema: así "contain" se ve intencional. */
+  height: clamp(420px, 62vh, 700px);
   background: var(--crema);
 }
 

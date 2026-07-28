@@ -11,24 +11,28 @@ const slides = [
     alt: "Bolso Menorca de La Marquessa sobre un pedestal frente al mar, al atardecer",
     ancho: 1472,
     alto: 1068,
+    enfoque: "50% 58%",
   },
   {
     src: "/fotos/bolso-montt-en-uso.jpg",
     alt: "Bolso Montt de La Marquessa llevado a mano en la playa",
     ancho: 1023,
     alto: 1537,
+    enfoque: "42% 82%",
   },
   {
     src: "/fotos/bolso-mallorca-ambiente.jpg",
     alt: "Bolso Mallorca de La Marquessa sobre la cubierta de un velero al atardecer",
     ancho: 1083,
     alto: 1453,
+    enfoque: "52% 60%",
   },
   {
     src: "/fotos/bolso-kruta-ambiente.jpg",
     alt: "Bolso Kruta de La Marquessa sobre una roca junto al mar",
     ancho: 1086,
     alto: 1448,
+    enfoque: "50% 55%",
   },
 ];
 
