@@ -13,6 +13,7 @@ import type * as correoCliente from "../correoCliente.js";
 import type * as correoEnvio from "../correoEnvio.js";
 import type * as cuentas from "../cuentas.js";
 import type * as cupones from "../cupones.js";
+import type * as http from "../http.js";
 import type * as orders from "../orders.js";
 import type * as productos from "../productos.js";
 
@@ -28,6 +29,7 @@ declare const fullApi: ApiFromModules<{
   correoEnvio: typeof correoEnvio;
   cuentas: typeof cuentas;
   cupones: typeof cupones;
+  http: typeof http;
   orders: typeof orders;
   productos: typeof productos;
 }>;

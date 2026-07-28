@@ -2,6 +2,8 @@
 // `productos`, editable desde el panel); aquí solo quedan el tipo que comparten
 // los componentes y los formateadores de precio.
 
+import { SHIPPING_COP } from "./site";
+
 export type Color = {
   id: string;
   nombre: string;
@@ -38,8 +40,11 @@ export type Producto = {
   insignia?: string;
 };
 
-/** Envío: tarifa plana nacional. ⚠️ [PENDIENTE: tarifa real] */
-export const ENVIO_COP = 16_500;
+/** Envío: tarifa plana nacional.
+ *  Alias de SHIPPING_COP para el código que ya lo importaba con este nombre.
+ *  Un solo valor: lo que muestra la tienda y lo que cobra el checkout no pueden
+ *  separarse nunca. */
+export const ENVIO_COP = SHIPPING_COP;
 
 /** Precio de la pieza (el más bajo si hubiera varias tallas). */
 export function precioDesde(p: Pick<Producto, "tamanos">): number {

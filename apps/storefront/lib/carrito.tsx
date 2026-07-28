@@ -36,6 +36,11 @@ type Ctx = {
   vaciar: () => void;
   cantidadTotal: number;
   subtotal: number;
+  /** false hasta que se leyó localStorage. Quien necesite actuar sobre el
+   *  carrito al montar (vaciarlo tras pagar) debe esperar a que sea true: los
+   *  efectos de los hijos corren ANTES que los del proveedor, así que sin esto
+   *  la hidratación pisaría el cambio. */
+  hidratado: boolean;
 };
 
 const CarritoContext = createContext<Ctx | null>(null);
@@ -44,6 +49,7 @@ const STORAGE = "lm_carrito_v1";
 export function CarritoProvider({ children }: { children: React.ReactNode }) {
   const [lineas, setLineas] = useState<LineaCarrito[]>([]);
   const [abierto, setAbierto] = useState(false);
+  const [hidratado, setHidratado] = useState(false);
 
   useEffect(() => {
     try {
@@ -52,15 +58,19 @@ export function CarritoProvider({ children }: { children: React.ReactNode }) {
     } catch {
       /* ignore */
     }
+    setHidratado(true);
   }, []);
 
   useEffect(() => {
+    // Antes de hidratar, `lineas` es el [] inicial: guardarlo borraría el
+    // carrito que el cliente dejó abierto en su visita anterior.
+    if (!hidratado) return;
     try {
       localStorage.setItem(STORAGE, JSON.stringify(lineas));
     } catch {
       /* ignore */
     }
-  }, [lineas]);
+  }, [lineas, hidratado]);
 
   const agregar = useCallback((linea: NuevaLinea, cantidad = 1) => {
     const key = `${linea.slug}|${linea.colorId}|${linea.tamanoId}`;
@@ -110,6 +120,7 @@ export function CarritoProvider({ children }: { children: React.ReactNode }) {
     vaciar,
     cantidadTotal,
     subtotal,
+    hidratado,
   };
 
   return <CarritoContext.Provider value={value}>{children}</CarritoContext.Provider>;
