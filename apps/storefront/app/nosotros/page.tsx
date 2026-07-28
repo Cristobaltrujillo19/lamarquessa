@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Concepto from "@/components/marca/Concepto";
+import Manifiesto from "@/components/marca/Manifiesto";
 import ComoSeHace from "@/components/marca/ComoSeHace";
 import Elementos from "@/components/marca/Elementos";
 import CierreCta from "@/components/marca/CierreCta";
@@ -28,26 +29,9 @@ export default function NosotrosPage() {
 
       <Concepto />
 
-      <section className={`seccion ${css.relato}`}>
-        <div className={`contenedor ${css.centro} reveal`}>
-          <p className={css.parrafo}>
-            La vida, como el mar, no es lineal ni predecible. Todo está en
-            constante movimiento, renovándose. Por eso creemos que la verdadera
-            plenitud no está en la línea recta, sino en vivir en paz con la
-            incertidumbre, en conexión profunda con nosotros mismos y con el
-            mundo que nos rodea.
-          </p>
-          <p className={css.parrafo}>
-            Cada ola trae una historia, y juntas componen un relato tan mágico
-            como indescifrable. Ellas nos inspiran a soñar, a ser y, sobre todo,
-            a crear. Así nacen nuestros bolsos: llevando la pureza del mar, su
-            constante fluir y su poder de renovación.
-          </p>
-          <p className={css.lema}>
-            De ahí venimos: del amor, del mar y del amor al mar.
-          </p>
-        </div>
-      </section>
+      {/* El relato estaba escrito dos veces: aquí suelto y en <Manifiesto/>, que
+          además trae el lockup de olas del manual. Se queda el componente. */}
+      <Manifiesto />
 
       <ComoSeHace />
       <Elementos />

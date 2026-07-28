@@ -5,9 +5,8 @@ import { api } from "@/convex/_generated/api";
 import ProductCard from "@/components/ProductCard";
 import Hero from "@/components/marca/Hero";
 import Beneficios from "@/components/marca/Beneficios";
-import ComoSeHace from "@/components/marca/ComoSeHace";
+import Editorial from "@/components/marca/Editorial";
 import FranjaIconos from "@/components/marca/FranjaIconos";
-import Manifiesto from "@/components/marca/Manifiesto";
 import { DESCRIPCION_MARCA, urlAbsoluta } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -57,9 +56,11 @@ export default async function Home() {
         </div>
       </section>
 
-      <ComoSeHace />
+      {/* El proceso (ComoSeHace) y el manifiesto viven ahora solo en /nosotros:
+          estaban duplicados aquí y allá. En su lugar, un segundo carrete con
+          las fotos editoriales que no se mostraban en ningún sitio. */}
+      <Editorial />
       <FranjaIconos />
-      <Manifiesto />
 
       <section className="seccion" style={{ background: "var(--arena-clara)" }}>
         <div className="contenedor reveal" style={{ textAlign: "center" }}>

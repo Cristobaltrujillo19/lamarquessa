@@ -1,0 +1,19 @@
+.editorial {
+  background: var(--blanco);
+}
+
+.encabezado {
+  text-align: center;
+  max-width: 62ch;
+  margin-inline: auto;
+}
+
+/* Estas fotos son verticales y editoriales. Con la franja ancha del hero
+   (2,47:1) solo se veía una tira del 27% de la foto y los bolsos quedaban
+   cortados por arriba y por abajo. Más angosta y más alta, cada bolso entra
+   completo. */
+.carrete {
+  margin-top: clamp(34px, 5vw, 56px);
+  --carrusel-ancho: 820px;
+  --carrusel-alto: clamp(440px, 56vw, 560px);
+}
