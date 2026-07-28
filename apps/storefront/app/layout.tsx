@@ -7,6 +7,7 @@ import CartDrawer from "./CartDrawer";
 import Chrome from "./Chrome";
 import Reveal from "@/components/marca/Reveal";
 import FabWhatsApp from "@/components/marca/FabWhatsApp";
+import Analitica from "@/components/Analitica";
 import { CarritoProvider } from "@/lib/carrito";
 import {
   MARCA,
@@ -119,6 +120,7 @@ export default function RootLayout({
           </Chrome>
         </CarritoProvider>
         <Reveal />
+        <Analitica id={process.env.NEXT_PUBLIC_GTM_ID} />
       </body>
     </html>
   );
