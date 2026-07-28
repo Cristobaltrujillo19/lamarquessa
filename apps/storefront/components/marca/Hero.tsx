@@ -57,8 +57,10 @@ export default function Hero() {
           height={285}
           fetchPriority="high"
         />
-        <h1 className={css.titular}>
-          Bolsos únicos, impresos en 3D y terminados a mano
+        {/* lang="en": la página es es-CO, así que sin esto un lector de
+            pantalla leería la frase con fonética española. */}
+        <h1 className={css.titular} lang="en">
+          Colombian statement pieces inspired by the sea.
         </h1>
         <p className={css.tagline}>{TAGLINE}</p>
       </div>
