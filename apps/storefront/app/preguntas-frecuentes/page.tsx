@@ -4,6 +4,7 @@ import { fetchQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
 import { formatCm, formatCop } from "@/lib/productos";
 import {
+  ENVIO_DIAS,
   MARCA,
   MENSAJES,
   PRODUCCION_SEMANAS,
@@ -44,9 +45,14 @@ type Pregunta = {
 
 type Grupo = { titulo: string; preguntas: Pregunta[] };
 
-// ⚠️ [PENDIENTE: peso real de cada bolso, en gramos]. Cuando lleguen los datos,
-// se llenan aquí (slug → gramos) y la respuesta muestra la lista sola.
-const PESOS_GRAMOS: Record<string, number> = {};
+// Peso real de cada bolso, en gramos (dato de la marca). La respuesta arma el
+// rango sola, así que basta con actualizar aquí si entra un modelo nuevo.
+const PESOS_GRAMOS: Record<string, number> = {
+  menorca: 290,
+  mallorca: 350,
+  kruta: 190,
+  montt: 290,
+};
 
 export default async function PreguntasFrecuentesPage() {
   const productos = await fetchQuery(api.productos.catalogo, {}).catch(() => []);
@@ -59,6 +65,11 @@ export default async function PreguntasFrecuentesPage() {
   const pesos = productos
     .map((p) => ({ nombre: p.nombre, gramos: PESOS_GRAMOS[p.slug] }))
     .filter((p): p is { nombre: string; gramos: number } => Boolean(p.gramos));
+  const gramos = pesos.map((p) => p.gramos);
+  const rangoPesos =
+    gramos.length > 0
+      ? `Entre ${Math.min(...gramos)} y ${Math.max(...gramos)} gramos, según el modelo.`
+      : "Mucho menos de lo que sugiere su tamaño.";
 
   const grupos: Grupo[] = [
     {
@@ -139,7 +150,7 @@ export default async function PreguntasFrecuentesPage() {
           id: "peso",
           pregunta: "¿Cuánto pesa?",
           respuesta: [
-            "Mucho menos de lo que sugiere su tamaño. Son piezas huecas, sin forro, sin herrajes y sin partes metálicas: casi todo el peso es la estructura impresa, y el PLA es un material liviano.",
+            `${rangoPesos} Son piezas huecas, sin forro, sin herrajes y sin partes metálicas: casi todo el peso es la estructura impresa, y el PLA es un material liviano.`,
           ],
           extra: pesos.length > 0 && (
             <ul className={css.listaPesos}>
@@ -184,7 +195,7 @@ export default async function PreguntasFrecuentesPage() {
           id: "tiempos",
           pregunta: "¿Cuánto tarda en llegar?",
           respuesta: [
-            `Cada bolso se fabrica cuando lo pides, no antes: la producción toma ${PRODUCCION_SEMANAS} semanas. A ese plazo se le suma el tiempo que tarde la transportadora hasta tu ciudad.`,
+            `Cada bolso se fabrica cuando lo pides, no antes: la producción toma ${PRODUCCION_SEMANAS} semanas. A eso se le suman ${ENVIO_DIAS} días hábiles de transportadora, así que en total son unas ${PRODUCCION_SEMANAS} semanas y media desde que confirmas el pedido hasta que lo tienes en la mano.`,
             "Si lo necesitas para una fecha concreta, escríbenos antes de comprar y te confirmamos si alcanzamos a llegar.",
           ],
           extra: (
@@ -203,9 +214,49 @@ export default async function PreguntasFrecuentesPage() {
           id: "envios",
           pregunta: "¿Envían a toda Colombia? ¿Cuánto cuesta el envío?",
           respuesta: [
-            `Sí, a todo el país. El envío tiene una tarifa plana de ${formatCop(SHIPPING_COP)}, sin importar la ciudad.`,
+            `Sí, a todo el país. El envío tiene una tarifa plana de ${formatCop(SHIPPING_COP)}, sin importar la ciudad, y tarda ${ENVIO_DIAS} días hábiles una vez el bolso está listo.`,
             "Despachamos por transportadora nacional y te entregamos el número de guía para que puedas seguir tu pedido hasta la puerta.",
           ],
+        },
+        {
+          id: "internacional",
+          pregunta: "¿Envían fuera de Colombia?",
+          respuesta: [
+            "Sí, pero por ahora esos envíos los coordinamos uno a uno. Escríbenos por WhatsApp con tu país y ciudad y te cotizamos el envío antes de que compres.",
+          ],
+          extra: (
+            <p className={css.enlace}>
+              <a
+                href={enlaceWhatsApp(MENSAJES.pedido)}
+                target="_blank"
+                rel="noopener"
+              >
+                Cotizar un envío internacional →
+              </a>
+            </p>
+          ),
+        },
+        {
+          id: "personalizacion",
+          pregunta: "¿Puedo pedirlo personalizado?",
+          // ⚠️ [PENDIENTE: qué se puede personalizar exactamente y desde cuánto].
+          // Hasta tener esos datos, la respuesta manda a cotizar sin prometer
+          // ni alcances ni precios.
+          respuesta: [
+            "Sí, se puede. La personalización tiene un costo adicional según lo que pidas, así que se cotiza antes de empezar: nos escribes por WhatsApp, nos cuentas qué tienes en mente y te decimos si es posible y cuánto suma.",
+            "Ten en cuenta que una pieza personalizada se hace solo para ti, así que no aplica el derecho de retracto. La garantía por defectos de fabricación sí, siempre.",
+          ],
+          extra: (
+            <p className={css.enlace}>
+              <a
+                href={enlaceWhatsApp(MENSAJES.pedido)}
+                target="_blank"
+                rel="noopener"
+              >
+                Cotizar una personalización →
+              </a>
+            </p>
+          ),
         },
         {
           id: "pago",
@@ -236,8 +287,9 @@ export default async function PreguntasFrecuentesPage() {
           // Lo que dice aquí es el piso legal colombiano (Ley 1480 de 2011):
           // retracto en ventas a distancia y garantía legal por defectos.
           respuesta: [
-            "Sí. Al ser una compra a distancia, en Colombia tienes derecho de retracto: puedes arrepentirte dentro de los cinco (5) días hábiles siguientes a la entrega, devolver el bolso en el mismo estado en que lo recibiste y recuperar tu dinero. Los costos de la devolución los asume quien se retracta, y el reembolso se hace a más tardar treinta (30) días calendario después.",
-            "Si el bolso llega con un defecto de fabricación es otra cosa: ahí aplica la garantía legal y lo reponemos o lo reparamos sin costo para ti. Escríbenos con una foto y lo resolvemos.",
+            "Si el bolso tiene un defecto de fabricación, la devolución es totalmente gratis: lo reponemos o lo reparamos sin ningún costo para ti, envío incluido. Escríbenos con una foto y lo resolvemos.",
+            "Si simplemente te arrepentiste, también puedes devolverlo: al ser una compra a distancia tienes derecho de retracto dentro de los cinco (5) días hábiles siguientes a la entrega, devolviendo el bolso en el mismo estado en que lo recibiste. En ese caso el flete de la devolución lo asumes tú, y te reembolsamos a más tardar treinta (30) días calendario después.",
+            "Las piezas personalizadas quedan por fuera del retracto, porque se fabrican solo para ti. La garantía por defectos las cubre igual.",
           ],
         },
       ],

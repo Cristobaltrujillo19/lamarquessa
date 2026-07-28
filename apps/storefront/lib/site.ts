@@ -29,8 +29,11 @@ export const SITE_URL = (
 /** Semanas de fabricación: cada bolso se hace a pedido. */
 export const PRODUCCION_SEMANAS = 2;
 
-/** Envío: tarifa plana nacional. ⚠️ [PENDIENTE: tarifa real] */
+/** Envío: tarifa plana nacional (confirmada). */
 export const SHIPPING_COP = 16_500;
+
+/** Días hábiles que tarda la transportadora, ya fabricado el bolso. */
+export const ENVIO_DIAS = 2;
 /** Umbral de envío gratis. ⚠️ [PENDIENTE: confirmar] */
 export const ENVIO_GRATIS_DESDE = 350_000;
 

@@ -8,8 +8,10 @@ import Galeria from "./Galeria";
 import ComprarPanel from "./ComprarPanel";
 import { formatCm } from "@/lib/productos";
 import {
+  ENVIO_DIAS,
   MARCA,
   PRODUCCION_SEMANAS,
+  SHIPPING_COP,
   SITE_URL,
   urlAbsoluta,
 } from "@/lib/site";
@@ -103,13 +105,25 @@ export default async function ProductoPage({
           "@type": "DefinedRegion",
           addressCountry: "CO",
         },
+        shippingRate: {
+          "@type": "MonetaryAmount",
+          value: SHIPPING_COP,
+          currency: "COP",
+        },
         deliveryTime: {
           "@type": "ShippingDeliveryTime",
-          // Se fabrica a pedido: 2 semanas de producción.
+          // Se fabrica a pedido: 2 semanas de producción...
           handlingTime: {
             "@type": "QuantitativeValue",
             minValue: 10,
             maxValue: PRODUCCION_SEMANAS * 7,
+            unitCode: "DAY",
+          },
+          // ...y después, 2 días hábiles de transportadora.
+          transitTime: {
+            "@type": "QuantitativeValue",
+            minValue: ENVIO_DIAS,
+            maxValue: ENVIO_DIAS,
             unitCode: "DAY",
           },
         },
@@ -209,10 +223,10 @@ export default async function ProductoPage({
                 <span className="text-cobre-texto">+</span>
               </summary>
               <p className="mt-2 text-sm leading-relaxed text-cacao-suave">
-                Cada pieza se fabrica a pedido y se despacha en{" "}
-                {PRODUCCION_SEMANAS} semanas. Envíos a todo Colombia, con
-                derecho de retracto dentro de los 5 días hábiles siguientes a la
-                entrega.{" "}
+                Cada pieza se fabrica a pedido en {PRODUCCION_SEMANAS} semanas y
+                la transportadora tarda {ENVIO_DIAS} días hábiles más. Envíos a
+                todo Colombia. Si el bolso sale con un defecto de fabricación, la
+                devolución es gratis.{" "}
                 {/* ⚠️ [PENDIENTE: política propia de cambios, revisada por un
                     abogado. Lo que se afirma aquí es el piso legal (Ley 1480). */}
                 <Link
