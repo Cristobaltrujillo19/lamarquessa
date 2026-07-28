@@ -197,6 +197,21 @@ h3 {
   animation: flotar 7s ease-in-out infinite;
 }
 
+/* Transición del logo (solo en el inicio). El logo grande del hero se encoge
+   al bajar hasta fundirse con el de la cabecera; hasta entonces, el de la
+   cabecera está oculto para que no se vean dos a la vez.
+   TransicionLogo.tsx mueve --logo-p de 0 a 1. En las demás páginas la variable
+   no existe, el valor por defecto es 1 y la cabecera muestra su logo normal.
+   Aparece en el último tramo (a partir de 0.6) para que sea un relevo y no un
+   solapamiento de los dos logos a media opacidad. */
+.logo-cabecera {
+  opacity: clamp(0, calc((var(--logo-p, 1) - 0.6) / 0.4), 1);
+}
+
+.logo-cabecera-oculto .logo-cabecera {
+  pointer-events: none;
+}
+
 :focus-visible {
   outline: 2px solid var(--cobre-texto);
   outline-offset: 3px;

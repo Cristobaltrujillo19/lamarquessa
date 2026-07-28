@@ -18,7 +18,13 @@ export default function Header() {
           </Link>
         </nav>
 
-        <Link href="/" aria-label="La Marquessa — inicio" className="justify-self-center">
+        {/* En el inicio este logo empieza invisible y aparece cuando el del
+            hero termina de encogerse (ver .logo-cabecera en globals.css). */}
+        <Link
+          href="/"
+          aria-label="La Marquessa — inicio"
+          className="logo-cabecera justify-self-center"
+        >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/marca/logo-cobre.png"

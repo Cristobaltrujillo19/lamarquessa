@@ -25,6 +25,9 @@
   height: clamp(58px, 9vw, 92px);
   width: auto;
   max-width: 90%;
+  /* Se encoge hacia arriba, hacia la cabecera, no hacia su propio centro. */
+  transform-origin: 50% 0%;
+  will-change: transform, opacity;
 }
 
 /* El titular dice qué es el producto y qué lo hace distinto, en una línea.

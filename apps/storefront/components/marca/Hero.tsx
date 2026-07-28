@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Carrusel from "./Carrusel";
+import TransicionLogo from "./TransicionLogo";
 import { TAGLINE } from "@/lib/site";
 import css from "./Hero.module.css";
 
@@ -39,12 +40,19 @@ const slides = [
 export default function Hero() {
   return (
     <section id="inicio" className={css.hero}>
+      {/* El logo de la cabecera nace oculto y solo aparece cuando el del hero
+          termina de encogerse. Va como estilo en el HTML, no desde el script,
+          para que no parpadee antes de que cargue el JavaScript. */}
+      <style>{`:root{--logo-p:0}`}</style>
+      <TransicionLogo />
+
       <div className={css.top}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/marca/logo-cobre.png"
           alt="La Marquessa"
           className={css.logo}
+          data-hero-logo
           width={1000}
           height={285}
           fetchPriority="high"
