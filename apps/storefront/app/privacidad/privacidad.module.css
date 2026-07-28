@@ -8,14 +8,41 @@
 }
 
 .texto h2 {
-  font-size: 26px;
+  font-size: 24px;
   color: var(--cacao);
-  margin-top: 36px;
+  margin-top: 40px;
 }
 
 .texto p {
   margin-top: 14px;
   color: var(--cacao-suave);
+}
+
+.meta {
+  font-size: 14px;
+  color: var(--cacao-suave);
+  font-style: italic;
+}
+
+.texto ul {
+  margin-top: 14px;
+  padding-left: 1.2em;
+  color: var(--cacao-suave);
+  display: grid;
+  gap: 10px;
+}
+
+.texto li {
+  line-height: 1.7;
+}
+
+.texto li::marker {
+  color: var(--cobre-texto);
+}
+
+.texto strong {
+  color: var(--cacao);
+  font-weight: 500;
 }
 
 .aviso {
@@ -33,5 +60,7 @@
 }
 
 .volver {
-  margin-top: 44px;
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid color-mix(in srgb, var(--cacao) 12%, transparent);
 }
