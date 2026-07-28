@@ -120,8 +120,12 @@ export default async function PreguntasFrecuentesPage() {
         {
           id: "capacidad",
           pregunta: "¿Cabe un celular? ¿Qué cabe adentro?",
+          // Dato de la marca: en Menorca el celular NO entra. Es la excepción y
+          // se dice claro: que llegue y no quepa el teléfono es justo el tipo de
+          // sorpresa que termina en devolución.
           respuesta: [
-            "Sí. Un celular de pantalla grande ronda los 16 cm de alto y entra en los cuatro modelos, junto con lo esencial del día: llaves, tarjetas, labial y audífonos.",
+            "En Mallorca, Kruta y Montt sí: entra un celular de pantalla grande junto con lo esencial del día — llaves, tarjetas, labial y audífonos.",
+            "En Menorca no. Da para lo justo —tarjetas, llaves, labial—, pero el celular no entra. Si te gusta esa silueta y necesitas llevar el teléfono, Mallorca es su talla grande: mismo diseño, más cuerpo.",
             "Ninguno es un bolso de laptop ni de cuaderno: son piezas de mano, y esa es justamente la idea. Estas son las medidas exteriores de cada uno.",
           ],
           extra: conMedidas.length > 0 && (

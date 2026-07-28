@@ -16,8 +16,7 @@ export const DESCRIPCION_MARCA =
 export const WHATSAPP = "573000000000";
 export const INSTAGRAM_URL = "https://www.instagram.com/lamarquessa.co/";
 export const INSTAGRAM_HANDLE = "@lamarquessa.co";
-// ⚠️ [PENDIENTE: correo real de la marca]
-export const EMAIL = "hola@lamarquessa.co";
+export const EMAIL = "info.lamarquessa@gmail.com";
 
 /** URL pública del sitio. Hoy apunta al despliegue de Vercel porque el dominio
  *  propio aún no se compra: el día que exista, se cambia esta variable de
