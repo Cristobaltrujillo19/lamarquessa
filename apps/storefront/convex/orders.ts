@@ -23,6 +23,14 @@ const itemsArg = v.array(
   }),
 );
 
+/** Marca un error como mostrable al cliente. Lo que NO lleva esta marca
+ *  (configuración ausente, caídas de Mercado Pago) se le esconde: no puede
+ *  hacer nada al respecto y solo expone detalles internos de la tienda. */
+const AVISO = "[aviso] ";
+function avisoCliente(mensaje: string): Error {
+  return new Error(AVISO + mensaje);
+}
+
 // === Acción pública: inicia el checkout ===
 // La llama el formulario de /checkout (a través de un server action de Next).
 // Calcula los precios desde el catálogo de Convex —NUNCA confía en lo que
@@ -39,7 +47,7 @@ export const createCheckout = action({
     ctx,
     args,
   ): Promise<{ initPoint: string; pedidoId: Id<"pedidos"> }> => {
-    if (args.items.length === 0) throw new Error("El carrito está vacío");
+    if (args.items.length === 0) throw avisoCliente("Tu carrito está vacío.");
 
     // La configuración se comprueba ANTES de tocar la base: si falta el token,
     // no tiene sentido dejar un pedido creado que nunca podrá pagarse.
@@ -51,13 +59,17 @@ export const createCheckout = action({
     const catalogo = await ctx.runQuery(api.productos.catalogo, {});
     const lineas = args.items.map((it) => {
       const p = catalogo.find((x) => x.slug === it.slug);
-      if (!p) throw new Error(`El bolso "${it.slug}" ya no está disponible`);
+      if (!p) throw avisoCliente("Uno de los bolsos de tu carrito ya no está disponible.");
 
       const color = p.colores.find((c) => c.id === it.colorId);
-      if (!color) throw new Error(`Ese acabado ya no está disponible para ${p.nombre}`);
+      if (!color) {
+        throw avisoCliente(`Ese acabado ya no está disponible para ${p.nombre}.`);
+      }
 
       const tamano = p.tamanos.find((t) => t.id === it.tamanoId);
-      if (!tamano) throw new Error(`Ese tamaño ya no está disponible para ${p.nombre}`);
+      if (!tamano) {
+        throw avisoCliente(`Ese tamaño ya no está disponible para ${p.nombre}.`);
+      }
 
       return {
         slug: p.slug,
@@ -84,7 +96,7 @@ export const createCheckout = action({
         subtotalCop: subtotal,
         envioCop,
       });
-      if (!r.ok) throw new Error(r.mensaje);
+      if (!r.ok) throw avisoCliente(r.mensaje);
       descuentoCop = r.descuentoCop;
       cupon = r.codigo;
     }

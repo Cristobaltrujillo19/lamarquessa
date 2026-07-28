@@ -18,14 +18,24 @@ export type ResultadoCheckout =
   | { ok: true; initPoint: string }
   | { ok: false; error: string };
 
-/** Mensaje de error legible. Convex envuelve los throw del servidor con su
- *  propio prefijo; aquí se rescata solo la frase que escribimos nosotros. */
+const GENERICO =
+  "No pudimos iniciar el pago. Vuelve a intentarlo en un momento o escríbenos " +
+  "por WhatsApp y cerramos tu pedido a mano.";
+
+/** Qué ve el cliente cuando algo falla.
+ *
+ *  Solo salen los errores que el servidor marcó como suyos (los que puede
+ *  resolver: carrito vacío, cupón vencido, acabado agotado). Cualquier otra
+ *  cosa —token mal puesto, Mercado Pago caído, un fallo de red— se registra
+ *  para nosotros y al cliente se le da un mensaje humano: enseñarle
+ *  "Falta MP_ACCESS_TOKEN" no le sirve de nada y expone cómo está montada
+ *  la tienda. */
 function mensajeLegible(e: unknown): string {
   const bruto = e instanceof Error ? e.message : String(e);
-  const limpio = bruto.split("Uncaught Error:").pop()?.split("\n")[0]?.trim();
-  return limpio && limpio.length < 200
-    ? limpio
-    : "No pudimos iniciar el pago. Vuelve a intentarlo o escríbenos por WhatsApp.";
+  const i = bruto.indexOf("[aviso] ");
+  if (i === -1) return GENERICO;
+  const limpio = bruto.slice(i + "[aviso] ".length).split("\n")[0]?.trim();
+  return limpio && limpio.length < 200 ? limpio : GENERICO;
 }
 
 export async function iniciarCheckout(datos: {
