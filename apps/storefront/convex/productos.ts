@@ -1,7 +1,12 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
-const colorV = v.object({ id: v.string(), nombre: v.string(), hex: v.string() });
+const colorV = v.object({
+  id: v.string(),
+  nombre: v.string(),
+  hex: v.string(),
+  hex2: v.optional(v.string()),
+});
 const tamanoV = v.object({ id: v.string(), nombre: v.string(), precioCop: v.number() });
 
 // Gate del panel: mismo patrón que SER (secreto compartido en el server de Next).
@@ -144,10 +149,9 @@ export const sembrarCatalogoReal = mutation({
     const ACABADOS = [
       { id: "amanecer", nombre: "Amanecer", hex: "#e8bca6" },
       { id: "caribe", nombre: "Caribe", hex: "#bcc1d2" },
-      // Horizonte es un seda bicolor negro y rojo. La muestra del selector solo
-      // admite un color plano (el panel la edita con <input type="color">), así
-      // que se usa el negro como base; el rojo se cuenta en la ficha y en la FAQ.
-      { id: "horizonte", nombre: "Horizonte", hex: "#111111" },
+      // Horizonte es un seda bicolor: negro y rojo. Los dos tonos son
+      // aproximaciones editables desde el panel.
+      { id: "horizonte", nombre: "Horizonte", hex: "#111111", hex2: "#b3121a" },
     ];
     const MATERIAL = "PLA de origen colombiano, impreso en 3D y terminado a mano";
 
@@ -240,5 +244,43 @@ export const sembrarCatalogoReal = mutation({
       });
     }
     return { eliminados: previos.map((p) => p.slug), creados: data.map((p) => p.slug) };
+  },
+});
+
+// Corrige el acabado Horizonte en el catálogo que ya está vivo: nació con un
+// cobre provisional y en realidad es un seda bicolor negro y rojo.
+//
+// A diferencia de sembrarCatalogoReal, esta mutación NO borra nada: solo toca
+// ese color en los productos que lo tengan, y es idempotente (correrla dos
+// veces no cambia nada la segunda). Los tonos exactos quedan editables desde
+// el panel.
+export const corregirColorHorizonte = mutation({
+  args: { secret: v.string() },
+  handler: async (ctx, { secret }) => {
+    exigirSecreto(secret);
+
+    const NEGRO = "#111111";
+    const ROJO = "#b3121a";
+
+    const productos = await ctx.db.query("productos").collect();
+    const actualizados: string[] = [];
+
+    for (const p of productos) {
+      const tiene = p.colores.some((c) => c.id === "horizonte");
+      if (!tiene) continue;
+
+      const colores = p.colores.map((c) =>
+        c.id === "horizonte" ? { ...c, hex: NEGRO, hex2: ROJO } : c,
+      );
+      const yaEstaba = p.colores.every(
+        (c, i) => c.hex === colores[i].hex && c.hex2 === colores[i].hex2,
+      );
+      if (yaEstaba) continue;
+
+      await ctx.db.patch(p._id, { colores });
+      actualizados.push(p.slug);
+    }
+
+    return { actualizados };
   },
 });

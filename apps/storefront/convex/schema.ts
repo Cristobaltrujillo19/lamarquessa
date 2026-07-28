@@ -13,6 +13,10 @@ export const colorV = v.object({
   id: v.string(),
   nombre: v.string(),
   hex: v.string(),
+  // Segundo color, solo para acabados bicolor (Horizonte es negro y rojo). Si
+  // está, la muestra del selector se parte en dos en vez de mentir con un
+  // color plano. Opcional: los acabados de un solo color no lo llevan.
+  hex2: v.optional(v.string()),
 });
 
 export const tamanoV = v.object({

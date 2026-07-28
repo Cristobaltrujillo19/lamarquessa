@@ -7,7 +7,17 @@ export type Color = {
   nombre: string;
   /** Muestra de color para el selector. */
   hex: string;
+  /** Segundo color, solo en los acabados bicolor (Horizonte: negro y rojo). */
+  hex2?: string;
 };
+
+/** Valor CSS de la muestra de un acabado. Un acabado bicolor se pinta partido
+ *  en diagonal; uno normal, plano. Vive aquí para que el selector de la ficha,
+ *  la tarjeta del catálogo y el inventario del panel pinten siempre igual. */
+export function muestraColor(c: Pick<Color, "hex" | "hex2">): string {
+  if (!c.hex2) return c.hex;
+  return `linear-gradient(135deg, ${c.hex} 0 50%, ${c.hex2} 50% 100%)`;
+}
 
 export type Tamano = {
   id: string;

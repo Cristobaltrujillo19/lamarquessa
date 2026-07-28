@@ -2,6 +2,7 @@ import { fetchQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
 import { secreto } from "@/app/panel/lib/auth";
 import { ajustarInventarioAction } from "@/app/panel/actions";
+import { muestraColor } from "@/lib/productos";
 
 export const dynamic = "force-dynamic";
 
@@ -71,7 +72,7 @@ export default async function InventarioPage() {
                           <span className="flex items-center gap-2">
                             <span
                               className="inline-block h-4 w-4 rounded-full border border-cacao/20"
-                              style={{ backgroundColor: c.hex }}
+                              style={{ background: muestraColor(c) }}
                             />
                             {c.nombre}
                           </span>

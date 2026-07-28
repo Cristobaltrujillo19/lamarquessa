@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { type Producto, formatCop } from "@/lib/productos";
+import { type Producto, formatCop, muestraColor } from "@/lib/productos";
 import { useCarrito } from "@/lib/carrito";
 
 export default function ComprarPanel({ producto }: { producto: Producto }) {
@@ -30,7 +30,7 @@ export default function ComprarPanel({ producto }: { producto: Producto }) {
               className={`h-8 w-8 rounded-full border-2 transition-transform hover:scale-110 ${
                 c.id === colorId ? "border-cobre" : "border-cacao/15"
               }`}
-              style={{ background: c.hex }}
+              style={{ background: muestraColor(c) }}
             />
           ))}
         </div>

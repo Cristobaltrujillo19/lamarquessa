@@ -377,7 +377,7 @@ function refrescar() {
   revalidatePath("/");
 }
 
-type ColorIn = { id: string; nombre: string; hex: string };
+type ColorIn = { id: string; nombre: string; hex: string; hex2?: string };
 type TamanoIn = { id: string; nombre: string; precioCop: number };
 
 function parseProducto(formData: FormData) {
@@ -396,6 +396,9 @@ function parseProducto(formData: FormData) {
       id: c.id || c.nombre.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
       nombre: c.nombre,
       hex: c.hex,
+      // Solo viaja si el acabado es bicolor: JSON.stringify ya descarta el
+      // undefined cuando se quita el segundo color desde el formulario.
+      ...(c.hex2 ? { hex2: c.hex2 } : {}),
     })),
     tamanos: tamanos.map((t) => ({
       id: t.id,

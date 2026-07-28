@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 
-type Color = { id: string; nombre: string; hex: string };
+type Color = { id: string; nombre: string; hex: string; hex2?: string };
 type Tamano = { id: string; nombre: string; precioCop: number };
 type Producto = {
   _id?: string;
@@ -96,6 +96,48 @@ export default function ProductoForm({
                 className="h-9 w-12 rounded-sm border border-cacao/25"
                 aria-label="Color"
               />
+              {/* Segundo color: solo para acabados bicolor. Si está, la muestra
+                  se parte en dos en la tienda; si no, se pinta plana. */}
+              {c.hex2 === undefined ? (
+                <button
+                  type="button"
+                  onClick={() =>
+                    setColores((cs) =>
+                      cs.map((x, j) => (j === i ? { ...x, hex2: "#b3121a" } : x)),
+                    )
+                  }
+                  className="h-9 rounded-sm border border-dashed border-cacao/30 px-2 text-xs text-cacao-suave hover:border-cobre hover:text-cobre"
+                  title="Convertir en acabado bicolor"
+                >
+                  +2º
+                </button>
+              ) : (
+                <span className="flex items-center">
+                  <input
+                    type="color"
+                    value={c.hex2}
+                    onChange={(e) =>
+                      setColores((cs) =>
+                        cs.map((x, j) => (j === i ? { ...x, hex2: e.target.value } : x)),
+                      )
+                    }
+                    className="h-9 w-12 rounded-sm border border-cacao/25"
+                    aria-label="Segundo color (bicolor)"
+                  />
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setColores((cs) =>
+                        cs.map((x, j) => (j === i ? { ...x, hex2: undefined } : x)),
+                      )
+                    }
+                    className="px-1 text-xs text-cacao-suave hover:text-red-700"
+                    title="Quitar el segundo color"
+                  >
+                    ✕
+                  </button>
+                </span>
+              )}
               <input
                 value={c.nombre}
                 onChange={(e) =>

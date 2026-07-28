@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Foto, { altDeFoto } from "./Foto";
-import { type Producto, precioDesde, formatCop } from "@/lib/productos";
+import { type Producto, precioDesde, formatCop, muestraColor } from "@/lib/productos";
 
 export default function ProductCard({ producto }: { producto: Producto }) {
   const portada = producto.fotos[0];
@@ -27,7 +27,7 @@ export default function ProductCard({ producto }: { producto: Producto }) {
               key={c.id}
               title={c.nombre}
               className="h-3 w-3 rounded-full border border-cacao/15"
-              style={{ background: c.hex }}
+              style={{ background: muestraColor(c) }}
             />
           ))}
         </div>
