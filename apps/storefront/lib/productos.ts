@@ -45,3 +45,10 @@ const copFormatter = new Intl.NumberFormat("es-CO", {
 export function formatCop(precioCop: number): string {
   return copFormatter.format(precioCop);
 }
+
+const cmFormatter = new Intl.NumberFormat("es-CO", { maximumFractionDigits: 1 });
+
+/** Medida en centímetros con la coma decimal del español (19,2 — no 19.2). */
+export function formatCm(cm: number): string {
+  return `${cmFormatter.format(cm)} cm`;
+}

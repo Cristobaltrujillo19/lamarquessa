@@ -13,6 +13,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: urlAbsoluta("/"), lastModified: ahora, changeFrequency: "weekly", priority: 1 },
     { url: urlAbsoluta("/tienda"), lastModified: ahora, changeFrequency: "weekly", priority: 0.9 },
     { url: urlAbsoluta("/nosotros"), lastModified: ahora, changeFrequency: "monthly", priority: 0.7 },
+    {
+      url: urlAbsoluta("/preguntas-frecuentes"),
+      lastModified: ahora,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
     { url: urlAbsoluta("/privacidad"), lastModified: ahora, changeFrequency: "yearly", priority: 0.2 },
   ];
 

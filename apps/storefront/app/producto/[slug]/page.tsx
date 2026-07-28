@@ -6,7 +6,7 @@ import { api } from "@/convex/_generated/api";
 import ProductCard from "@/components/ProductCard";
 import Galeria from "./Galeria";
 import ComprarPanel from "./ComprarPanel";
-import { formatCop } from "@/lib/productos";
+import { formatCm } from "@/lib/productos";
 import {
   MARCA,
   PRODUCCION_SEMANAS,
@@ -179,9 +179,9 @@ export default async function ProductoPage({
                   <span className="text-cobre-texto">+</span>
                 </summary>
                 <ul className="mt-2 space-y-1 text-sm text-cacao-suave">
-                  <li>Alto: {medidas.alto} cm</li>
-                  <li>Ancho: {medidas.ancho} cm</li>
-                  <li>Profundidad: {medidas.prof} cm</li>
+                  <li>Alto: {formatCm(medidas.alto)}</li>
+                  <li>Ancho: {formatCm(medidas.ancho)}</li>
+                  <li>Profundidad: {formatCm(medidas.prof)}</li>
                 </ul>
               </details>
             )}
@@ -194,7 +194,13 @@ export default async function ProductoPage({
                 {producto.material ??
                   "Diseñada e impresa en 3D, terminada a mano con materiales colombianos."}{" "}
                 Limpia con un paño suave y seco; evita la exposición prolongada al
-                sol.
+                sol.{" "}
+                <Link
+                  href="/preguntas-frecuentes#cuidado"
+                  className="text-cobre-texto underline-offset-4 hover:underline"
+                >
+                  Cómo cuidarlo →
+                </Link>
               </p>
             </details>
             <details className="border-b border-cacao/10 py-3">
@@ -204,9 +210,17 @@ export default async function ProductoPage({
               </summary>
               <p className="mt-2 text-sm leading-relaxed text-cacao-suave">
                 Cada pieza se fabrica a pedido y se despacha en{" "}
-                {PRODUCCION_SEMANAS} semanas. Envíos a todo Colombia.{" "}
-                {/* ⚠️ [PENDIENTE: política de cambios y derecho de retracto,
-                    revisada por un abogado] */}
+                {PRODUCCION_SEMANAS} semanas. Envíos a todo Colombia, con
+                derecho de retracto dentro de los 5 días hábiles siguientes a la
+                entrega.{" "}
+                {/* ⚠️ [PENDIENTE: política propia de cambios, revisada por un
+                    abogado. Lo que se afirma aquí es el piso legal (Ley 1480). */}
+                <Link
+                  href="/preguntas-frecuentes#devoluciones"
+                  className="text-cobre-texto underline-offset-4 hover:underline"
+                >
+                  Ver condiciones →
+                </Link>
               </p>
             </details>
           </div>

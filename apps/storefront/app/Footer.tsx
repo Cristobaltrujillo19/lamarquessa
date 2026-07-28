@@ -49,6 +49,11 @@ export default function Footer() {
           <p className="kicker">Atención</p>
           <ul className="mt-3 space-y-2 text-sm">
             <li>
+              <Link href="/preguntas-frecuentes" className="hover:text-cobre">
+                Preguntas frecuentes
+              </Link>
+            </li>
+            <li>
               <a
                 href={enlaceWhatsApp(MENSAJES.general)}
                 target="_blank"
