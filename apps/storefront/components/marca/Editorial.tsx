@@ -44,13 +44,6 @@ export default function Editorial() {
   return (
     <section className={`seccion ${css.editorial}`}>
       <div className="contenedor">
-        <header className={`${css.encabezado} reveal`}>
-          <p className="kicker">La colección en uso</p>
-          <h2 className="titulo-seccion">
-            Cómo se ven <span className="script">de verdad</span>
-          </h2>
-        </header>
-
         <div className={css.carrete}>
           <Carrusel slides={slides} />
         </div>

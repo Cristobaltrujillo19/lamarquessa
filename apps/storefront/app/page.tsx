@@ -65,7 +65,7 @@ export default async function Home() {
       <section className="seccion" style={{ background: "var(--arena-clara)" }}>
         <div className="contenedor reveal" style={{ textAlign: "center" }}>
           <h2 className="titulo-seccion">
-            Elige la <span className="script">tuya</span>
+            Elige el <span className="script">tuyo</span>
           </h2>
           <p
             style={{
@@ -74,8 +74,8 @@ export default async function Home() {
               color: "var(--cacao-suave)",
             }}
           >
-            Cada bolso se fabrica a pedido y llega en dos semanas. La que elijas
-            será la única con ese relieve.
+            Cada bolso se fabrica a pedido y llega en poco más de dos semanas.
+            El que elijas será el único con ese relieve.
           </p>
           <Link className="boton boton-primario" href="/tienda">
             Ver la colección
