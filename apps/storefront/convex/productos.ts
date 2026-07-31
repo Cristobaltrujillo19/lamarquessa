@@ -165,11 +165,14 @@ export const sembrarCatalogoReal = mutation({
         altoCm: 20,
         anchoCm: 19.2,
         profundidadCm: 8.7,
+        // Los dos renders de estudio van juntos al principio; las fotos de
+        // contexto después. Así la galería enseña primero el producto y luego
+        // el ambiente, en vez de alternar.
         fotos: [
           "/fotos/bolso-menorca-impresion-3d-frente.jpg",
+          "/fotos/bolso-menorca-impresion-3d-angulo.jpg",
           "/fotos/bolso-menorca-en-uso.jpg",
           "/fotos/bolso-menorca-ambiente.jpg",
-          "/fotos/bolso-menorca-impresion-3d-angulo.jpg",
         ],
         insignia: undefined as string | undefined,
       },
@@ -184,9 +187,9 @@ export const sembrarCatalogoReal = mutation({
         profundidadCm: 10.4,
         fotos: [
           "/fotos/bolso-mallorca-impresion-3d-frente.jpg",
+          "/fotos/bolso-mallorca-impresion-3d-angulo.jpg",
           "/fotos/bolso-mallorca-en-uso.jpg",
           "/fotos/bolso-mallorca-ambiente.jpg",
-          "/fotos/bolso-mallorca-impresion-3d-angulo.jpg",
         ],
         insignia: undefined as string | undefined,
       },
@@ -201,9 +204,9 @@ export const sembrarCatalogoReal = mutation({
         profundidadCm: 12.8,
         fotos: [
           "/fotos/bolso-kruta-impresion-3d-frente.jpg",
+          "/fotos/bolso-kruta-impresion-3d-angulo.jpg",
           "/fotos/bolso-kruta-en-uso.jpg",
           "/fotos/bolso-kruta-ambiente.jpg",
-          "/fotos/bolso-kruta-impresion-3d-angulo.jpg",
         ],
         insignia: undefined,
       },
@@ -218,9 +221,9 @@ export const sembrarCatalogoReal = mutation({
         profundidadCm: 12.3,
         fotos: [
           "/fotos/bolso-montt-impresion-3d-frente.jpg",
+          "/fotos/bolso-montt-impresion-3d-angulo.jpg",
           "/fotos/bolso-montt-en-uso.jpg",
           "/fotos/bolso-montt-ambiente.jpg",
-          "/fotos/bolso-montt-impresion-3d-angulo.jpg",
         ],
         insignia: undefined,
       },
@@ -244,6 +247,35 @@ export const sembrarCatalogoReal = mutation({
       });
     }
     return { eliminados: previos.map((p) => p.slug), creados: data.map((p) => p.slug) };
+  },
+});
+
+// Deja los dos renders de estudio juntos al principio de la galería. El
+// catálogo vivo los tenía alternados (frente, contexto, ambiente, ángulo), así
+// que la ficha enseñaba el producto, se iba al ambiente y volvía al producto.
+//
+// No borra ni añade fotos: solo las reordena, y la portada (la primera) sigue
+// siendo la misma, que es la que usan la tarjeta del catálogo y el Open Graph.
+// Idempotente: correrla dos veces no cambia nada la segunda.
+export const juntarRendersDeEstudio = mutation({
+  args: { secret: v.string() },
+  handler: async (ctx, { secret }) => {
+    exigirSecreto(secret);
+
+    const productos = await ctx.db.query("productos").collect();
+    const reordenados: string[] = [];
+
+    for (const p of productos) {
+      const estudio = p.fotos.filter((f) => f.includes("impresion-3d"));
+      const contexto = p.fotos.filter((f) => !f.includes("impresion-3d"));
+      const fotos = [...estudio, ...contexto];
+      if (fotos.join("|") === p.fotos.join("|")) continue;
+
+      await ctx.db.patch(p._id, { fotos });
+      reordenados.push(p.slug);
+    }
+
+    return { reordenados };
   },
 });
 
