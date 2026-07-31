@@ -294,13 +294,17 @@ export default async function PreguntasFrecuentesPage() {
         {
           id: "devoluciones",
           pregunta: "¿Puedo devolverlo o cambiarlo?",
-          // ⚠️ [PENDIENTE: revisión de un abogado y política propia de la marca].
-          // Lo que dice aquí es el piso legal colombiano (Ley 1480 de 2011):
-          // retracto en ventas a distancia y garantía legal por defectos.
+          // ⚠️ [PENDIENTE: revisión de un abogado]. Política de la marca: sin
+          // reembolso si el bolso llegó bien, solo cambio. Ojo: el derecho de
+          // retracto (Ley 1480 art. 47) es obligatorio en ventas a distancia y
+          // una cláusula que lo niegue sería ineficaz, salvo que un bolso caiga
+          // en la excepción de "bienes de uso personal". Eso lo tiene que
+          // confirmar un abogado antes de dar este texto por definitivo.
           respuesta: [
             "Si el bolso tiene un defecto de fabricación, la devolución es totalmente gratis: lo reponemos o lo reparamos sin ningún costo para ti, envío incluido. Escríbenos con una foto y lo resolvemos.",
-            "Si simplemente te arrepentiste, también puedes devolverlo: al ser una compra a distancia tienes derecho de retracto dentro de los cinco (5) días hábiles siguientes a la entrega, devolviendo el bolso en el mismo estado en que lo recibiste. En ese caso el flete de la devolución lo asumes tú, y te reembolsamos a más tardar treinta (30) días calendario después.",
-            "Las piezas personalizadas quedan por fuera de todo esto: se fabrican solo para ti, así que no aceptamos retracto ni cambios una vez apruebas el diseño.",
+            "Si el bolso llegó en perfecto estado y simplemente cambiaste de opinión, no hacemos reembolsos de dinero, pero sí te lo cambiamos por otro dentro de los 15 días calendario siguientes a la entrega. El bolso tiene que estar sin usar y en las mismas condiciones en que te llegó, y el flete de ida y vuelta lo asumes tú.",
+            "Si eliges un bolso más caro puedes pagar la diferencia; si es más barato, ese es el cambio.",
+            "Las piezas personalizadas quedan por fuera: se fabrican solo para ti, así que no aceptamos cambios una vez apruebas el diseño.",
           ],
         },
       ],
