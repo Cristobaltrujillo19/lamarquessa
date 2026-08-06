@@ -14,7 +14,7 @@ export default function Header() {
             Colección
           </Link>
           <Link href="/nosotros" className="transition-colors hover:text-cobre-texto">
-            Cómo se hacen
+            Nuestra historia
           </Link>
         </nav>
 

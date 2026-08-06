@@ -39,7 +39,7 @@ export default function Footer() {
             </li>
             <li>
               <Link href="/nosotros" className="hover:text-cobre">
-                Cómo se hacen
+                Nuestra historia
               </Link>
             </li>
           </ul>

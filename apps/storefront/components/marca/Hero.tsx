@@ -72,7 +72,7 @@ export default function Hero() {
           Ver la colección
         </Link>
         <Link className="boton boton-fantasma" href="/nosotros">
-          Cómo se hacen
+          Nuestra historia
         </Link>
       </div>
     </section>
