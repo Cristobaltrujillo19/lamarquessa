@@ -1,34 +1,39 @@
 # ESTADO — La Marquessa · Handoff para la próxima sesión
 
-Última actualización: **28 de julio de 2026**
-Rama: `main` · Último commit: `c6e1ee6` · Árbol local: limpio · Todo pusheado.
+Última actualización: **6 de agosto de 2026**
+Rama: `main` · Último commit: `c9f5b02` · Árbol local: limpio · Todo pusheado.
 
 ---
 
 ## 1. Qué es este proyecto
 
-**La Marquessa** (dos eses — grafía oficial decidida) es una marca colombiana de **bolsos de autor impresos en 3D y terminados a mano**. Cada pieza se fabrica una por una, así que no hay dos iguales.
+**La Marquessa** (dos eses — grafía oficial) es una marca colombiana de **bolsos de autor impresos en 3D y terminados a mano**. Cada pieza se fabrica una por una, así que no hay dos iguales.
 
-- **Objetivo del sitio: VENDER.** No es pre-lanzamiento (esa decisión cambió durante el proyecto).
-- Mercado: Colombia · Idioma: es-CO · Moneda: COP
-- Fabricación **a pedido, 2 semanas** de producción.
-- Canal paralelo: campaña de lanzamiento con influencers (tráfico móvil desde Instagram).
+- **Objetivo del sitio: VENDER.** El checkout con Mercado Pago está en vivo.
+- Mercado: Colombia principalmente (tarifa plana COP 16.500, 2 días hábiles). Envíos internacionales por cotización vía WhatsApp.
+- Idioma: es-CO · Moneda: COP
+- Fabricación **a pedido, 2 semanas** de producción + 2 días de transportadora.
 
 ### Universo de marca
-Mar, olas, Caribe, el sueño de recorrer el mundo en velero.
-Tagline: *"Un sueño tejido por las olas"* · *"Life comes in waves"* · *"del amor, del mar y del amor al mar"*.
 
-### Catálogo real (4 bolsos, ya cargados)
+Mar, olas, Caribe. Titular del hero **en inglés** (decisión de marca): *"Colombian statement pieces inspired by the sea."* Tagline: *"Un sueño tejido por las olas"*.
 
-| Bolso | Precio COP | Alto × Ancho × Prof | Notas |
-|---|---|---|---|
-| **Menorca** | 210.000 | 20 × 19,2 × 8,7 cm | Textura de espuma, asa integrada |
-| **Mallorca** | 255.000 | 23,7 × 22,8 × 10,4 cm | Talla grande de Menorca; su render lleva **zoom 1.2×** para que se vea mayor |
-| **Kruta** | 230.000 | 20,5 × 12,8 × 12,8 cm | Vertical, lisa, un pliegue |
-| **Montt** | 195.000 | 17,5 × 18,2 × 12,3 cm | Ancha y baja, pliegue diagonal |
+### Catálogo real (4 bolsos)
 
-**Acabados (3):** Amanecer `#e8bca6` (rosa nude) · Caribe `#bcc1d2` (azul con destellos) · Horizonte (seda bicolor, **color provisional — falta dato real**).
-**Material:** PLA de proveedor colombiano (4D-LAB). **El proveedor NO se menciona en la web.**
+| Bolso | Precio COP | Alto × Ancho × Prof | Peso | Notas |
+|---|---|---|---|---|
+| **Menorca** | 210.000 | 20 × 19,2 × 8,7 cm | 290 g | Textura de espuma. **En Menorca NO cabe un celular** — dato importante que la FAQ dice explícito |
+| **Mallorca** | 255.000 | 23,7 × 22,8 × 10,4 cm | 350 g | Talla grande de Menorca |
+| **Kruta** | 230.000 | 20,5 × 12,8 × 12,8 cm | 190 g | Vertical, lisa, un pliegue |
+| **Montt** | 195.000 | 17,5 × 18,2 × 12,3 cm | 290 g | Ancha y baja, pliegue diagonal |
+
+**Acabados (3):** Amanecer `#e8bca6` (rosa nude) · Caribe `#bcc1d2` (azul con destellos) · **Horizonte** (bicolor negro `#111111` + rojo `#b3121a`, seda; se pinta partido en diagonal con `muestraColor()`).
+
+**Material:** PLA de proveedor colombiano. **El proveedor NO se menciona en la web.**
+
+### Personalización
+
+Dos formas: color específico o iniciales en la parte inferior. Se cotiza al momento por WhatsApp. Las piezas personalizadas no aceptan cambio ni retracto.
 
 ---
 
@@ -39,130 +44,173 @@ Monorepo pnpm + Turborepo en `C:\Users\crist\Documents\random proyects\La Marque
 
 ```
 pnpm -C apps/storefront dev        # http://localhost:3000
-npx convex dev                     # desde apps/storefront, para cambios de backend
+npx convex dev --once              # desde apps/storefront, para propagar cambios de backend a dev
+npx convex deploy -y               # desde apps/storefront, para desplegar a PRODUCCIÓN (ver §5)
 ```
 
-**Ya no existe `apps/landing`** — se unificó todo dentro de `apps/storefront` (Next 16 + React 19 + Tailwind 4 + Convex).
+**Ya no existe `apps/landing`** — todo vive en `apps/storefront` (Next 16 + React 19 + Tailwind 4 + Convex).
 
 ### Datos clave
+
 - **Producción:** https://lamarquessa-landing-gtpv-three.vercel.app
-- **Repo:** github.com/Cristobaltrujillo19/lamarquessa
-- **Panel:** `/panel` → usuario `admin`, contraseña = `PANEL_PASSWORD` (local: `marquessa2026`)
+- **Repo:** https://github.com/Cristobaltrujillo19/lamarquessa (privado)
+- **Panel:** `/panel` → usuario `admin`, contraseña `PANEL_PASSWORD` (local: `marquessa2026`)
 - **Convex dev:** `dev:agreeable-buzzard-367` · **Convex prod:** `hearty-lemur-822`
-- **Dominio propio:** `lamarquessa.co` **NO comprado todavía**
+- **Dominio propio:** `lamarquessa.co` **NO comprado**
 - **Instagram:** https://www.instagram.com/lamarquessa.co/
+- **Correo:** `info.lamarquessa@gmail.com` (con Gmail SMTP configurado para transaccionales)
+- **WhatsApp:** `573332779109` (mostrado como `333 277 9109`)
 
 ---
 
-## 3. Qué está HECHO
+## 3. Qué está HECHO (verificado en vivo)
 
 ### ✅ Fase 0 — Auditoría
-`AUDITORIA.md` en la raíz. Incluye el inventario SEO previo, contraste medido, y las 8 decisiones tomadas.
+`AUDITORIA.md`. Incluye inventario SEO previo, contraste medido, 8 decisiones tomadas.
 
-### ✅ Fase 1 — Cimientos técnicos (en producción)
-- **Unificación**: landing (Astro) migrado a Next; `apps/landing` eliminado. Los componentes de marca se portaron a React **conservando su CSS** (CSS Modules) para no cambiar el diseño.
-- **Catálogo real** cargado en Convex; eliminados los 4 placeholders.
-- **16 imágenes propias** importadas en AVIF + JPEG (2 de estudio + 2 de contexto por bolso). Origen: `C:\Users\crist\Documents\random proyects\La Marquesa\Renders`.
-- **SEO**: metadata única por página, canonical absoluto, Open Graph completo + `og.jpg` generado, un `<h1>` por página, `sitemap.xml` (8 URLs), `robots.txt` que **no bloquea crawlers de IA**.
-- **JSON-LD**: `Organization` (con `alternateName: "La Marquesa"`), `WebSite`, `BreadcrumbList`, `Product` (precio real, `InStock`, `handlingTime` 14 días).
-- **Accesibilidad**: el cobre del manual `#B38561` da **2.70:1** sobre crema y falla AA. Se derivó **`#805337`** (5.41:1) para texto y botones; el original se conserva para uso decorativo.
-- **Hero**: carrete con fotos de producto, ancho limitado a 1100px y `object-position` por foto para que el bolso sea el centro (las verticales se cortaban).
+### ✅ Fase 1 — Cimientos técnicos
+- **Unificación**: landing (Astro) migrado a Next; `apps/landing` eliminado.
+- **Catálogo real** de 4 bolsos en Convex.
+- **16 imágenes propias** (2 de estudio + 2 de contexto por bolso) en AVIF + JPEG.
+- **SEO**: metadata por página, canonical absoluto, Open Graph completo + `og.jpg`, un `<h1>` por página, `sitemap.xml` (9 URLs), `robots.txt` (no bloquea IA).
+- **JSON-LD**: `Organization`, `WebSite`, `BreadcrumbList`, `Product` (precio real, `InStock`, `handlingTime` 14 días, `transitTime` 2 días, `shippingRate` 16.500), `FAQPage`.
+- **Accesibilidad**: cobre-texto derivado `#805337` (5.41:1 sobre crema, cumple AA).
+- **Hero**: carrete de fotos de producto, ajustado para no cortar los bolsos verticales.
 
-### ✅ Google Tag Manager
-Contenedor **`GTM-P76W5D68`** montado por variable de entorno, carga `afterInteractive`, con `<noscript>` de respaldo y **excluido de `/panel`**. Verificado en navegador real.
-Incluye helper `enviarEvento()` en `components/Analitica.tsx`, listo para cablear eventos.
+### ✅ Fase 2 — Contenido
+- **FAQ** `/preguntas-frecuentes`: 15 preguntas en tono formal (usted), schema `FAQPage`, con datos reales (pesos, plazos, política de cambios). Corregida específicamente para decir que Menorca NO admite celular.
+- **`/nosotros`**: Concepto + Manifiesto (con velero "Life comes in waves") + ComoSeHace + Elementos + CierreCta.
+- **`/privacidad`**: política Ley 1581 con secciones legales completas.
+- Copy en inglés y en plural en franja de beneficios (`UNIQUE PIECES / 3D PRINTED / MADE IN COLOMBIA / WORLDWIDE SHIPPING`).
 
-### ✅ Política Ley 1581
-`/privacidad` completada como política de tratamiento de datos (11 secciones, plazos legales 10/15 días hábiles, derechos del titular, terceros, cookies).
-⚠️ **Estaba desplegándose al cierre de la sesión** — verificar que ya esté viva.
+### ✅ Fase 3 — Conversión (parcial)
+- **Checkout Mercado Pago** funcionando (`convex/orders.ts` + `convex/http.ts`).
+- **WhatsApp obligatorio** en el checkout (frontend + servidor).
+- **Asteriscos** en los seis campos obligatorios.
+- **Aviso de compra internacional** encima del formulario.
+- **CTA fijo en móvil** en la ficha de producto: aparece cuando el CTA principal ya salió por arriba.
+- **Menú móvil** con hamburguesa 44×44 (Colección, Nuestra historia, FAQ).
+- **Círculos de color** con tap area 44×44 sin cambio visual.
+- Correo de confirmación por Gmail SMTP funcionando.
 
-### ✅ Investigación de keywords
-`SEO-KEYWORDS.md`. **Sin volúmenes** (marcados `[PENDIENTE: volumen]`, no se inventaron).
+### ✅ Fase 5 — Accesibilidad móvil (parcial)
+- Sin scroll horizontal en ninguna página, verificado.
+- Contraste AA/AAA verificado (H1 8.99:1, párrafos 5.37:1, botones 6.13:1).
+- Tap targets ≥44×44 en selectores y hamburguesa.
+- Inputs con `font-size: 16px` (evita el zoom automático de iOS Safari).
+- Títulos partidos con espacio literal antes del `<br />` (para lectores de pantalla y crawlers).
 
-### ✅ Extras
-- **Brand kit** en `C:\Users\crist\Documents\random proyects\La Marquesa\La-Marquessa-Brand-Kit` (logos, símbolos, patrones, SVG, fuentes incl. Jost).
-- **Plugin claude-seo** instalado (18 agentes + 31 skills + runtime Python/Chromium). Verificado con `doctor`.
+### ✅ Configuración
+- **Vars en Convex prod**: `ADMIN_API_SECRET`, `MP_ACCESS_TOKEN`, `SITE_URL`, `GMAIL_USER`, `GMAIL_APP_PASSWORD`. Todas puestas y verificadas.
+- **Google Tag Manager** `GTM-P76W5D68` cargado (falta cablear GA4 dentro de GTM).
+- **Cuenta MP**: `id=515941663`, nombre visible **"Amor y Brillitos"** (paraguas para SER + La Marquessa).
 
 ---
 
-## 4. Los 3 hallazgos estratégicos (no perderlos)
+## 4. Los tres hallazgos estratégicos (no perderlos)
 
-1. **"Bolsos artesanales Colombia" es una trampa.** La SERP la copan MercadoLibre y el término significa *wayuu / mola / cuero*. Un bolso impreso en 3D no es eso: traería visitas que rebotan. **Descartado como objetivo.**
-2. **"Bolso impreso en 3D" está vacío en Colombia.** Solo hay marcas internacionales (XYZBAG, NODOS, Coperni). **Es el eje de la estrategia.**
-3. **El producto coincide con la tendencia 2026**: mini bolsos, formas esculturales, media luna. Ahí está el volumen.
+1. **"Bolsos artesanales Colombia" es una trampa.** Significa wayuu/mola/cuero, la SERP la copan MercadoLibre y grandes retailers. Un bolso impreso en 3D no encaja. **Descartado.**
+2. **"Bolso impreso en 3D" está vacío en Colombia.** Solo hay marcas internacionales. **Es el eje de la estrategia.** El hero en inglés no ayuda a este SEO — está en tensión con la estrategia.
+3. **El producto coincide con la tendencia 2026**: mini bolsos, formas esculturales, media luna, siluetas estructuradas. Ahí está el volumen.
 
-⚠️ **Riesgo de marca:** existen negocios con nombre casi idéntico, uno **colombiano y del mismo rubro** (*La Marqueza Equestrian*), además de *Boutique Marquesa Style* y *@UniformesLaMarquessa*. Táctica: no competir por "La Marquessa" a secas, sino anclarla siempre a *"bolsos impresos en 3D"*. Conviene revisar disponibilidad de marca en la SIC.
+⚠️ **Riesgo de marca:** existen negocios con nombre casi idéntico. Uno colombiano y del mismo rubro (*La Marqueza Equestrian*). Táctica: anclar siempre "La Marquessa" a *"bolsos impresos en 3D"*.
 
 ---
 
-## 5. Qué FALTA — por fases
+## 5. ⚠️ REGLA CRÍTICA: Convex prod se despliega A MANO
 
-### 🔄 Fase 2 — Contenido (~25%)
-- [ ] **Página FAQ** con schema `FAQPage` ← **la más importante**
-- [ ] Guías: "cómo cuidar un bolso impreso en 3D", "regalo que no se puede repetir"
-- [ ] Página de contacto
-- [ ] Legales: envíos, cambios/devoluciones (derecho de retracto), términos
-- [ ] Reescribir el copy del sitio con el tono de marca
+**El build de Vercel NO corre `convex deploy`.** Cambios en `apps/storefront/convex/**` requieren dos pasos:
 
-### ⚠️ Fase 3 — Conversión (~30%)
-- [ ] **Checkout real con Mercado Pago** (hoy `/checkout` es un stub que NO cobra)
-- [ ] CTA fijo (sticky) en móvil en la ficha de producto
-- [ ] Escasez honesta (numeración de pieza)
-- [ ] Prueba social (firma de la diseñadora, taller, contenido de influencers)
-- [ ] Foto macro de la textura 3D (el diferenciador que hoy no se ve)
-- [ ] Eventos de analítica: `view_product`, `whatsapp_click`, `instagram_click`, `faq_open`, `scroll_50`
+1. `cd apps/storefront; npx convex deploy -y` (despliega funciones + schema a `hearty-lemur-822`)
+2. `git push origin main` (despliega frontend a Vercel)
+
+**En este orden.** Si se hace al revés, el frontend intentaría llamar funciones que aún no existen en producción, o guardar en un schema viejo.
+
+Para verificar qué hay desplegado: `npx convex function-spec --prod | Select-String "nombre_funcion"`.
+
+Para pasar JSON a `npx convex run` desde PowerShell: **comillas dobles por fuera y simples por dentro** — `"{secret:'$s'}"`. Al revés falla el parseo.
+
+---
+
+## 6. 🔴 Bloqueado esperando al usuario (bloqueadores para vender)
+
+| Qué falta | Consecuencia |
+|---|---|
+| **Rotar `ADMIN_API_SECRET`** (Convex prod + Vercel + `.env.local`) | Quedó impreso en un error de terminal hace días |
+| **Prueba real con cupón** para cerrar la incógnita del webhook | Es lo único que no puedo verificar sin plata real |
+| **Etiqueta GA4 dentro de GTM** (publicar en tagmanager.google.com) | GTM carga pero **no mide nada** |
+| **Razón social, NIT, domicilio, teléfono** | La política de privacidad tiene `[pendiente]` |
+| **Borrar/redirigir el proyecto viejo en Vercel** (`lamarquessa-landing`) | Sigue vivo y compite en Google (duplicate content) |
+| **Comprar dominio `lamarquessa.co`** | Hoy la URL es de Vercel; cuando se compre, cambiar `NEXT_PUBLIC_SITE_URL` |
+| **Revisión de abogado** sobre la política de cambios/retracto | La FAQ afirma que las piezas personalizadas no admiten retracto, pero Ley 1480 es restrictiva sobre estas exclusiones |
+
+---
+
+## 7. Qué FALTA — por fases
+
+### 🔄 Fase 3 — Conversión (~65%)
+- [ ] **Escasez honesta** — numeración de pieza (*"la pieza #24"*). **Decisión pendiente**: ¿desde qué número empieza el contador?
+- [ ] **Prueba social**: firma de la diseñadora, foto del taller, contenido real de clientes. **Bloqueada por material**.
+- [ ] Eventos de analítica: `view_product`, `whatsapp_click`, `instagram_click`, `faq_open`, `scroll_50` (cuando GA4 esté cableado)
 - [ ] Banner de consentimiento de cookies (Consent Mode)
+- [ ] Foto macro de la textura 3D (el diferenciador que hoy no se ve)
 
 ### ⚠️ Fase 4 — Rendimiento (~40%)
 - [ ] `srcset` responsive (400/800/1200/1600)
-- [ ] Autoalojar las 3 fuentes de Google (Jost, Cormorant, Pinyon)
-- [ ] **Medir Core Web Vitals** (nunca se han medido)
+- [ ] **Medir Core Web Vitals** (nunca se han medido — pero fuentes ya autohospedadas y preload de Queen Serif hecho)
 
-### ⚠️ Fase 5 — Accesibilidad (~35%)
+### ⚠️ Fase 5 — Accesibilidad (~70%)
 - [ ] Navegación completa por teclado con foco visible
 - [ ] Probar en 320 / 390 / 768 / 1440 px
 
 ### ❌ Fase 6 — Verificación (0%)
 - [ ] Lighthouse móvil (objetivo ≥95 SEO y Accesibilidad, ≥90 Rendimiento)
 - [ ] Validar JSON-LD con Rich Results Test
-- [ ] Capturas a 390px
 - [ ] `CAMBIOS.md`
 
 ---
 
-## 6. 🚧 Bloqueado esperando al usuario
-
-| Qué falta | Consecuencia |
-|---|---|
-| **Etiqueta GA4 dentro de GTM** (en tagmanager.google.com, y publicar) | GTM carga pero **no mide nada** |
-| **Razón social, NIT, domicilio, teléfono** | La política legal queda incompleta (`[pendiente]` en la página) |
-| **`NEXT_PUBLIC_SITE_URL`** en Vercel | Funciona con el valor por defecto, pero conviene |
-| **Borrar/redirigir el proyecto `lamarquessa-landing` en Vercel** | El sitio viejo sigue vivo y **compite en Google** (contenido duplicado) |
-| Credenciales de **Mercado Pago** | No se puede cobrar |
-| Colores reales del acabado **Horizonte** | Muestra provisional |
-| **Peso** de cada bolso, **costo y tiempo de envío** | Datos faltantes en fichas y schema |
-| Número real de **WhatsApp** y correo | Hoy son placeholders (`573000000000`, `hola@lamarquessa.co`) |
-| Developer token de **Google Ads** (requiere cuenta MCC, 1-3 días) | Sin volúmenes de búsqueda reales |
-
----
-
-## 7. Reglas de trabajo acordadas
+## 8. Reglas de trabajo acordadas
 
 - **No inventar datos.** Precios, plazos, medidas, reseñas: si no está dado, marcar `[PENDIENTE: dato]` y preguntar.
 - **Nunca generar `AggregateRating` ni `Review` falsos.**
-- Commits atómicos, **uno por fase**, en español.
+- **Commits atómicos**, uno por tema, en español.
 - **No borrar nada sin listarlo antes.**
 - Al terminar cada fase: resumen breve y **esperar** antes de seguir.
 - Verificar de verdad (build, curl del HTML servido, navegador) en vez de asumir.
-- **PowerShell** para node/pnpm/convex. Ojo: `Set-Content` corrompió acentos una vez (releyó UTF-8 como ANSI) — usar las herramientas de edición, no PowerShell, para escribir archivos de código.
+- **PowerShell** para node/pnpm/convex.
+- **Convex prod ANTES del push** cuando toque backend.
+- Al cancelar pedidos con script: **usar id exacto**, no "el más reciente" (colisiona con actividad en paralelo).
 
 ---
 
-## 8. Gotchas técnicos
+## 9. Gotchas técnicos
 
 - **Next 16**: `params` es `Promise` (hay que `await`).
-- **Tailwind 4**: `@theme` en CSS, no `tailwind.config`.
-- **Convex**: cambios de funciones requieren `npx convex dev` (dev) o `npx convex deploy` (prod). Las variables de entorno **no se copian** entre dev y prod.
+- **Tailwind 4**: `@theme` en CSS, no `tailwind.config`. Para valores arbitrarios con variables CSS: `top-[var(--x)]`, no `top-[--x]`.
+- **Convex**: cambios de funciones requieren `npx convex dev` (dev) o `npx convex deploy` (prod). Vars de entorno NO se copian entre dev y prod.
 - **turbo.json**: las variables de entorno deben declararse en `build.env` o Vercel avisa que no llegan.
-- El error de hidratación `cz-shortcut-listen` lo causa una **extensión del navegador**, no el código (ya silenciado con `suppressHydrationWarning`).
 - **gh CLI**: `C:\Users\crist\AppData\Local\Programs\gh\bin\gh.exe` (no está en el PATH).
+- **Gmail SMTP**: `GMAIL_USER` + `GMAIL_APP_PASSWORD` (contraseña de app de Google, requiere 2FA activo). Los correos se auto-desactivan si faltan.
+- **Los correos usan constantes duplicadas** para el WhatsApp (`correoCliente.ts` y `correoEnvio.ts`) porque `"use node"` no puede importar de `lib/site.ts`. Si el WhatsApp cambia, hay que tocarlo en los 3 sitios.
+
+---
+
+## 10. Últimas cosas hechas (sesión que termina 2026-08-06)
+
+- Auditoría del flujo de compra completa. Encontrado y corregido: `marcarPagado` solo transiciona desde `pendiente` (antes revivía cancelados si llegaba pago tarde por Efecty).
+- WhatsApp correcto en el correo "va en camino".
+- Auditoría móvil completa. 4 fixes: menú hamburguesa, CTA fijo, tap targets 44×44, títulos con espacio antes de `<br />`.
+- Configuración de Gmail probada y funcionando.
+- 9 pedidos de prueba cancelados. Panel limpio.
+- Cuenta MP renombrada a "Amor y Brillitos" (paraguas para las dos marcas).
+
+## 11. Historial de commits recientes
+
+```
+c9f5b02  Ficha de producto: CTA fijo en móvil + selectores de color a 44px táctil
+ceff9b0  Titulos partidos: espacio antes del <br /> para no pegar palabras
+f9730ff  Cabecera móvil: menú hamburguesa
+af87e10  Auditoría del flujo de compra: tres correcciones
+a0887ae  Checkout: WhatsApp obligatorio, asteriscos y aviso para envíos internacionales
+```
