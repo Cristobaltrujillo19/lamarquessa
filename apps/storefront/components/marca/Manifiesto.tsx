@@ -25,6 +25,8 @@ export default function Manifiesto() {
           <p className={css.cierre}>
             De ahí venimos, del amor, del mar, y del amor al mar.
           </p>
+          {/* Nota: si mañana este texto se parte con <br />, poner espacio
+              literal antes (ver comentario en app/nosotros/page.tsx). */}
         </div>
 
         <div className={css.sello}>

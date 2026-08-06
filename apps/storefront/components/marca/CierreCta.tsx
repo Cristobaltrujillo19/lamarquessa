@@ -9,7 +9,9 @@ export default function CierreCta() {
       <div className={`contenedor ${css.centro} reveal`}>
         <IconoMarca nombre="concha" tamano={64} />
         <h2 className={css.frase}>
-          Del amor, del mar
+          {/* Espacio antes del <br /> para que innerText no pegue "mar" y "y":
+              sin él, lectores de pantalla y crawlers leen "mary". */}
+          Del amor, del mar{" "}
           <br />y del amor al mar.
         </h2>
         <p className={css.sub}>Cada pieza se hace una sola vez.</p>

@@ -21,7 +21,10 @@ export default function NosotrosPage() {
         <div className="contenedor" style={{ textAlign: "center" }}>
           <p className="kicker">Nuestra historia</p>
           <h1 className={css.titulo}>
-            <span className="script">Del amor</span>
+            {/* Espacio literal antes del <br />: sin él, innerText concatena
+                "amor" y "y" sin separación y los lectores de pantalla lo leen
+                "amory". Visualmente no cambia nada. */}
+            <span className="script">Del amor</span>{" "}
             <br />y del mar
           </h1>
         </div>
