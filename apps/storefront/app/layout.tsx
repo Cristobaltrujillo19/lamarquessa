@@ -96,6 +96,16 @@ export default function RootLayout({
       className={`${jost.variable} ${cormorant.variable} ${pinyon.variable} antialiased`}
     >
       <head>
+        {/* Queen Serif es la tipografía del titular del hero y del logotipo:
+            precargarla evita el parpadeo al fallback en el LCP. Vive en
+            /public/fonts, así que la sirve el propio dominio (sin CDN). */}
+        <link
+          rel="preload"
+          href="/fonts/queen-serif.otf"
+          as="font"
+          type="font/otf"
+          crossOrigin=""
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaOrganizacion) }}
