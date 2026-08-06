@@ -5,7 +5,7 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-cacao/10 bg-crema/85 backdrop-blur-md">
       <p className="bg-cobre-texto px-4 py-2 text-center text-[11px] uppercase tracking-[0.2em] text-blanco">
-        Piezas únicas hechas a mano · Envíos a todo Colombia
+        Piezas únicas hechas a mano · Envíos a todo el mundo
       </p>
 
       <div className="mx-auto grid max-w-[1280px] grid-cols-[1fr_auto_1fr] items-center px-5 py-4 md:px-8">
