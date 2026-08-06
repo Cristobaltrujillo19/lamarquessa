@@ -19,14 +19,14 @@ import css from "./preguntas.module.css";
 export const metadata: Metadata = {
   title: "Preguntas frecuentes — bolsos impresos en 3D | La Marquessa",
   description:
-    "¿Es realmente único? ¿Resiste? ¿Cuánto pesa? ¿Cuánto tarda? ¿Puedo devolverlo? Resolvemos las dudas reales antes de comprar un bolso impreso en 3D.",
+    "Resolvemos las preguntas esenciales antes de adquirir una pieza La Marquessa: material, resistencia, capacidad, tiempos de entrega, envíos y política de cambios.",
   alternates: { canonical: urlAbsoluta("/preguntas-frecuentes") },
   openGraph: {
     type: "website",
     url: urlAbsoluta("/preguntas-frecuentes"),
     title: "Preguntas frecuentes sobre nuestros bolsos impresos en 3D",
     description:
-      "Material, resistencia, capacidad, tiempos de entrega, envíos a Colombia y devoluciones. Sin letra pequeña.",
+      "Material, resistencia, capacidad, tiempos de entrega, envíos y política de cambios.",
   },
 };
 
@@ -73,43 +73,43 @@ export default async function PreguntasFrecuentesPage() {
 
   const grupos: Grupo[] = [
     {
-      titulo: "El bolso",
+      titulo: "La pieza",
       preguntas: [
         {
           id: "que-es",
           pregunta: "¿Qué es exactamente un bolso impreso en 3D?",
           respuesta: [
-            "Es un bolso cuya estructura se fabrica capa sobre capa con una impresora 3D, en lugar de cortarse y coserse. No es una carcasa de plástico moldeada en serie: la forma se construye desde cero, milímetro a milímetro, y por eso puede tener curvas continuas y relieves que no se lograrían cosiendo cuero o tela.",
-            "Cuando la pieza sale de la impresora todavía no es un bolso. Se ensambla, se lija y se remata a mano, una por una. Ese cruce entre máquina y mano es lo que define a La Marquessa.",
+            "Es un bolso cuya estructura se fabrica capa sobre capa con una impresora 3D, en lugar de cortarse y coserse. No se trata de una carcasa de plástico moldeada en serie: la forma se construye desde cero, milímetro a milímetro, y por eso admite curvas continuas y relieves imposibles de lograr con cuero o tela.",
+            "Cuando la pieza sale de la impresora aún no es un bolso. Se ensambla, se lija y se remata a mano, una por una. Ese cruce entre máquina y mano es lo que define a La Marquessa.",
           ],
           extra: (
             <p className={css.enlace}>
-              <Link href="/nosotros#proceso">Ver el proceso completo →</Link>
+              <Link href="/nosotros#proceso">Conocer el proceso completo →</Link>
             </p>
           ),
         },
         {
           id: "unicos",
-          pregunta: "¿De verdad no hay dos bolsos iguales?",
+          pregunta: "¿Es cierto que no existen dos bolsos iguales?",
           respuesta: [
-            "Sí, y vale la pena ser precisos: el diseño es el mismo —una Menorca es siempre una Menorca—, pero cada pieza se imprime y se termina individualmente. El relieve, el pliegue y el acabado nunca caen exactamente igual.",
-            "No fabricamos por lotes ni tenemos una bodega llena de bolsos idénticos esperando comprador. Tu bolso empieza a existir el día que lo pides.",
+            "Sí. El diseño es el mismo —una Menorca es siempre una Menorca—, pero cada pieza se imprime y se termina de manera individual. El relieve, el pliegue y el acabado nunca caen exactamente igual.",
+            "No fabricamos por lotes ni conservamos una bodega llena de bolsos idénticos a la espera de un comprador. Su bolso empieza a existir el día en que usted lo pide.",
           ],
         },
         {
           id: "material",
           pregunta: "¿De qué material está hecho? ¿Qué es el PLA?",
           respuesta: [
-            "De PLA, un bioplástico de origen vegetal que compramos a un proveedor colombiano. Es rígido, liviano y estable en el tiempo.",
-            "Al venir de fuentes vegetales renovables, su huella es menor que la de un plástico derivado del petróleo. Dicho con honestidad: el PLA no se degrada solo en casa ni en un relleno sanitario común, necesita compostaje industrial. Un bolso que dura años y no se reemplaza cada temporada sigue siendo, en la práctica, su mejor argumento ambiental.",
+            "De PLA: un bioplástico de origen vegetal que adquirimos a un proveedor colombiano. Es rígido, liviano y estable en el tiempo.",
+            "Al provenir de fuentes vegetales renovables, su huella es menor que la de un plástico derivado del petróleo. Con toda honestidad: el PLA no se degrada por sí solo en casa ni en un relleno sanitario común, requiere compostaje industrial. Una pieza que dura años y no se reemplaza cada temporada sigue siendo, en la práctica, su mejor argumento ambiental.",
           ],
         },
         {
           id: "acabados",
-          pregunta: "¿Qué acabados existen?",
+          pregunta: "¿Qué acabados están disponibles?",
           respuesta: [
             "Tres, iguales para los cuatro modelos: Amanecer, un rosa nude cálido; Caribe, un azul con destellos; y Horizonte, un bicolor en negro y rojo con caída de seda.",
-            "Cada acabado se comporta distinto según la luz, así que ninguna foto lo cuenta del todo. Si dudas entre dos, escríbenos y te mandamos fotos reales del que te interese. Y si el color que buscas no está, se puede pedir a la medida.",
+            "Cada acabado se comporta de manera distinta según la luz, y ninguna fotografía lo captura del todo. Si duda entre dos, escríbanos y le enviaremos imágenes reales del que le interese. Y si el color que busca no figura entre estos, puede solicitarse a medida.",
           ],
           extra: (
             <p className={css.enlace}>
@@ -119,14 +119,14 @@ export default async function PreguntasFrecuentesPage() {
         },
         {
           id: "capacidad",
-          pregunta: "¿Cabe un celular? ¿Qué cabe adentro?",
+          pregunta: "¿Cabe un celular? ¿Qué puede llevarse dentro?",
           // Dato de la marca: en Menorca el celular NO entra. Es la excepción y
-          // se dice claro: que llegue y no quepa el teléfono es justo el tipo de
-          // sorpresa que termina en devolución.
+          // se dice claro: que llegue y no quepa el teléfono es justo el tipo
+          // de sorpresa que termina en devolución.
           respuesta: [
-            "En Mallorca, Kruta y Montt sí: entra un celular de pantalla grande junto con lo esencial del día — llaves, tarjetas, labial y audífonos.",
-            "En Menorca no. Da para lo justo —tarjetas, llaves, labial—, pero el celular no entra. Si te gusta esa silueta y necesitas llevar el teléfono, Mallorca es su talla grande: mismo diseño, más cuerpo.",
-            "Ninguno es un bolso de laptop ni de cuaderno: son piezas de mano, y esa es justamente la idea. Estas son las medidas exteriores de cada uno.",
+            "En Mallorca, Kruta y Montt, sí: cabe un celular de pantalla grande junto con lo esencial del día — llaves, tarjetas, labial y audífonos.",
+            "En Menorca no. Alcanza para lo justo —tarjetas, llaves, labial—, pero el celular no entra. Si le gusta esa silueta y necesita llevar el teléfono, Mallorca es su talla grande: mismo diseño, más cuerpo.",
+            "Ninguna de las piezas está pensada para computador ni cuaderno: son bolsos de mano, y esa es precisamente la intención. Estas son las medidas exteriores de cada uno.",
           ],
           extra: conMedidas.length > 0 && (
             <div className={css.tablaEnvoltura}>
@@ -159,7 +159,7 @@ export default async function PreguntasFrecuentesPage() {
           id: "peso",
           pregunta: "¿Cuánto pesa?",
           respuesta: [
-            `${rangoPesos} Son piezas huecas, sin forro, sin herrajes y sin partes metálicas: casi todo el peso es la estructura impresa, y el PLA es un material liviano.`,
+            `${rangoPesos} Son piezas huecas, sin forro, sin herrajes ni partes metálicas: casi todo el peso es la estructura impresa, y el PLA es un material notablemente liviano.`,
           ],
           extra: pesos.length > 0 && (
             <ul className={css.listaPesos}>
@@ -175,37 +175,37 @@ export default async function PreguntasFrecuentesPage() {
           id: "resistencia",
           pregunta: "¿Resiste el uso diario?",
           respuesta: [
-            "Está hecho para usarse, no para mirarse. La estructura impresa es rígida y mantiene su forma sola: no se descuelga ni se deforma como un bolso de tela, y no necesita relleno para verse bien.",
-            "Dos cuidados que sí importan. El PLA se ablanda con el calor fuerte, así que no lo dejes dentro del carro cerrado al sol ni junto a una fuente de calor. Y al ser una pieza rígida, un golpe seco contra el piso lo afecta más que a un bolso blando.",
-            "Todos nuestros bolsos están cubiertos por la garantía legal que exige la ley colombiana frente a defectos de fabricación.",
+            "Está pensado para llevarse, no solo para admirarse. La estructura impresa es rígida y conserva su forma por sí sola: no se descuelga ni se deforma como un bolso de tela, ni requiere relleno para lucir bien.",
+            "Dos cuidados que sí conviene tener presentes. El PLA se ablanda con el calor intenso, por lo que le recomendamos no dejarlo dentro del automóvil al sol ni cerca de una fuente de calor. Y, al ser una pieza rígida, un golpe seco contra el piso lo afecta más que a un bolso blando.",
+            "Todas nuestras piezas están cubiertas por la garantía legal que exige la ley colombiana frente a defectos de fabricación.",
           ],
         },
         {
           id: "cuidado",
-          pregunta: "¿Cómo lo limpio y lo cuido?",
+          pregunta: "¿Cómo se limpia y se cuida?",
           respuesta: [
-            "Para el día a día basta un paño suave y seco. Si hace falta más, humedécelo apenas con agua y seca enseguida. No uses limpiadores abrasivos ni solventes, y no lo sumerjas.",
-            "Guárdalo lejos del sol directo y del calor. Bien cuidado, el acabado se mantiene como el primer día.",
+            "Para el uso cotidiano basta un paño suave y seco. Si se requiere algo más, humedézcalo apenas con agua y seque de inmediato. No emplee limpiadores abrasivos ni solventes, y en ningún caso lo sumerja.",
+            "Guárdelo lejos del sol directo y del calor. Con estos cuidados, el acabado se mantiene como el primer día.",
           ],
         },
         {
           id: "donde",
           pregunta: "¿Dónde se fabrican?",
           respuesta: [
-            "En Colombia, uno por uno. El PLA con el que se imprimen también lo compramos a un proveedor colombiano.",
+            "En Colombia, una a una. El PLA con el que se imprimen también proviene de un proveedor colombiano.",
           ],
         },
       ],
     },
     {
-      titulo: "Compra, envío y devoluciones",
+      titulo: "Compra, envío y cambios",
       preguntas: [
         {
           id: "tiempos",
           pregunta: "¿Cuánto tarda en llegar?",
           respuesta: [
-            `Cada bolso se fabrica cuando lo pides, no antes: la producción toma ${PRODUCCION_SEMANAS} semanas. A eso se le suman ${ENVIO_DIAS} días hábiles de transportadora, así que en total son unas ${PRODUCCION_SEMANAS} semanas y media desde que confirmas el pedido hasta que lo tienes en la mano.`,
-            "Si lo necesitas para una fecha concreta, escríbenos antes de comprar y te confirmamos si alcanzamos a llegar.",
+            `Cada bolso se fabrica cuando usted lo pide, no antes: la producción toma ${PRODUCCION_SEMANAS} semanas. A ese plazo se le suman ${ENVIO_DIAS} días hábiles de transportadora, de modo que son cerca de ${PRODUCCION_SEMANAS} semanas y media desde que se confirma el pedido hasta que llega a sus manos.`,
+            "Si necesita la pieza para una fecha determinada, escríbanos antes de comprar y le confirmaremos si alcanzamos a llegar.",
           ],
           extra: (
             <p className={css.enlace}>
@@ -214,24 +214,24 @@ export default async function PreguntasFrecuentesPage() {
                 target="_blank"
                 rel="noopener"
               >
-                Preguntar por WhatsApp →
+                Consultar por WhatsApp →
               </a>
             </p>
           ),
         },
         {
           id: "envios",
-          pregunta: "¿Envían a toda Colombia? ¿Cuánto cuesta el envío?",
+          pregunta: "¿Cuál es el costo del envío nacional?",
           respuesta: [
-            `Sí, a todo el país. El envío tiene una tarifa plana de ${formatCop(SHIPPING_COP)}, sin importar la ciudad, y tarda ${ENVIO_DIAS} días hábiles una vez el bolso está listo.`,
-            "Despachamos por transportadora nacional y te entregamos el número de guía para que puedas seguir tu pedido hasta la puerta.",
+            `Enviamos a todo el territorio colombiano con una tarifa plana de ${formatCop(SHIPPING_COP)}, sin importar la ciudad. La entrega toma ${ENVIO_DIAS} días hábiles desde que la pieza está lista.`,
+            "Despachamos por transportadora nacional y le entregamos el número de guía para que pueda seguir su pedido hasta la puerta.",
           ],
         },
         {
           id: "internacional",
-          pregunta: "¿Envían fuera de Colombia?",
+          pregunta: "¿Realizan envíos internacionales?",
           respuesta: [
-            "Sí, pero por ahora esos envíos los coordinamos uno a uno. Escríbenos por WhatsApp con tu país y ciudad y te cotizamos el envío antes de que compres.",
+            "Sí. Por el momento estos envíos se coordinan uno a uno: escríbanos por WhatsApp con su país y ciudad y le prepararemos una cotización antes de la compra.",
           ],
           extra: (
             <p className={css.enlace}>
@@ -247,15 +247,15 @@ export default async function PreguntasFrecuentesPage() {
         },
         {
           id: "personalizacion",
-          pregunta: "¿Puedo pedirlo personalizado?",
+          pregunta: "¿Es posible pedirlo personalizado?",
           // No se anuncia precio porque no hay lista: cada pedido se cotiza en
           // el momento. Tampoco se promete garantía sobre la personalización,
           // pero no se publica una renuncia a la garantía legal: la Ley 1480
           // no permite excluirla y una cláusula así sería ineficaz.
           respuesta: [
-            "Sí, de dos formas: puedes pedir un color específico, aunque no esté entre los tres acabados, y puedes agregar tus iniciales en la parte inferior del bolso.",
-            "El costo depende de lo que pidas y te lo cotizamos en el momento: nos escribes por WhatsApp, nos cuentas qué tienes en mente y te confirmamos precio y tiempos ahí mismo.",
-            "Una pieza personalizada se fabrica solo para ti, así que no aplica el derecho de retracto ni aceptamos cambios una vez apruebas el diseño. Por eso confirmamos contigo el color y las iniciales antes de empezar a imprimir.",
+            "Sí, en dos formas: puede solicitar un color específico, aunque no figure entre los tres acabados, y puede añadir sus iniciales en la parte inferior de la pieza.",
+            "El costo depende de lo que se solicite y se cotiza al momento: escríbanos por WhatsApp, cuéntenos qué tiene en mente y le confirmaremos precio y tiempos allí mismo.",
+            "Una pieza personalizada se fabrica exclusivamente para usted, de modo que no aplica el derecho de retracto ni se aceptan cambios una vez aprobado el diseño. Por eso confirmamos con usted el color y las iniciales antes de empezar a imprimir.",
           ],
           extra: (
             <p className={css.enlace}>
@@ -271,13 +271,11 @@ export default async function PreguntasFrecuentesPage() {
         },
         {
           id: "pago",
-          pregunta: "¿Cómo puedo pagar?",
-          // ⚠️ Actualizar esta respuesta en cuanto Mercado Pago quede conectado
-          // (PSE, tarjetas y billeteras). Hoy /checkout no cobra, así que decir
-          // que se paga en línea sería falso.
+          pregunta: "¿Qué medios de pago aceptan?",
           respuesta: [
-            "Hoy cerramos cada pedido por WhatsApp: nos escribes, confirmamos el bolso y el acabado que quieres, y de ahí coordinamos el pago y el envío.",
-            "Es un paso más, pero también significa que hablas con una persona antes de que empecemos a fabricar tu pieza.",
+            "El pago se realiza en línea, con Mercado Pago, al finalizar la compra. Puede pagar con tarjeta de crédito o débito, PSE, transferencia con Bancolombia o Efecty.",
+            "Nosotros no vemos ni almacenamos los datos de su tarjeta: es Mercado Pago quien los procesa. Recibirá la confirmación por correo tan pronto se acredite el pago.",
+            "Si prefiere coordinar la compra de manera personal, también puede hacerlo por WhatsApp.",
           ],
           extra: (
             <p className={css.enlace}>
@@ -286,14 +284,14 @@ export default async function PreguntasFrecuentesPage() {
                 target="_blank"
                 rel="noopener"
               >
-                Escribir por WhatsApp →
+                Escribirnos por WhatsApp →
               </a>
             </p>
           ),
         },
         {
           id: "devoluciones",
-          pregunta: "¿Puedo devolverlo o cambiarlo?",
+          pregunta: "¿Se aceptan devoluciones o cambios?",
           // ⚠️ [PENDIENTE: revisión de un abogado]. Política de la marca: sin
           // reembolso si el bolso llegó bien, solo cambio. Ojo: el derecho de
           // retracto (Ley 1480 art. 47) es obligatorio en ventas a distancia y
@@ -301,10 +299,10 @@ export default async function PreguntasFrecuentesPage() {
           // en la excepción de "bienes de uso personal". Eso lo tiene que
           // confirmar un abogado antes de dar este texto por definitivo.
           respuesta: [
-            "Si el bolso tiene un defecto de fabricación, la devolución es totalmente gratis: lo reponemos o lo reparamos sin ningún costo para ti, envío incluido. Escríbenos con una foto y lo resolvemos.",
-            "Si el bolso llegó en perfecto estado y simplemente cambiaste de opinión, no hacemos reembolsos de dinero, pero sí te lo cambiamos por otro dentro de los 15 días calendario siguientes a la entrega. El bolso tiene que estar sin usar y en las mismas condiciones en que te llegó, y el flete de ida y vuelta lo asumes tú.",
-            "Si eliges un bolso más caro puedes pagar la diferencia; si es más barato, ese es el cambio.",
-            "Las piezas personalizadas quedan por fuera: se fabrican solo para ti, así que no aceptamos cambios una vez apruebas el diseño.",
+            "Si la pieza presenta un defecto de fabricación, la devolución es enteramente gratuita: la reponemos o la reparamos sin costo para usted, envío incluido. Escríbanos con una fotografía y lo resolveremos.",
+            "Si el bolso llegó en perfectas condiciones y sencillamente ha cambiado de parecer, no realizamos reembolsos en dinero, pero sí lo cambiamos por otro dentro de los 15 días calendario siguientes a la entrega. La pieza debe encontrarse sin usar y en las mismas condiciones en que la recibió, y el flete de ida y vuelta corre por su cuenta.",
+            "Si elige un bolso de mayor valor, puede abonar la diferencia; si es de menor valor, ese es el cambio.",
+            "Las piezas personalizadas quedan por fuera de esta política: se fabrican exclusivamente para usted, por lo que no se aceptan cambios una vez aprobado el diseño.",
           ],
         },
       ],
@@ -356,14 +354,14 @@ export default async function PreguntasFrecuentesPage() {
 
       <section className={css.cabecera}>
         <div className="contenedor">
-          <p className="kicker">Antes de comprar</p>
+          <p className="kicker">Antes de su compra</p>
           <h1 className={css.titulo}>
             Preguntas <span className="script">frecuentes</span>
           </h1>
           <p className={css.entrada}>
-            Todo lo que solemos responder por WhatsApp sobre un bolso impreso en
-            3D: de qué está hecho, cuánto aguanta, qué cabe adentro y qué pasa si
-            te arrepientes.
+            Reunimos aquí lo esencial para adquirir una pieza La Marquessa con
+            plena confianza: de qué está hecha, cuánto resiste, qué puede llevar
+            dentro y qué ocurre si necesita un cambio.
           </p>
         </div>
       </section>
@@ -400,11 +398,11 @@ export default async function PreguntasFrecuentesPage() {
         ))}
 
         <aside className={css.cierre}>
-          <p className="kicker">¿Te quedó una duda?</p>
-          <h2 className={css.tituloCierre}>Escríbenos y te respondemos</h2>
+          <p className="kicker">¿Le queda alguna duda?</p>
+          <h2 className={css.tituloCierre}>Estamos a su disposición</h2>
           <p className={css.entradaCierre}>
-            Detrás de {MARCA} hay una persona, no un formulario. Pregunta lo que
-            necesites antes de decidirte.
+            Detrás de {MARCA} hay una persona, no un formulario. Escríbanos con
+            toda tranquilidad antes de decidirse.
           </p>
           <div className={css.acciones}>
             <a

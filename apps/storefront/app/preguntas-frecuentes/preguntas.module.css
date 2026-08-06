@@ -75,7 +75,10 @@
   font-family: var(--fuente-titulo);
   font-weight: 400;
   font-size: clamp(19px, 2.6vw, 23px);
-  line-height: 1.3;
+  line-height: 1.35;
+  /* Interletrado más amplio: da aire a la pregunta y hace que se lea con más
+     calma, en un tono editorial y sin apretujar los caracteres. */
+  letter-spacing: 0.04em;
   color: var(--cacao);
   transition: color 0.25s ease;
 }
