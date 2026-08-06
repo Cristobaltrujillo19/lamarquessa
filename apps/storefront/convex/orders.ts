@@ -260,10 +260,14 @@ export const marcarPagado = internalMutation({
   handler: async (ctx, args) => {
     const pedido = await ctx.db.get(args.pedidoId);
     if (!pedido) return;
-    // Idempotente: Mercado Pago reintenta el webhook y puede avisar dos veces
-    // del mismo pago. Sin esta guarda, el cupón se contaría de más y al cliente
-    // le llegaría la confirmación repetida.
-    if (pedido.estado === "pagado") return;
+    // Solo pasan a "pagado" los pedidos que estaban "pendiente". Esta guarda
+    // cubre dos escenarios:
+    //  - Reintento del mismo webhook: MP reintenta y sin esto contaríamos el
+    //    cupón de más y el cliente recibiría el correo dos veces.
+    //  - Pago llegado tarde a un pedido ya cancelado o enviado: nos protege de
+    //    revivir un pedido sin dejar rastro de su estado anterior. Si eso
+    //    ocurre, hay que verlo en el panel y reconciliar a mano.
+    if (pedido.estado !== "pendiente") return;
 
     await ctx.db.patch(args.pedidoId, {
       estado: "pagado",

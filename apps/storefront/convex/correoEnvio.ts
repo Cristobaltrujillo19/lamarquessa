@@ -5,9 +5,11 @@ import { internalAction } from "./_generated/server";
 import { internal } from "./_generated/api";
 import nodemailer from "nodemailer";
 
-// ⚠️ Reemplazar por el WhatsApp real de La Marquessa antes de activar los correos.
-const WHATSAPP = "573000000000";
-const WHATSAPP_VISIBLE = "300 000 0000";
+// WhatsApp de la marca. Duplicado en convex/correoCliente.ts porque Convex y
+// Next viven en paquetes separados y este archivo no puede importar de
+// lib/site.ts. Si el número cambia, hay que tocarlo también allí.
+const WHATSAPP = "573332779109";
+const WHATSAPP_VISIBLE = "333 277 9109";
 
 // Correo "tu pedido va en camino", al marcar un pedido como enviado. Mismo
 // transporte que la confirmación (SMTP de Google Workspace). Se auto-desactiva
