@@ -12,8 +12,8 @@ export const TAGLINE = "Un sueño tejido por las olas";
 export const DESCRIPCION_MARCA =
   "La Marquessa es una marca colombiana de bolsos de autor. Cada pieza se fabrica una por una combinando impresión 3D con acabado artesanal a mano, así que no existen dos iguales.";
 
-// ⚠️ [PENDIENTE: número real de WhatsApp de la marca] (formato 57XXXXXXXXXX)
-export const WHATSAPP = "573000000000";
+// WhatsApp de la marca en formato internacional (Colombia: 57 + celular).
+export const WHATSAPP = "573332779109";
 export const INSTAGRAM_URL = "https://www.instagram.com/lamarquessa.co/";
 export const INSTAGRAM_HANDLE = "@lamarquessa.co";
 export const EMAIL = "info.lamarquessa@gmail.com";

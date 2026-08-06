@@ -6,9 +6,12 @@ import { internal } from "./_generated/api";
 import { formatCop } from "../lib/productos";
 import nodemailer from "nodemailer";
 
-// ⚠️ Reemplazar por el WhatsApp real de La Marquessa antes de activar los correos.
-const WHATSAPP = "573000000000";
-const WHATSAPP_VISIBLE = "300 000 0000";
+// WhatsApp de la marca. Convex y Next viven en paquetes separados, así que
+// este archivo no puede importar la constante compartida de lib/site.ts sin
+// arrastrar dependencias del cliente. Si el número cambia, hay que tocarlo
+// también en lib/site.ts.
+const WHATSAPP = "573332779109";
+const WHATSAPP_VISIBLE = "333 277 9109";
 
 // Confirmación de compra al cliente, por el SMTP de Google Workspace (no necesita
 // dominio verificado). Sale desde GMAIL_FROM. Se auto-desactiva si faltan las
