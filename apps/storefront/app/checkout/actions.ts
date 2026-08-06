@@ -41,7 +41,7 @@ function mensajeLegible(e: unknown): string {
 export async function iniciarCheckout(datos: {
   nombre: string;
   email: string;
-  whatsapp?: string;
+  whatsapp: string;
   calle: string;
   ciudad: string;
   departamento: string;
@@ -51,10 +51,17 @@ export async function iniciarCheckout(datos: {
 }): Promise<ResultadoCheckout> {
   const nombre = datos.nombre.trim();
   const email = datos.email.trim().toLowerCase();
+  // Del WhatsApp guardamos solo dígitos: el cliente escribe "300 123 4567" o
+  // "+57 300 123-4567" y aquí queda "3001234567" (o "573001234567"). Así el
+  // panel puede armar el link de wa.me sin volver a limpiar.
+  const whatsapp = datos.whatsapp.replace(/\D+/g, "");
 
   if (!nombre) return { ok: false, error: "Necesitamos tu nombre." };
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
     return { ok: false, error: "Revisa el correo: no parece válido." };
+  }
+  if (whatsapp.length < 7) {
+    return { ok: false, error: "Necesitamos tu WhatsApp para coordinar la entrega." };
   }
   if (!datos.calle.trim() || !datos.ciudad.trim() || !datos.departamento.trim()) {
     return { ok: false, error: "Falta la dirección de envío." };
@@ -65,11 +72,7 @@ export async function iniciarCheckout(datos: {
 
   try {
     const { initPoint } = await fetchAction(api.orders.createCheckout, {
-      cliente: {
-        nombre,
-        email,
-        whatsapp: datos.whatsapp?.trim() || undefined,
-      },
+      cliente: { nombre, email, whatsapp },
       items: datos.items,
       direccion: {
         calle: datos.calle.trim(),

@@ -4,7 +4,13 @@ import Link from "next/link";
 import { useState, useTransition } from "react";
 import { useCarrito } from "@/lib/carrito";
 import { formatCop } from "@/lib/productos";
-import { PRODUCCION_SEMANAS, ENVIO_DIAS, SHIPPING_COP } from "@/lib/site";
+import {
+  ENVIO_DIAS,
+  MENSAJES,
+  PRODUCCION_SEMANAS,
+  SHIPPING_COP,
+  enlaceWhatsApp,
+} from "@/lib/site";
 import { DEPARTAMENTOS } from "@/lib/colombia";
 import { iniciarCheckout, revisarCupon } from "./actions";
 
@@ -12,6 +18,17 @@ const campo =
   "mt-1 w-full rounded-sm border border-cacao/25 bg-blanco px-3 py-2.5 text-cacao " +
   "placeholder:text-cacao-suave/50 focus-visible:border-cobre-texto";
 const etiqueta = "block text-xs uppercase tracking-[0.14em] text-cacao-suave";
+
+/** Asterisco de campo obligatorio. `aria-hidden`: la marca visual sobra para
+ *  quien usa lector de pantalla, porque el input ya lleva `required` y el
+ *  navegador se lo anuncia. */
+function Obligatorio() {
+  return (
+    <span aria-hidden="true" className="ml-1 text-cobre-texto">
+      *
+    </span>
+  );
+}
 
 type Cupon = { codigo: string; descuentoCop: number };
 
@@ -93,17 +110,44 @@ export default function CheckoutPage() {
     <div className="mx-auto max-w-[1000px] px-5 py-12 md:px-8">
       <h1 className="font-titulo text-4xl md:text-5xl">Finalizar compra</h1>
 
-      <form onSubmit={alEnviar} className="mt-8 grid gap-10 md:grid-cols-[1fr_380px]">
+      {/* Aviso de compra internacional: los envíos fuera de Colombia se cotizan
+          uno a uno por WhatsApp (el formulario solo cobra dentro del país),
+          así que quien viene de fuera no debería atascarse en el selector de
+          departamentos. Va arriba del formulario para verse antes de empezar
+          a llenar. */}
+      <p className="mt-6 rounded-sm border border-cobre/30 bg-cobre/5 p-4 text-sm text-cacao">
+        ¿Tu envío es fuera de Colombia? Este formulario cobra dentro del país.
+        Para envíos internacionales,{" "}
+        <a
+          href={enlaceWhatsApp(MENSAJES.pedido)}
+          target="_blank"
+          rel="noopener"
+          className="font-medium text-cobre-texto underline underline-offset-4"
+        >
+          escríbenos por WhatsApp
+        </a>{" "}
+        y te cotizamos el envío antes de la compra.
+      </p>
+
+      <form onSubmit={alEnviar} className="mt-6 grid gap-10 md:grid-cols-[1fr_380px]">
         <div className="space-y-8">
           <section>
             <h2 className="font-titulo text-2xl">Tus datos</h2>
+            <p className="mt-1 text-xs text-cacao-suave">
+              Los campos marcados con <span className="text-cobre-texto">*</span>{" "}
+              son obligatorios.
+            </p>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
               <label className="sm:col-span-2">
-                <span className={etiqueta}>Nombre completo</span>
+                <span className={etiqueta}>
+                  Nombre completo<Obligatorio />
+                </span>
                 <input name="nombre" required autoComplete="name" className={campo} />
               </label>
               <label>
-                <span className={etiqueta}>Correo</span>
+                <span className={etiqueta}>
+                  Correo<Obligatorio />
+                </span>
                 <input
                   name="email"
                   type="email"
@@ -113,11 +157,20 @@ export default function CheckoutPage() {
                 />
               </label>
               <label>
-                <span className={etiqueta}>WhatsApp (opcional)</span>
+                <span className={etiqueta}>
+                  WhatsApp<Obligatorio />
+                </span>
                 <input
                   name="whatsapp"
                   type="tel"
+                  required
                   autoComplete="tel"
+                  // inputMode: teclado numérico en móvil, más cómodo para un
+                  // teléfono. pattern: mínimo 7 dígitos, tolera espacios y guiones
+                  // porque muchos escriben "300 123 4567". La normalización a
+                  // solo dígitos vive en el servidor.
+                  inputMode="tel"
+                  pattern="[0-9+\-\s]{7,}"
                   placeholder="300 000 0000"
                   className={campo}
                 />
@@ -137,7 +190,9 @@ export default function CheckoutPage() {
             <h2 className="font-titulo text-2xl">¿A dónde lo enviamos?</h2>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
               <label className="sm:col-span-2">
-                <span className={etiqueta}>Dirección</span>
+                <span className={etiqueta}>
+                  Dirección<Obligatorio />
+                </span>
                 <input
                   name="calle"
                   required
@@ -147,7 +202,9 @@ export default function CheckoutPage() {
                 />
               </label>
               <label>
-                <span className={etiqueta}>Ciudad</span>
+                <span className={etiqueta}>
+                  Ciudad<Obligatorio />
+                </span>
                 <input
                   name="ciudad"
                   required
@@ -156,7 +213,9 @@ export default function CheckoutPage() {
                 />
               </label>
               <label>
-                <span className={etiqueta}>Departamento</span>
+                <span className={etiqueta}>
+                  Departamento<Obligatorio />
+                </span>
                 <select name="departamento" required defaultValue="" className={campo}>
                   <option value="" disabled>
                     Elige uno
