@@ -16,7 +16,8 @@
         "CONVEX_DEPLOY_KEY",
         "NEXT_PUBLIC_CONVEX_URL",
         "NEXT_PUBLIC_SITE_URL",
-        "NEXT_PUBLIC_GTM_ID"
+        "NEXT_PUBLIC_GTM_ID",
+        "NEXT_PUBLIC_GA4_ID"
       ],
       "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
     },

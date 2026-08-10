@@ -202,3 +202,7 @@ export function trackInstagramClick(location: string): void {
 export function trackFaqOpen(id: string, pregunta: string): void {
   enviarEvento("faq_open", { faq_id: id, faq_question: pregunta });
 }
+
+export function trackEmailClick(location: string): void {
+  enviarEvento("email_click", { link_location: location });
+}

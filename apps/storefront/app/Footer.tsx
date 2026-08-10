@@ -11,7 +11,11 @@ import {
   MENSAJES,
   enlaceWhatsApp,
 } from "@/lib/site";
-import { trackInstagramClick, trackWhatsAppClick } from "@/lib/analytics";
+import {
+  trackEmailClick,
+  trackInstagramClick,
+  trackWhatsAppClick,
+} from "@/lib/analytics";
 
 export default function Footer() {
   return (
@@ -90,7 +94,11 @@ export default function Footer() {
               </a>
             </li>
             <li>
-              <a href={`mailto:${EMAIL}`} className="hover:text-cobre">
+              <a
+                href={`mailto:${EMAIL}`}
+                onClick={() => trackEmailClick("footer")}
+                className="hover:text-cobre"
+              >
                 {EMAIL}
               </a>
             </li>

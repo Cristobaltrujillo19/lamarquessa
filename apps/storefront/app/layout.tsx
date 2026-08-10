@@ -130,7 +130,10 @@ export default function RootLayout({
           </Chrome>
         </CarritoProvider>
         <Reveal />
-        <Analitica id={process.env.NEXT_PUBLIC_GTM_ID} />
+        <Analitica
+          gtmId={process.env.NEXT_PUBLIC_GTM_ID}
+          ga4Id={process.env.NEXT_PUBLIC_GA4_ID}
+        />
       </body>
     </html>
   );
