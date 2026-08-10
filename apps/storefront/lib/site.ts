@@ -18,11 +18,11 @@ export const INSTAGRAM_URL = "https://www.instagram.com/lamarquessa.co/";
 export const INSTAGRAM_HANDLE = "@lamarquessa.co";
 export const EMAIL = "info.lamarquessa@gmail.com";
 
-/** URL pública del sitio. Hoy apunta al despliegue de Vercel porque el dominio
- *  propio aún no se compra: el día que exista, se cambia esta variable de
- *  entorno (y se dejan las redirecciones 301) sin tocar código. */
+/** URL pública del sitio. Se lee de NEXT_PUBLIC_SITE_URL en cada entorno; el
+ *  fallback es el dominio en vivo por si la variable llegara a faltar. Un
+ *  middleware en la raíz redirige 301 al canónico cualquier host distinto. */
 export const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://lamarquessa-landing-gtpv-three.vercel.app"
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://lamarquessa.co"
 ).replace(/\/$/, "");
 
 /** Semanas de fabricación: cada bolso se hace a pedido. */

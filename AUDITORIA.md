@@ -4,6 +4,14 @@
 
 Fecha: 2026-07-27 · Alcance auditado: monorepo `lamarquesa/` (apps `landing` + `storefront`) y carpeta de assets `../Claude_proyect/`.
 
+> ⚠️ **Documento histórico.** Este informe describe el estado del proyecto al 27 de julio de 2026. Desde entonces han cambiado cosas importantes que ya no coinciden con este texto:
+>
+> - `apps/landing` (Astro) fue absorbido por `apps/storefront` (Next) durante Fase 1. Hoy solo existe `storefront`.
+> - El dominio propio `lamarquessa.co` **está comprado y en vivo** desde el 2026-08-10. Todos los canonical / OG / sitemap ya lo usan.
+> - Convex prod (`hearty-lemur-822`) está poblado con el catálogo real.
+>
+> Para el estado actual, ver `ESTADO.md`.
+
 ---
 
 ## 0. DECISIÓN CRÍTICA — La grafía (una `s` vs dos `ss`)

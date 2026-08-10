@@ -1,41 +1,57 @@
 # La Marquessa
 
-Monorepo del sitio de La Marquessa: una marca costera de accesorios.
+Marca colombiana de **bolsos de autor impresos en 3D y hechos a mano**.
 "Un sueño tejido por las olas."
+
+**En vivo:** https://lamarquessa.co
 
 ## Estructura
 
 ```
 lamarquessa/
 ├── apps/
-│   ├── landing/      Astro — la página de marca (lamarquessa.co)
-│   └── storefront/   Next.js — la tienda (shop.lamarquessa.co)  ← fase 2
-├── packages/         código compartido (vacío por ahora)
-├── pnpm-workspace.yaml   le dice a pnpm cuáles carpetas son proyectos
-└── turbo.json            le dice a Turborepo cómo correr tareas
+│   └── storefront/   Next 16 + React 19 + Tailwind 4 + Convex (tienda + panel)
+├── packages/          código compartido (vacío por ahora)
+├── pnpm-workspace.yaml
+└── turbo.json
 ```
 
-## Comandos (desde esta carpeta)
+La landing en Astro (`apps/landing`) fue absorbida por `storefront` durante
+Fase 1: hoy todo el sitio vive en un solo proyecto de Next.
+
+## Comandos (desde la raíz)
 
 | Comando | Qué hace |
 | --- | --- |
-| `pnpm install` | Instala dependencias de todas las apps |
-| `pnpm dev` | Levanta las apps (landing en http://localhost:4321) |
-| `pnpm dev:landing` | Levanta solo la landing |
-| `pnpm build` | Compila todo (Turborepo cachea) |
+| `pnpm install` | Instala dependencias |
+| `pnpm -C apps/storefront dev` | Levanta el sitio en http://localhost:3000 |
+| `pnpm build` | Compila (Turborepo cachea) |
 
-## Despliegue (Vercel)
+Convex (backend de datos):
 
-Cada app se despliega como su **propio proyecto de Vercel** apuntando a este repo:
+| Comando | Qué hace |
+| --- | --- |
+| `npx convex dev --once` | Propaga schema y funciones a dev (`agreeable-buzzard-367`) |
+| `npx convex deploy -y` | Despliega a producción (`hearty-lemur-822`) |
 
-1. Proyecto de Vercel con **Root Directory** = `apps/landing` → dominio `lamarquessa.co`.
-2. (Fase 2) Segundo proyecto, Root Directory `apps/storefront` → `shop.lamarquessa.co`.
-3. En el proyecto de la landing, variable `PUBLIC_SHOP_URL=https://shop.lamarquessa.co`.
+**Regla crítica:** cambios en `apps/storefront/convex/**` requieren
+`npx convex deploy -y` a mano antes del `git push`. Vercel no lo corre.
 
-## Pendiente de la marca (reemplazar placeholders)
+## Despliegue
 
-- **Contacto:** WhatsApp, Instagram y correo reales en `apps/landing/src/lib/site.ts`.
-- **Colección:** piezas reales (fotos, precios, variantes) en `apps/landing/src/lib/coleccion.ts`.
-- **Tipografías:** si hay licencia de *Beauty Angelique* y *Queen Serif*, reemplazan a las
-  equivalentes web (Pinyon Script + Cormorant Garamond) cargadas en `Base.astro`.
-- **Dominio:** ajustar `site` en `apps/landing/astro.config.mjs`.
+- **Vercel** (Root Directory `apps/storefront`) → dominio propio
+  `https://lamarquessa.co` (apex canónico; `www` redirige al apex).
+- Un middleware en `apps/storefront/middleware.ts` devuelve 301 a
+  `lamarquessa.co` para cualquier host distinto (así la URL antigua del
+  proyecto en Vercel no compite en Google).
+- Variables de entorno en Vercel Production: `NEXT_PUBLIC_SITE_URL`,
+  `NEXT_PUBLIC_CONVEX_URL`, `CONVEX_DEPLOY_KEY`, `PANEL_PASSWORD`, y en
+  Convex prod: `ADMIN_API_SECRET`, `MP_ACCESS_TOKEN`, `SITE_URL`,
+  `GMAIL_USER`, `GMAIL_APP_PASSWORD`.
+
+## Documentación complementaria
+
+- `ESTADO.md` — handoff para la próxima sesión.
+- `AUDITORIA.md` — auditoría inicial del sitio (histórica).
+- `SEO-KEYWORDS.md` — investigación de keywords y estrategia.
+- `PROMPT-INICIO.md` — prompt de arranque de sesión.

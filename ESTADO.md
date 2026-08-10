@@ -1,7 +1,7 @@
 # ESTADO — La Marquessa · Handoff para la próxima sesión
 
-Última actualización: **6 de agosto de 2026**
-Rama: `main` · Último commit: `c9f5b02` · Árbol local: limpio · Todo pusheado.
+Última actualización: **10 de agosto de 2026**
+Rama: `main` · Último commit: `f2e4ccf` (middleware) · Árbol local: limpio · Todo pusheado.
 
 ---
 
@@ -52,11 +52,12 @@ npx convex deploy -y               # desde apps/storefront, para desplegar a PRO
 
 ### Datos clave
 
-- **Producción:** https://lamarquessa-landing-gtpv-three.vercel.app
+- **Producción:** https://lamarquessa.co (dominio propio, apex canónico)
+- **Subdominio Vercel viejo:** `lamarquessa-landing-gtpv-three.vercel.app` → 301 al apex por middleware
 - **Repo:** https://github.com/Cristobaltrujillo19/lamarquessa (privado)
 - **Panel:** `/panel` → usuario `admin`, contraseña `PANEL_PASSWORD` (local: `marquessa2026`)
 - **Convex dev:** `dev:agreeable-buzzard-367` · **Convex prod:** `hearty-lemur-822`
-- **Dominio propio:** `lamarquessa.co` **NO comprado**
+- **Registrador del dominio:** Namecheap (A `@` → `76.76.21.21`, CNAME `www` → `cname.vercel-dns.com`)
 - **Instagram:** https://www.instagram.com/lamarquessa.co/
 - **Correo:** `info.lamarquessa@gmail.com` (con Gmail SMTP configurado para transaccionales)
 - **WhatsApp:** `573332779109` (mostrado como `333 277 9109`)
@@ -136,12 +137,12 @@ Para pasar JSON a `npx convex run` desde PowerShell: **comillas dobles por fuera
 
 | Qué falta | Consecuencia |
 |---|---|
-| **Rotar `ADMIN_API_SECRET`** (Convex prod + Vercel + `.env.local`) | Quedó impreso en un error de terminal hace días |
+| **Rotar `ADMIN_API_SECRET`** (Convex prod + Vercel + `.env.local`) | Quedó impreso en un error de terminal hace días. Además el local ya no coincide con el de prod (se usó el de prod directo el 2026-08-10 para correr una mutación) |
 | **Prueba real con cupón** para cerrar la incógnita del webhook | Es lo único que no puedo verificar sin plata real |
 | **Etiqueta GA4 dentro de GTM** (publicar en tagmanager.google.com) | GTM carga pero **no mide nada** |
 | **Razón social, NIT, domicilio, teléfono** | La política de privacidad tiene `[pendiente]` |
-| **Borrar/redirigir el proyecto viejo en Vercel** (`lamarquessa-landing`) | Sigue vivo y compite en Google (duplicate content) |
-| **Comprar dominio `lamarquessa.co`** | Hoy la URL es de Vercel; cuando se compre, cambiar `NEXT_PUBLIC_SITE_URL` |
+| **Google Search Console**: agregar propiedad `https://lamarquessa.co` y enviar `sitemap.xml` | Sin esto, Google no descubre el sitio en el dominio nuevo con la misma velocidad |
+| **Cambiar el link de la bio de Instagram** al dominio nuevo | Sigue apuntando a la URL de Vercel |
 | **Revisión de abogado** sobre la política de cambios/retracto | La FAQ afirma que las piezas personalizadas no admiten retracto, pero Ley 1480 es restrictiva sobre estas exclusiones |
 
 ---
@@ -196,8 +197,15 @@ Para pasar JSON a `npx convex run` desde PowerShell: **comillas dobles por fuera
 
 ---
 
-## 10. Últimas cosas hechas (sesión que termina 2026-08-06)
+## 10. Últimas cosas hechas (sesión que termina 2026-08-10)
 
+- **Cutover al dominio propio `lamarquessa.co`** (Namecheap → Vercel). Apex canónico, `www` con 308 al apex. `NEXT_PUBLIC_SITE_URL` (Vercel) y `SITE_URL` (Convex prod) apuntando al dominio.
+- **Middleware 301** en `apps/storefront/middleware.ts` desde cualquier host distinto al canónico (típicamente el subdominio auto de Vercel) hacia `lamarquessa.co`. Guardado por `VERCEL_ENV === "production"` para no romper previews.
+- **Fallback de `SITE_URL` actualizado** en `lib/site.ts` al dominio nuevo.
+- **Keywords de moda en H1/H2 y descripciones** de los 4 productos. Nuevo campo opcional `subtitulo` en el schema, renderizado como H2 bajo el H1 y usado en el meta title. Descripciones enriquecidas con un párrafo de cierre con 3–4 keywords por bolso. Mutación idempotente `actualizarSeoDeCatalogo` corrida en prod.
+- Docs internos actualizados (README, ESTADO, memoria) al dominio nuevo.
+
+Sesión anterior (2026-08-06):
 - Auditoría del flujo de compra completa. Encontrado y corregido: `marcarPagado` solo transiciona desde `pendiente` (antes revivía cancelados si llegaba pago tarde por Efecty).
 - WhatsApp correcto en el correo "va en camino".
 - Auditoría móvil completa. 4 fixes: menú hamburguesa, CTA fijo, tap targets 44×44, títulos con espacio antes de `<br />`.
@@ -208,9 +216,9 @@ Para pasar JSON a `npx convex run` desde PowerShell: **comillas dobles por fuera
 ## 11. Historial de commits recientes
 
 ```
+f2e4ccf  Middleware: 301 desde subdominios de Vercel al dominio propio
+0b5bee6  Ficha de producto: subtitulo H2 con keywords de moda y descripciones enriquecidas
+719f134  Handout de sesión: ESTADO.md actualizado + PROMPT-INICIO.md
 c9f5b02  Ficha de producto: CTA fijo en móvil + selectores de color a 44px táctil
 ceff9b0  Titulos partidos: espacio antes del <br /> para no pegar palabras
-f9730ff  Cabecera móvil: menú hamburguesa
-af87e10  Auditoría del flujo de compra: tres correcciones
-a0887ae  Checkout: WhatsApp obligatorio, asteriscos y aviso para envíos internacionales
 ```
