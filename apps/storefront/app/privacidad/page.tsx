@@ -6,7 +6,7 @@ import css from "./privacidad.module.css";
 export const metadata: Metadata = {
   title: "Política de tratamiento de datos personales | La Marquessa",
   description:
-    "Cómo La Marquessa recoge, usa y protege tus datos personales, y cómo ejercer tus derechos conforme a la Ley 1581 de 2012 y el Decreto 1377 de 2013 de Colombia.",
+    "Política de tratamiento de datos personales de La Marquessa. Cómo recogemos, usamos y protegemos tus datos, y cómo ejercer tus derechos (Ley 1581, Colombia).",
   alternates: { canonical: urlAbsoluta("/privacidad") },
 };
 

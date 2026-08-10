@@ -19,14 +19,14 @@ import css from "./preguntas.module.css";
 export const metadata: Metadata = {
   title: "Preguntas frecuentes — bolsos impresos en 3D | La Marquessa",
   description:
-    "Resolvemos las preguntas esenciales antes de adquirir una pieza La Marquessa: material, resistencia, capacidad, tiempos de entrega, envíos y política de cambios.",
+    "Bolsos impresos en 3D La Marquessa: material, medidas, 2 semanas de fabricación, envíos a Colombia y al mundo, cambios y cuidados. Todo antes de comprar.",
   alternates: { canonical: urlAbsoluta("/preguntas-frecuentes") },
   openGraph: {
     type: "website",
     url: urlAbsoluta("/preguntas-frecuentes"),
     title: "Preguntas frecuentes sobre nuestros bolsos impresos en 3D",
     description:
-      "Material, resistencia, capacidad, tiempos de entrega, envíos y política de cambios.",
+      "Material, medidas, 2 semanas de fabricación, envíos a Colombia y al mundo, cambios y cuidados. Todo antes de comprar.",
   },
 };
 

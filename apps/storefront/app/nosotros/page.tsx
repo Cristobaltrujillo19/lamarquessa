@@ -10,7 +10,7 @@ import css from "./nosotros.module.css";
 export const metadata: Metadata = {
   title: "Cómo se hace un bolso La Marquessa | Nuestra historia",
   description:
-    "Impresión 3D y acabado a mano, pieza por pieza, en Colombia. Conoce el proceso, los materiales y la historia detrás de cada bolso de La Marquessa.",
+    "Cómo se hace un bolso de La Marquessa: impresión 3D y acabado a mano en Colombia, pieza por pieza. La historia, los materiales y las manos detrás de cada uno.",
   alternates: { canonical: urlAbsoluta("/nosotros") },
 };
 
