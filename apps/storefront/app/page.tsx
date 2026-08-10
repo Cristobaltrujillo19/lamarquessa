@@ -12,7 +12,7 @@ import { DESCRIPCION_MARCA, urlAbsoluta } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Bolsos únicos impresos en 3D y hechos a mano | La Marquessa",
   description:
-    "Bolsos de autor hechos uno por uno en Colombia: impresión 3D y acabado artesanal a mano. No existen dos iguales. Envíos a todo el mundo.",
+    "Bolsos impresos en 3D y hechos a mano en Colombia. Cada pieza es única — no existen dos iguales. Fabricados a pedido, listos en 2 semanas. Envíos globales.",
   alternates: { canonical: urlAbsoluta("/") },
 };
 

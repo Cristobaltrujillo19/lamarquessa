@@ -7,7 +7,7 @@ import { PRODUCCION_SEMANAS, SITE_URL, urlAbsoluta } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Bolsos artesanales hechos a mano en Colombia | La Marquessa",
   description:
-    "Descubre la colección de bolsos de La Marquessa: piezas únicas impresas en 3D y terminadas a mano. Hechas a pedido y enviadas a todo el mundo.",
+    "Colección completa de La Marquessa: 4 bolsos de mano impresos en 3D y hechos a mano en Colombia. Cada pieza es única. Fabricados a pedido, listos en 2 semanas.",
   alternates: { canonical: urlAbsoluta("/tienda") },
 };
 

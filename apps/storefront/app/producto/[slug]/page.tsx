@@ -16,8 +16,24 @@ import {
   urlAbsoluta,
 } from "@/lib/site";
 
-// Resumen corto para el meta description: la primera frase de la descripción,
-// recortada a la longitud que muestran los buscadores.
+// Meta description por producto: pensada para SERP (bajo 160 caracteres,
+// nombre + tipo + diferenciador + urgencia). Se prefiere a la descripción
+// editorial larga, que al truncarse cae en frases sueltas. Si mañana se añade
+// un producto nuevo desde el panel y no está en el mapa, se cae al resumen
+// automático de siempre.
+const META_DESCRIPCION_POR_SLUG: Record<string, string> = {
+  menorca:
+    "Menorca: mini bolso de mano impreso en 3D con textura de espuma tallada a mano. Silueta sin costuras, pieza única. A pedido, listo en 2 semanas.",
+  mallorca:
+    "Mallorca: bolso de mano grande impreso en 3D con textura de espuma tallada a mano. Talla mayor de Menorca. Pieza única. A pedido, listo en 2 semanas.",
+  kruta:
+    "Kruta: mini bolso vertical impreso en 3D, superficie lisa con un pliegue tallado a mano. Ideal para salir de noche. Pieza única. A pedido, 2 semanas.",
+  montt:
+    "Montt: bolso de mano ancho impreso en 3D con pliegue diagonal tallado a mano. Silueta horizontal para el día a día. Pieza única. A pedido, 2 semanas.",
+};
+
+// Fallback para productos que aún no tienen meta description propia: primera
+// frase(s) de la descripción editorial, recortada al ancho de SERP.
 function resumen(texto: string, max = 155): string {
   const limpio = texto.replace(/\s+/g, " ").trim();
   if (limpio.length <= max) return limpio;
@@ -40,7 +56,8 @@ export async function generateMetadata({
   // texto genérico que se usó siempre.
   const cola = producto.subtitulo ?? "impreso en 3D y hecho a mano";
   const titulo = `Bolso ${producto.nombre} — ${cola} | ${MARCA}`;
-  const descripcion = resumen(producto.descripcion);
+  const descripcion =
+    META_DESCRIPCION_POR_SLUG[producto.slug] ?? resumen(producto.descripcion);
 
   return {
     title: titulo,
