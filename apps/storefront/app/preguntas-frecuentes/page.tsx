@@ -14,6 +14,7 @@ import {
   urlAbsoluta,
 } from "@/lib/site";
 import AbrirDelHash from "./AbrirDelHash";
+import Pregunta from "./Pregunta";
 import css from "./preguntas.module.css";
 
 export const metadata: Metadata = {
@@ -373,25 +374,16 @@ export default async function PreguntasFrecuentesPage() {
 
             <div className={css.acordeon}>
               {grupo.preguntas.map((p, i) => (
-                <details
+                <Pregunta
                   key={p.id}
                   id={p.id}
-                  className={css.item}
+                  pregunta={p.pregunta}
+                  respuesta={p.respuesta}
+                  extra={p.extra}
                   // La primera queda abierta: es la objeción que más pesa y da a
                   // entender de un vistazo que esto se despliega.
-                  open={grupo === grupos[0] && i === 0}
-                >
-                  <summary className={css.pregunta}>
-                    <h3 className={css.textoPregunta}>{p.pregunta}</h3>
-                    <span className={css.signo} aria-hidden="true" />
-                  </summary>
-                  <div className={css.respuesta}>
-                    {p.respuesta.map((parrafo, j) => (
-                      <p key={j}>{parrafo}</p>
-                    ))}
-                    {p.extra}
-                  </div>
-                </details>
+                  abierta={grupo === grupos[0] && i === 0}
+                />
               ))}
             </div>
           </section>

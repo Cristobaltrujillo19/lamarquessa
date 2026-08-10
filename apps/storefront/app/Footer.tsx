@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import {
   MARCA,
@@ -9,6 +11,7 @@ import {
   MENSAJES,
   enlaceWhatsApp,
 } from "@/lib/site";
+import { trackInstagramClick, trackWhatsAppClick } from "@/lib/analytics";
 
 export default function Footer() {
   return (
@@ -58,6 +61,7 @@ export default function Footer() {
                 href={enlaceWhatsApp(MENSAJES.general)}
                 target="_blank"
                 rel="noopener"
+                onClick={() => trackWhatsAppClick("footer")}
                 className="hover:text-cobre"
               >
                 WhatsApp
@@ -79,6 +83,7 @@ export default function Footer() {
                 href={INSTAGRAM_URL}
                 target="_blank"
                 rel="noopener"
+                onClick={() => trackInstagramClick("footer")}
                 className="hover:text-cobre"
               >
                 Instagram {INSTAGRAM_HANDLE}

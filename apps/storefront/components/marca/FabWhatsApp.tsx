@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { IconoWhatsApp } from "./IconoMarca";
 import { enlaceWhatsApp } from "@/lib/site";
+import { trackWhatsAppClick } from "@/lib/analytics";
 import css from "./FabWhatsApp.module.css";
 
 // Botón flotante de WhatsApp: en Colombia es un canal de compra real, no un
@@ -30,6 +31,7 @@ export default function FabWhatsApp({ mensaje }: { mensaje: string }) {
       target="_blank"
       rel="noopener"
       aria-label="Escríbenos por WhatsApp"
+      onClick={() => trackWhatsAppClick("fab")}
       className={`${css.fab} ${visible ? css.visible : ""}`}
     >
       <IconoWhatsApp tamano={28} />
