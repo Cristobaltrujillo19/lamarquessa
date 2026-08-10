@@ -1,12 +1,31 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useRef } from "react";
 import { useCarrito } from "@/lib/carrito";
 import { formatCop } from "@/lib/productos";
+import { trackRemoveFromCart, trackViewCart } from "@/lib/analytics";
 
 export default function CartDrawer() {
   const { lineas, abierto, cerrar, cambiarCantidad, quitar, subtotal, cantidadTotal } =
     useCarrito();
+
+  // view_cart al abrir el drawer. Usamos ref para disparar SOLO en la
+  // transición cerrado → abierto: si `lineas` cambia mientras está abierto
+  // (por editar cantidades), no queremos volver a disparar view_cart.
+  const estabaAbierto = useRef(false);
+  useEffect(() => {
+    if (abierto && !estabaAbierto.current) {
+      trackViewCart(lineas, subtotal);
+    }
+    estabaAbierto.current = abierto;
+  }, [abierto, lineas, subtotal]);
+
+  function quitarLinea(key: string) {
+    const linea = lineas.find((x) => x.key === key);
+    if (linea) trackRemoveFromCart(linea);
+    quitar(key);
+  }
 
   return (
     <>
@@ -53,7 +72,7 @@ export default function CartDrawer() {
                     </div>
                     <span className="font-cita text-lg">{formatCop(l.precioCop * l.cantidad)}</span>
                   </div>
-                  <button onClick={() => quitar(l.key)} className="mt-1 text-[11px] text-cacao-suave underline hover:text-cobre">
+                  <button onClick={() => quitarLinea(l.key)} className="mt-1 text-[11px] text-cacao-suave underline hover:text-cobre">
                     Quitar
                   </button>
                 </div>

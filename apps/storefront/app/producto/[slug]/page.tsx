@@ -6,6 +6,7 @@ import { api } from "@/convex/_generated/api";
 import ProductCard from "@/components/ProductCard";
 import Galeria from "./Galeria";
 import ComprarPanel from "./ComprarPanel";
+import ViewItemTracker from "./ViewItemTracker";
 import { formatCm } from "@/lib/productos";
 import {
   ENVIO_DIAS,
@@ -172,6 +173,7 @@ export default async function ProductoPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaMigas) }}
       />
+      <ViewItemTracker producto={producto} />
 
       <nav aria-label="Ruta de navegación" className="text-sm text-cacao-suave">
         <Link href="/" className="transition-colors hover:text-cobre-texto">
@@ -277,7 +279,7 @@ export default async function ProductoPage({
           </h2>
           <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
             {relacionados.map((p) => (
-              <ProductCard key={p.slug} producto={p} />
+              <ProductCard key={p.slug} producto={p} listName="Relacionados" />
             ))}
           </div>
         </section>

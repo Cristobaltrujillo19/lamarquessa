@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import VaciarCarrito from "./VaciarCarrito";
+import PurchaseTracker from "./PurchaseTracker";
 import {
   ENVIO_DIAS,
   INSTAGRAM_URL,
@@ -20,15 +21,25 @@ export const metadata: Metadata = {
 export default async function GraciasPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; payment_id?: string }>;
+  searchParams: Promise<{
+    status?: string;
+    payment_id?: string;
+    preference_id?: string;
+  }>;
 }) {
-  const { status } = await searchParams;
+  const { status, payment_id, preference_id } = await searchParams;
   // Mercado Pago devuelve "approved" o "pending" (PSE y efectivo tardan).
   const enProceso = status === "pending" || status === "in_process";
+
+  // transaction_id para GA4: preferimos el payment_id (identifica el pago
+  // real), y si aún no lo hay (pendiente), caemos al preference_id que
+  // siempre viene y es único por intento de compra.
+  const transactionId = payment_id ?? preference_id ?? null;
 
   return (
     <div className="mx-auto max-w-[640px] px-5 py-20 text-center md:py-28">
       <VaciarCarrito />
+      <PurchaseTracker transactionId={transactionId} />
 
       <p className="kicker">{enProceso ? "Pago en proceso" : "Pedido confirmado"}</p>
       <h1 className="mt-3 font-titulo text-4xl md:text-5xl">

@@ -1,12 +1,37 @@
+"use client";
+
 import Link from "next/link";
 import Foto, { altDeFoto } from "./Foto";
 import { type Producto, precioDesde, formatCop, muestraColor } from "@/lib/productos";
+import { trackSelectItem } from "@/lib/analytics";
 
-export default function ProductCard({ producto }: { producto: Producto }) {
+export default function ProductCard({
+  producto,
+  listName = "Colección",
+}: {
+  producto: Producto;
+  /** Nombre del listado donde aparece la tarjeta: distingue "Colección"
+   *  (tienda y home) de "También te puede gustar" (relacionados en ficha)
+   *  en los reportes de GA4. */
+  listName?: string;
+}) {
   const portada = producto.fotos[0];
 
   return (
-    <Link href={`/producto/${producto.slug}`} className="group block">
+    <Link
+      href={`/producto/${producto.slug}`}
+      className="group block"
+      onClick={() =>
+        trackSelectItem(
+          {
+            slug: producto.slug,
+            nombre: producto.nombre,
+            precioDesde: precioDesde(producto),
+          },
+          listName,
+        )
+      }
+    >
       <div className="relative aspect-[4/5] overflow-hidden rounded-sm bg-arena-clara">
         {portada && (
           <Foto

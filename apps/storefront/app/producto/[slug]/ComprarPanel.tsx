@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { type Producto, formatCop, muestraColor } from "@/lib/productos";
 import { useCarrito } from "@/lib/carrito";
+import { trackAddToCart } from "@/lib/analytics";
 
 export default function ComprarPanel({ producto }: { producto: Producto }) {
   const { agregar } = useCarrito();
@@ -34,7 +35,7 @@ export default function ComprarPanel({ producto }: { producto: Producto }) {
   }, []);
 
   function agregarAlCarrito() {
-    agregar({
+    const linea = {
       slug: producto.slug,
       nombre: producto.nombre,
       colorId: color.id,
@@ -43,7 +44,9 @@ export default function ComprarPanel({ producto }: { producto: Producto }) {
       tamanoNombre: tamano.nombre,
       precioCop: tamano.precioCop,
       foto: producto.fotos[0],
-    });
+    };
+    agregar(linea);
+    trackAddToCart(linea);
   }
 
   return (

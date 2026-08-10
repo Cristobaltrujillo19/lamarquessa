@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { fetchQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
 import ProductCard from "@/components/ProductCard";
+import { precioDesde } from "@/lib/productos";
 import { PRODUCCION_SEMANAS, SITE_URL, urlAbsoluta } from "@/lib/site";
+import ViewItemListTracker from "./ViewItemListTracker";
 
 export const metadata: Metadata = {
   title: "Bolsos artesanales hechos a mano en Colombia | La Marquessa",
@@ -28,6 +30,14 @@ export default async function TiendaPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaMigas) }}
+      />
+      <ViewItemListTracker
+        listName="Colección"
+        items={items.map((p) => ({
+          slug: p.slug,
+          nombre: p.nombre,
+          precioDesde: precioDesde(p),
+        }))}
       />
 
       <div className="text-center">

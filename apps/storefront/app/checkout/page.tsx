@@ -5,6 +5,10 @@ import { useState, useTransition } from "react";
 import { useCarrito } from "@/lib/carrito";
 import { formatCop } from "@/lib/productos";
 import {
+  guardarSnapshotCompra,
+  trackBeginCheckout,
+} from "@/lib/analytics";
+import {
   ENVIO_DIAS,
   MENSAJES,
   PRODUCCION_SEMANAS,
@@ -76,6 +80,11 @@ export default function CheckoutPage() {
     setError(null);
     const f = new FormData(e.currentTarget);
 
+    // begin_checkout: se dispara al enviar el formulario, momento en el que
+    // el cliente confirmó dirección y cupón. Antes del await del server
+    // action para no perderlo si el iniciarCheckout falla.
+    trackBeginCheckout(lineas, total, cupon?.codigo);
+
     iniciarTransicion(async () => {
       const r = await iniciarCheckout({
         nombre: String(f.get("nombre") ?? ""),
@@ -99,6 +108,23 @@ export default function CheckoutPage() {
         setError(r.error);
         return;
       }
+      // Snapshot del carrito+total ANTES de vaciar/redirigir: /gracias lo
+      // recoge de sessionStorage para armar el evento purchase con items y
+      // valor reales (después de MP, el carrito ya está vacío).
+      guardarSnapshotCompra({
+        value: total,
+        shipping: envio,
+        currency: "COP",
+        items: lineas.map((l) => ({
+          item_id: `${l.slug}|${l.colorId}|${l.tamanoId}`,
+          item_name: `Bolso ${l.nombre}`,
+          item_variant: `${l.colorNombre} · ${l.tamanoNombre}`,
+          item_category: "Bolsos",
+          price: l.precioCop,
+          quantity: l.cantidad,
+        })),
+        ...(cupon?.codigo ? { coupon: cupon.codigo } : {}),
+      });
       // El carrito NO se vacía aquí: si el pago se cae o el cliente se
       // arrepiente en Mercado Pago, vuelve y encuentra su pedido intacto.
       // Se vacía en /gracias, cuando el pago ya salió bien.

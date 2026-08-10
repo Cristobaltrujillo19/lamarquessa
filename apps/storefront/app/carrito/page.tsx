@@ -1,11 +1,30 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useRef } from "react";
 import { useCarrito } from "@/lib/carrito";
 import { formatCop } from "@/lib/productos";
+import { trackRemoveFromCart, trackViewCart } from "@/lib/analytics";
 
 export default function CarritoPage() {
-  const { lineas, cambiarCantidad, quitar, subtotal } = useCarrito();
+  const { lineas, cambiarCantidad, quitar, subtotal, hidratado } = useCarrito();
+
+  // view_cart una sola vez al llegar a /carrito (después de hidratar el
+  // carrito de localStorage: si disparamos antes, mandamos un carrito vacío
+  // aunque el cliente tenga cosas guardadas de la visita anterior).
+  const disparado = useRef(false);
+  useEffect(() => {
+    if (hidratado && !disparado.current && lineas.length > 0) {
+      trackViewCart(lineas, subtotal);
+      disparado.current = true;
+    }
+  }, [hidratado, lineas, subtotal]);
+
+  function quitarLinea(key: string) {
+    const linea = lineas.find((x) => x.key === key);
+    if (linea) trackRemoveFromCart(linea);
+    quitar(key);
+  }
 
   if (lineas.length === 0) {
     return (
@@ -44,7 +63,7 @@ export default function CarritoPage() {
                   </div>
                   <span className="font-cita text-lg">{formatCop(l.precioCop * l.cantidad)}</span>
                 </div>
-                <button onClick={() => quitar(l.key)} className="mt-2 text-[11px] text-cacao-suave underline hover:text-cobre">
+                <button onClick={() => quitarLinea(l.key)} className="mt-2 text-[11px] text-cacao-suave underline hover:text-cobre">
                   Quitar
                 </button>
               </div>
