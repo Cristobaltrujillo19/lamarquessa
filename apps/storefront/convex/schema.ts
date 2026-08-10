@@ -51,6 +51,10 @@ export default defineSchema({
   productos: defineTable({
     slug: v.string(),
     nombre: v.string(),
+    // Frase corta bajo el H1 (H2 en la ficha). Es el sitio natural para el
+    // long-tail: "Mini bolso de mano impreso en 3D, hecho a mano en Colombia".
+    // Opcional: productos viejos que aún no lo tienen renderizan sin subtitulo.
+    subtitulo: v.optional(v.string()),
     descripcion: v.string(),
     categoria: v.string(),
     colores: v.array(colorV),

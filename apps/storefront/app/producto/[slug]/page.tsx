@@ -35,7 +35,11 @@ export async function generateMetadata({
   if (!producto) return { title: "Bolso no encontrado | La Marquessa" };
 
   const url = urlAbsoluta(`/producto/${producto.slug}`);
-  const titulo = `Bolso ${producto.nombre} — impreso en 3D y hecho a mano | ${MARCA}`;
+  // El subtitulo lleva la frase con palabras clave ("bolso de mano impreso en
+  // 3D, hecho a mano en Colombia"); si el producto todavía no lo tiene, cae al
+  // texto genérico que se usó siempre.
+  const cola = producto.subtitulo ?? "impreso en 3D y hecho a mano";
+  const titulo = `Bolso ${producto.nombre} — ${cola} | ${MARCA}`;
   const descripcion = resumen(producto.descripcion);
 
   return {
@@ -171,6 +175,14 @@ export default async function ProductoPage({
           <h1 className="font-titulo text-4xl md:text-5xl">
             Bolso {producto.nombre}
           </h1>
+          {producto.subtitulo && (
+            // H2 con la frase larga (palabras clave de moda insertadas de
+            // forma natural). Sirve al SEO y a la comprensión rápida: en un
+            // vistazo el visitante sabe QUÉ es este bolso.
+            <h2 className="mt-2 font-titulo text-xl text-cacao-suave md:text-2xl">
+              {producto.subtitulo}
+            </h2>
+          )}
 
           <div className="mt-4 space-y-4 leading-relaxed text-cacao-suave">
             {producto.descripcion.split("\n\n").map((parrafo, i) => (

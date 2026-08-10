@@ -33,6 +33,9 @@ export type Tamano = {
 export type Producto = {
   slug: string;
   nombre: string;
+  /** Frase corta bajo el H1 (H2 en la ficha). Opcional: productos que aún no
+   *  tienen subtitulo renderizan solo el nombre. */
+  subtitulo?: string;
   descripcion: string;
   colores: Color[];
   tamanos: Tamano[];

@@ -52,6 +52,7 @@ export const crear = mutation({
     secret: v.string(),
     slug: v.string(),
     nombre: v.string(),
+    subtitulo: v.optional(v.string()),
     descripcion: v.string(),
     categoria: v.string(),
     colores: v.array(colorV),
@@ -80,6 +81,7 @@ export const crear = mutation({
     await ctx.db.insert("productos", {
       slug,
       nombre: a.nombre,
+      subtitulo: a.subtitulo,
       descripcion: a.descripcion,
       categoria: a.categoria,
       colores: a.colores,
@@ -101,6 +103,7 @@ export const actualizar = mutation({
     secret: v.string(),
     id: v.id("productos"),
     nombre: v.string(),
+    subtitulo: v.optional(v.string()),
     descripcion: v.string(),
     categoria: v.string(),
     colores: v.array(colorV),
@@ -159,8 +162,10 @@ export const sembrarCatalogoReal = mutation({
       {
         slug: "menorca",
         nombre: "Menorca",
+        subtitulo:
+          "Mini bolso de mano impreso en 3D, hecho a mano en Colombia",
         descripcion:
-          "Menorca no necesita anunciarse. Su silueta nace de una curva continua —sin costuras, sin interrupciones— como una ola detenida justo antes de romper. La textura que la recorre no es un patrón repetido: es el relieve irregular de la espuma, distinto en cada centímetro, imposible de copiar dos veces.\n\nEs un bolso de mano de asa integrada, del tamaño exacto de un día bien planeado: entra lo que necesitas y nada que sobre. Cada Menorca se crea individualmente combinando impresión 3D con acabado artesanal a mano, así que la que llegue a ti es literalmente la única que existe.\n\nDisponible también en talla grande: Mallorca.",
+          "Menorca no necesita anunciarse. Su silueta nace de una curva continua —sin costuras, sin interrupciones— como una ola detenida justo antes de romper. La textura que la recorre no es un patrón repetido: es el relieve irregular de la espuma, distinto en cada centímetro, imposible de copiar dos veces.\n\nEs un bolso de mano de asa integrada, del tamaño exacto de un día bien planeado: entra lo que necesitas y nada que sobre. Cada Menorca se crea individualmente combinando impresión 3D con acabado artesanal a mano, así que la que llegue a ti es literalmente la única que existe.\n\nUn bolso pequeño de mano con textura escultural, impreso en 3D y hecho a mano en Colombia — accesorio de moda de edición individual.\n\nDisponible también en talla grande: Mallorca.",
         precioCop: 210_000,
         altoCm: 20,
         anchoCm: 19.2,
@@ -179,8 +184,10 @@ export const sembrarCatalogoReal = mutation({
       {
         slug: "mallorca",
         nombre: "Mallorca",
+        subtitulo:
+          "Bolso de mano estructurado, impreso en 3D y hecho a mano en Colombia",
         descripcion:
-          "Mallorca tiene la presencia de una pieza pensada para ser mirada. Una curva continua que se cierra en un arco abierto, y sobre toda su superficie el relieve irregular de la espuma, tallado a mano: la luz nunca cae dos veces igual sobre él.\n\nSu volumen la vuelve el bolso de los días largos —los que empiezan en una mesa y terminan en otra. Como toda pieza de La Marquessa, se crea una por una uniendo impresión 3D y trabajo manual, para lograr una forma que hasta hace poco no se podía fabricar.\n\nEs la talla grande de Menorca. Misma silueta, más cuerpo.",
+          "Mallorca tiene la presencia de una pieza pensada para ser mirada. Una curva continua que se cierra en un arco abierto, y sobre toda su superficie el relieve irregular de la espuma, tallado a mano: la luz nunca cae dos veces igual sobre él.\n\nSu volumen la vuelve el bolso de los días largos —los que empiezan en una mesa y terminan en otra. Como toda pieza de La Marquessa, se crea una por una uniendo impresión 3D y trabajo manual, para lograr una forma que hasta hace poco no se podía fabricar.\n\nUn bolso de mano para mujer, estructurado, de diseño de autor: bolso artesanal colombiano impreso en 3D pieza por pieza.\n\nEs la talla grande de Menorca. Misma silueta, más cuerpo.",
         precioCop: 255_000,
         altoCm: 23.7,
         anchoCm: 22.8,
@@ -196,8 +203,10 @@ export const sembrarCatalogoReal = mutation({
       {
         slug: "kruta",
         nombre: "Kruta",
+        subtitulo:
+          "Mini bolso vertical impreso en 3D, hecho a mano en Colombia",
         descripcion:
-          "Kruta se levanta. Su cuerpo es vertical y estrecho, de base casi cuadrada: una silueta que se sostiene sola sobre cualquier mesa, sin recostarse ni pedir permiso. La superficie es lisa y luminosa, y sobre ella corre un solo pliegue —el trazo de una corriente que envuelve la pieza de lado a lado y termina justo donde nace el asa.\n\nEs el bolso de las noches y de los planes cortos: lo esencial, llevado con intención. Cada Kruta se crea individualmente uniendo impresión 3D y acabado artesanal a mano, así que el pliegue que la recorre no se repite en ninguna otra.",
+          "Kruta se levanta. Su cuerpo es vertical y estrecho, de base casi cuadrada: una silueta que se sostiene sola sobre cualquier mesa, sin recostarse ni pedir permiso. La superficie es lisa y luminosa, y sobre ella corre un solo pliegue —el trazo de una corriente que envuelve la pieza de lado a lado y termina justo donde nace el asa.\n\nEs el bolso de las noches y de los planes cortos: lo esencial, llevado con intención. Cada Kruta se crea individualmente uniendo impresión 3D y acabado artesanal a mano, así que el pliegue que la recorre no se repite en ninguna otra.\n\nUn mini bolso estructurado de mano, hecho a mano en Colombia, pensado como bolso pequeño para salir de noche.",
         precioCop: 230_000,
         altoCm: 20.5,
         anchoCm: 12.8,
@@ -213,8 +222,10 @@ export const sembrarCatalogoReal = mutation({
       {
         slug: "montt",
         nombre: "Montt",
+        subtitulo:
+          "Cartera de mano para el día, impresa en 3D y hecha a mano en Colombia",
         descripcion:
-          "Montt se recuesta. Es ancha, baja, de líneas horizontales, y sobre el frente le cruza un pliegue en diagonal: la tela que cede, la ola que ya rompió. El asa se abre en un arco limpio y deja aire entre el mango y el cuerpo, como el vano de un puente.\n\nEs el bolso de la vida diaria: el que se agarra sin pensarlo y funciona con todo. Cada Montt se crea individualmente uniendo impresión 3D y acabado artesanal a mano, así que el pliegue cae distinto en cada pieza. No hay dos iguales.",
+          "Montt se recuesta. Es ancha, baja, de líneas horizontales, y sobre el frente le cruza un pliegue en diagonal: la tela que cede, la ola que ya rompió. El asa se abre en un arco limpio y deja aire entre el mango y el cuerpo, como el vano de un puente.\n\nEs el bolso de la vida diaria: el que se agarra sin pensarlo y funciona con todo. Cada Montt se crea individualmente uniendo impresión 3D y acabado artesanal a mano, así que el pliegue cae distinto en cada pieza. No hay dos iguales.\n\nUna cartera de mano para el día a día: bolso escultural para mujer, con textura tridimensional, impreso en 3D y hecho a mano en Colombia.",
         precioCop: 195_000,
         altoCm: 17.5,
         anchoCm: 18.2,
@@ -276,6 +287,67 @@ export const juntarRendersDeEstudio = mutation({
     }
 
     return { reordenados };
+  },
+});
+
+// Parcha el subtitulo (H2 de la ficha) y la descripción de los 4 bolsos en el
+// catálogo que ya está vivo, con textos ricos en palabras clave de moda
+// insertadas de forma natural. Igual que corregirColorHorizonte:
+//  - NO borra ni añade filas: solo toca esos dos campos por slug.
+//  - Idempotente: si ya coinciden, no vuelve a escribir.
+// Los productos que no estén en el mapa quedan intactos.
+export const actualizarSeoDeCatalogo = mutation({
+  args: { secret: v.string() },
+  handler: async (ctx, { secret }) => {
+    exigirSecreto(secret);
+
+    const cambios: Record<string, { subtitulo: string; descripcion: string }> = {
+      menorca: {
+        subtitulo:
+          "Mini bolso de mano impreso en 3D, hecho a mano en Colombia",
+        descripcion:
+          "Menorca no necesita anunciarse. Su silueta nace de una curva continua —sin costuras, sin interrupciones— como una ola detenida justo antes de romper. La textura que la recorre no es un patrón repetido: es el relieve irregular de la espuma, distinto en cada centímetro, imposible de copiar dos veces.\n\nEs un bolso de mano de asa integrada, del tamaño exacto de un día bien planeado: entra lo que necesitas y nada que sobre. Cada Menorca se crea individualmente combinando impresión 3D con acabado artesanal a mano, así que la que llegue a ti es literalmente la única que existe.\n\nUn bolso pequeño de mano con textura escultural, impreso en 3D y hecho a mano en Colombia — accesorio de moda de edición individual.\n\nDisponible también en talla grande: Mallorca.",
+      },
+      mallorca: {
+        subtitulo:
+          "Bolso de mano estructurado, impreso en 3D y hecho a mano en Colombia",
+        descripcion:
+          "Mallorca tiene la presencia de una pieza pensada para ser mirada. Una curva continua que se cierra en un arco abierto, y sobre toda su superficie el relieve irregular de la espuma, tallado a mano: la luz nunca cae dos veces igual sobre él.\n\nSu volumen la vuelve el bolso de los días largos —los que empiezan en una mesa y terminan en otra. Como toda pieza de La Marquessa, se crea una por una uniendo impresión 3D y trabajo manual, para lograr una forma que hasta hace poco no se podía fabricar.\n\nUn bolso de mano para mujer, estructurado, de diseño de autor: bolso artesanal colombiano impreso en 3D pieza por pieza.\n\nEs la talla grande de Menorca. Misma silueta, más cuerpo.",
+      },
+      kruta: {
+        subtitulo:
+          "Mini bolso vertical impreso en 3D, hecho a mano en Colombia",
+        descripcion:
+          "Kruta se levanta. Su cuerpo es vertical y estrecho, de base casi cuadrada: una silueta que se sostiene sola sobre cualquier mesa, sin recostarse ni pedir permiso. La superficie es lisa y luminosa, y sobre ella corre un solo pliegue —el trazo de una corriente que envuelve la pieza de lado a lado y termina justo donde nace el asa.\n\nEs el bolso de las noches y de los planes cortos: lo esencial, llevado con intención. Cada Kruta se crea individualmente uniendo impresión 3D y acabado artesanal a mano, así que el pliegue que la recorre no se repite en ninguna otra.\n\nUn mini bolso estructurado de mano, hecho a mano en Colombia, pensado como bolso pequeño para salir de noche.",
+      },
+      montt: {
+        subtitulo:
+          "Cartera de mano para el día, impresa en 3D y hecha a mano en Colombia",
+        descripcion:
+          "Montt se recuesta. Es ancha, baja, de líneas horizontales, y sobre el frente le cruza un pliegue en diagonal: la tela que cede, la ola que ya rompió. El asa se abre en un arco limpio y deja aire entre el mango y el cuerpo, como el vano de un puente.\n\nEs el bolso de la vida diaria: el que se agarra sin pensarlo y funciona con todo. Cada Montt se crea individualmente uniendo impresión 3D y acabado artesanal a mano, así que el pliegue cae distinto en cada pieza. No hay dos iguales.\n\nUna cartera de mano para el día a día: bolso escultural para mujer, con textura tridimensional, impreso en 3D y hecho a mano en Colombia.",
+      },
+    };
+
+    const productos = await ctx.db.query("productos").collect();
+    const actualizados: string[] = [];
+
+    for (const p of productos) {
+      const nuevo = cambios[p.slug];
+      if (!nuevo) continue;
+      if (
+        p.subtitulo === nuevo.subtitulo &&
+        p.descripcion === nuevo.descripcion
+      ) {
+        continue;
+      }
+      await ctx.db.patch(p._id, {
+        subtitulo: nuevo.subtitulo,
+        descripcion: nuevo.descripcion,
+      });
+      actualizados.push(p.slug);
+    }
+
+    return { actualizados };
   },
 });
 
