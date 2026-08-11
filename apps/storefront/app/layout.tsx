@@ -133,6 +133,7 @@ export default function RootLayout({
         <Analitica
           gtmId={process.env.NEXT_PUBLIC_GTM_ID}
           ga4Id={process.env.NEXT_PUBLIC_GA4_ID}
+          metaPixelId={process.env.NEXT_PUBLIC_META_PIXEL_ID}
         />
       </body>
     </html>
