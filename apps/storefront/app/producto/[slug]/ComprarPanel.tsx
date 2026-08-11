@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { type Producto, formatCop, muestraColor } from "@/lib/productos";
 import { useCarrito } from "@/lib/carrito";
-import { trackAddToCart } from "@/lib/analytics";
+import { trackAddToCart, trackCustomizeProduct } from "@/lib/analytics";
 
 export default function ComprarPanel({ producto }: { producto: Producto }) {
   const { agregar } = useCarrito();
@@ -34,6 +34,27 @@ export default function ComprarPanel({ producto }: { producto: Producto }) {
     return () => io.disconnect();
   }, []);
 
+  /** Dispara customize_product / CustomizeProduct una vez por selección real
+   *  del cliente. NO se llama en la primera renderización: por eso el useState
+   *  arranca con el color por defecto y este helper solo entra al onClick. */
+  function personalizar(nuevoColorId?: string, nuevoTamanoId?: string) {
+    const c = nuevoColorId
+      ? producto.colores.find((x) => x.id === nuevoColorId) ?? color
+      : color;
+    const t = nuevoTamanoId
+      ? producto.tamanos.find((x) => x.id === nuevoTamanoId) ?? tamano
+      : tamano;
+    trackCustomizeProduct({
+      slug: producto.slug,
+      nombre: producto.nombre,
+      colorId: c.id,
+      colorNombre: c.nombre,
+      tamanoId: t.id,
+      tamanoNombre: t.nombre,
+      precioCop: t.precioCop,
+    });
+  }
+
   function agregarAlCarrito() {
     const linea = {
       slug: producto.slug,
@@ -61,7 +82,10 @@ export default function ComprarPanel({ producto }: { producto: Producto }) {
           {producto.colores.map((c) => (
             <button
               key={c.id}
-              onClick={() => setColorId(c.id)}
+              onClick={() => {
+                setColorId(c.id);
+                if (c.id !== colorId) personalizar(c.id, undefined);
+              }}
               title={c.nombre}
               aria-label={c.nombre}
               // 44×44: mínimo táctil recomendado (WCAG, HIG). Antes eran 32×32,
@@ -92,7 +116,10 @@ export default function ComprarPanel({ producto }: { producto: Producto }) {
             {producto.tamanos.map((t) => (
               <button
                 key={t.id}
-                onClick={() => setTamanoId(t.id)}
+                onClick={() => {
+                  setTamanoId(t.id);
+                  if (t.id !== tamanoId) personalizar(undefined, t.id);
+                }}
                 className={`rounded-sm border px-6 py-2 text-sm transition-colors ${
                   t.id === tamanoId
                     ? "border-cobre-texto bg-cobre-texto text-blanco"

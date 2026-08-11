@@ -212,6 +212,30 @@ export function trackBeginCheckout(
   });
 }
 
+/** El cliente pulsó "Pagar con Mercado Pago". No podemos ver la tarjeta
+ *  (la introducen en MP), pero este es el momento en que se compromete a
+ *  hacerlo. GA4 lo llama add_payment_info, Meta AddPaymentInfo. */
+export function trackAddPaymentInfo(
+  lineas: LineaCarrito[],
+  value: number,
+  cupon?: string,
+): void {
+  const items = lineas.map(itemDeLinea);
+  enviarEvento("add_payment_info", {
+    currency: CURRENCY,
+    value,
+    payment_type: "mercadopago",
+    ...(cupon ? { coupon: cupon } : {}),
+    items,
+  });
+  enviarEventoMeta("AddPaymentInfo", {
+    ...contentsMeta(items),
+    value,
+    currency: CURRENCY,
+    num_items: items.reduce((s, i) => s + i.quantity, 0),
+  });
+}
+
 /** Snapshot que se guarda justo antes de redirigir a Mercado Pago para poder
  *  disparar `purchase` cuando volvamos a /gracias con el carrito ya vacío. */
 export type SnapshotCompra = {
@@ -266,6 +290,40 @@ export function trackPurchase(args: {
     currency: args.snapshot.currency,
     num_items: args.snapshot.items.reduce((s, i) => s + i.quantity, 0),
     eventID: args.transactionId,
+  });
+}
+
+// === Personalización ===
+
+/** Un click del cliente en el selector de color o de tamaño. Meta lo usa como
+ *  señal de intención de compra en anuncios para productos configurables. */
+export function trackCustomizeProduct(p: {
+  slug: string;
+  nombre: string;
+  colorId: string;
+  colorNombre: string;
+  tamanoId: string;
+  tamanoNombre: string;
+  precioCop: number;
+}): void {
+  const item: ItemGA4 = {
+    item_id: `${p.slug}|${p.colorId}|${p.tamanoId}`,
+    item_name: `Bolso ${p.nombre}`,
+    item_variant: `${p.colorNombre} · ${p.tamanoNombre}`,
+    item_category: "Bolsos",
+    price: p.precioCop,
+    quantity: 1,
+  };
+  enviarEvento("customize_product", {
+    currency: CURRENCY,
+    value: p.precioCop,
+    items: [item],
+  });
+  enviarEventoMeta("CustomizeProduct", {
+    ...contentsMeta([item]),
+    content_name: item.item_name,
+    value: p.precioCop,
+    currency: CURRENCY,
   });
 }
 

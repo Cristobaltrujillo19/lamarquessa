@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useCarrito } from "@/lib/carrito";
 import { formatCop } from "@/lib/productos";
 import {
   guardarSnapshotCompra,
+  trackAddPaymentInfo,
   trackBeginCheckout,
 } from "@/lib/analytics";
 import {
@@ -46,6 +47,18 @@ export default function CheckoutPage() {
   const [avisoCupon, setAvisoCupon] = useState<string | null>(null);
   const [validandoCupon, setValidandoCupon] = useState(false);
 
+  // begin_checkout / InitiateCheckout se dispara una sola vez al llegar al
+  // checkout con carrito lleno. El submit disparará AddPaymentInfo (más
+  // adelante en el funnel). Ref para no re-disparar en re-renders o si el
+  // subtotal cambia al aplicar cupón.
+  const beginCheckoutDisparado = useRef(false);
+  useEffect(() => {
+    if (beginCheckoutDisparado.current) return;
+    if (lineas.length === 0) return;
+    beginCheckoutDisparado.current = true;
+    trackBeginCheckout(lineas, subtotal + SHIPPING_COP);
+  }, [lineas, subtotal]);
+
   if (lineas.length === 0) {
     return (
       <div className="mx-auto max-w-[700px] px-5 py-24 text-center">
@@ -80,10 +93,11 @@ export default function CheckoutPage() {
     setError(null);
     const f = new FormData(e.currentTarget);
 
-    // begin_checkout: se dispara al enviar el formulario, momento en el que
-    // el cliente confirmó dirección y cupón. Antes del await del server
-    // action para no perderlo si el iniciarCheckout falla.
-    trackBeginCheckout(lineas, total, cupon?.codigo);
+    // add_payment_info / AddPaymentInfo: momento en el que el cliente se
+    // compromete a pagar (el submit). MP se lleva los datos de tarjeta;
+    // aquí registramos que llegó al último paso antes del cobro. Antes del
+    // await para no perderlo si iniciarCheckout falla.
+    trackAddPaymentInfo(lineas, total, cupon?.codigo);
 
     iniciarTransicion(async () => {
       const r = await iniciarCheckout({
