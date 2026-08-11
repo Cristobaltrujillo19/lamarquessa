@@ -40,7 +40,7 @@ const pinyon = Pinyon_Script({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Bolsos únicos impresos en 3D y hechos a mano | La Marquessa",
+    default: "La Marquessa",
     template: "%s",
   },
   description: DESCRIPCION_MARCA,

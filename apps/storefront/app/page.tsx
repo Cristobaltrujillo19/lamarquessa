@@ -10,7 +10,7 @@ import FranjaIconos from "@/components/marca/FranjaIconos";
 import { DESCRIPCION_MARCA, urlAbsoluta } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Bolsos únicos impresos en 3D y hechos a mano | La Marquessa",
+  title: "La Marquessa",
   description:
     "Bolsos impresos en 3D y hechos a mano en Colombia. Cada pieza es única — no existen dos iguales. Fabricados a pedido, listos en 2 semanas. Envíos globales.",
   alternates: { canonical: urlAbsoluta("/") },
