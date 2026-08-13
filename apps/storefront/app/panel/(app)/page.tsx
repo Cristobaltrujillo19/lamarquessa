@@ -4,6 +4,7 @@ import { api } from "@/convex/_generated/api";
 import { secreto } from "@/app/panel/lib/auth";
 import { ESTADOS, type EstadoPedido, formatFecha } from "@/app/panel/lib/ui";
 import { formatCop } from "@/lib/productos";
+import { BotonLimpiarCancelados } from "./BotonLimpiarCancelados";
 
 // Los pedidos cambian seguido: nunca cachear esta página.
 export const dynamic = "force-dynamic";
@@ -29,9 +30,16 @@ export default async function PanelHome({
   const cuenta = (e?: EstadoPedido) =>
     e ? pedidos.filter((p) => p.estado === e).length : pedidos.length;
 
+  const totalCancelados = cuenta("cancelado");
+
   return (
     <div>
-      <h1 className="font-titulo text-3xl">Pedidos</h1>
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="font-titulo text-3xl">Pedidos</h1>
+        {estado === "cancelado" && (
+          <BotonLimpiarCancelados cantidad={totalCancelados} />
+        )}
+      </div>
 
       {/* Filtros por estado */}
       <div className="mb-5 mt-4 flex flex-wrap gap-2">

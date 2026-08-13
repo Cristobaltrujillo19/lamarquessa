@@ -6,6 +6,7 @@ import type { Id } from "@/convex/_generated/dataModel";
 import { secreto } from "@/app/panel/lib/auth";
 import { marcarEnviadoAction, marcarEntregadoAction } from "@/app/panel/actions";
 import { BotonCancelarPedido } from "./BotonCancelarPedido";
+import { BotonEliminarPedido } from "./BotonEliminarPedido";
 import {
   ESTADOS,
   METODO_PAGO_LABEL,
@@ -233,6 +234,9 @@ export default async function PedidoDetalle({
 
       {pedido.estado !== "entregado" && pedido.estado !== "cancelado" && (
         <BotonCancelarPedido pedidoId={pedido._id} />
+      )}
+      {pedido.estado === "cancelado" && (
+        <BotonEliminarPedido pedidoId={pedido._id} />
       )}
     </div>
   );
