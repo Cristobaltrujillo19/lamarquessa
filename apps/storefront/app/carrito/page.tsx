@@ -5,6 +5,7 @@ import { useEffect, useRef } from "react";
 import { useCarrito } from "@/lib/carrito";
 import { formatCop } from "@/lib/productos";
 import { trackRemoveFromCart, trackViewCart } from "@/lib/analytics";
+import { addOnsPorUnidad } from "@/lib/personalizacion";
 
 export default function CarritoPage() {
   const { lineas, cambiarCantidad, quitar, subtotal, hidratado } = useCarrito();
@@ -46,7 +47,9 @@ export default function CarritoPage() {
 
       <div className="mt-8 grid gap-10 md:grid-cols-[1fr_320px]">
         <div className="border-y border-cacao/10">
-          {lineas.map((l) => (
+          {lineas.map((l) => {
+            const efectivo = l.precioCop + addOnsPorUnidad(l.personalizacion);
+            return (
             <div key={l.key} className="flex gap-4 border-b border-cacao/10 py-5 last:border-b-0">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={l.foto} alt={l.nombre} className="h-28 w-24 rounded-sm object-cover" />
@@ -55,20 +58,31 @@ export default function CarritoPage() {
                 <p className="text-[11px] uppercase tracking-wide text-cacao-suave">
                   {l.colorNombre} · {l.tamanoNombre}
                 </p>
+                {l.personalizacion?.iniciales && (
+                  <p className="text-[11px] text-cobre-texto">
+                    Iniciales {l.personalizacion.iniciales.texto}
+                  </p>
+                )}
+                {l.personalizacion?.colorPersonalizado && (
+                  <p className="text-[11px] text-cobre-texto">
+                    Color: {l.personalizacion.colorPersonalizado.descripcion}
+                  </p>
+                )}
                 <div className="mt-3 flex items-center justify-between">
                   <div className="flex items-center rounded-sm border border-cacao/20">
                     <button onClick={() => cambiarCantidad(l.key, l.cantidad - 1)} className="px-3 py-1 hover:text-cobre" aria-label="Restar">−</button>
                     <span className="min-w-7 text-center text-sm">{l.cantidad}</span>
                     <button onClick={() => cambiarCantidad(l.key, l.cantidad + 1)} className="px-3 py-1 hover:text-cobre" aria-label="Sumar">+</button>
                   </div>
-                  <span className="font-cita text-lg">{formatCop(l.precioCop * l.cantidad)}</span>
+                  <span className="font-cita text-lg">{formatCop(efectivo * l.cantidad)}</span>
                 </div>
                 <button onClick={() => quitarLinea(l.key)} className="mt-2 text-[11px] text-cacao-suave underline hover:text-cobre">
                   Quitar
                 </button>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
 
         <aside className="h-fit rounded-sm border border-cacao/10 bg-blanco p-6">

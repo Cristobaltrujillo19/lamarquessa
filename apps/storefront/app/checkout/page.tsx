@@ -9,6 +9,7 @@ import {
   trackAddPaymentInfo,
   trackBeginCheckout,
 } from "@/lib/analytics";
+import { addOnsPorUnidad } from "@/lib/personalizacion";
 import {
   ENVIO_DIAS,
   MENSAJES,
@@ -109,12 +110,14 @@ export default function CheckoutPage() {
         departamento: String(f.get("departamento") ?? ""),
         notas: String(f.get("notas") ?? ""),
         codigo: cupon?.codigo,
-        // Solo qué variante y cuántas: el precio lo pone el servidor.
+        // Solo qué variante, cuántas y (opcional) qué personalización.
+        // El precio lo pone el servidor tras re-validar los add-ons.
         items: lineas.map((l) => ({
           slug: l.slug,
           colorId: l.colorId,
           tamanoId: l.tamanoId,
           cantidad: l.cantidad,
+          ...(l.personalizacion ? { personalizacion: l.personalizacion } : {}),
         })),
       });
 
@@ -124,19 +127,29 @@ export default function CheckoutPage() {
       }
       // Snapshot del carrito+total ANTES de vaciar/redirigir: /gracias lo
       // recoge de sessionStorage para armar el evento purchase con items y
-      // valor reales (después de MP, el carrito ya está vacío).
+      // valor reales (después de MP, el carrito ya está vacío). El precio
+      // por item incluye add-ons de personalización para que GA4/Meta
+      // vean el valor efectivo pagado por bolso.
       guardarSnapshotCompra({
         value: total,
         shipping: envio,
         currency: "COP",
-        items: lineas.map((l) => ({
-          item_id: `${l.slug}|${l.colorId}|${l.tamanoId}`,
-          item_name: `Bolso ${l.nombre}`,
-          item_variant: `${l.colorNombre} · ${l.tamanoNombre}`,
-          item_category: "Bolsos",
-          price: l.precioCop,
-          quantity: l.cantidad,
-        })),
+        items: lineas.map((l) => {
+          const addOns = addOnsPorUnidad(l.personalizacion);
+          const extra: string[] = [];
+          if (l.personalizacion?.iniciales)
+            extra.push(`Iniciales ${l.personalizacion.iniciales.texto}`);
+          if (l.personalizacion?.colorPersonalizado)
+            extra.push("Color a disposición");
+          return {
+            item_id: `${l.slug}|${l.colorId}|${l.tamanoId}`,
+            item_name: `Bolso ${l.nombre}`,
+            item_variant: [l.colorNombre, l.tamanoNombre, ...extra].join(" · "),
+            item_category: "Bolsos",
+            price: l.precioCop + addOns,
+            quantity: l.cantidad,
+          };
+        }),
         ...(cupon?.codigo ? { coupon: cupon.codigo } : {}),
       });
       // El carrito NO se vacía aquí: si el pago se cae o el cliente se
@@ -283,19 +296,33 @@ export default function CheckoutPage() {
           <h2 className="font-titulo text-2xl">Tu pedido</h2>
 
           <ul className="mt-4 space-y-3">
-            {lineas.map((l) => (
-              <li key={l.key} className="flex justify-between gap-3 text-sm">
-                <span className="text-cacao-suave">
-                  {l.cantidad}× Bolso {l.nombre}
-                  <span className="block text-xs">
-                    {l.colorNombre} · {l.tamanoNombre}
+            {lineas.map((l) => {
+              const addOns = addOnsPorUnidad(l.personalizacion);
+              const precioLinea = (l.precioCop + addOns) * l.cantidad;
+              return (
+                <li key={l.key} className="flex justify-between gap-3 text-sm">
+                  <span className="text-cacao-suave">
+                    {l.cantidad}× Bolso {l.nombre}
+                    <span className="block text-xs">
+                      {l.colorNombre} · {l.tamanoNombre}
+                    </span>
+                    {l.personalizacion?.iniciales && (
+                      <span className="block text-xs text-cobre-texto">
+                        Iniciales {l.personalizacion.iniciales.texto}
+                      </span>
+                    )}
+                    {l.personalizacion?.colorPersonalizado && (
+                      <span className="block text-xs text-cobre-texto">
+                        Color: {l.personalizacion.colorPersonalizado.descripcion}
+                      </span>
+                    )}
                   </span>
-                </span>
-                <span className="whitespace-nowrap font-cita text-base">
-                  {formatCop(l.precioCop * l.cantidad)}
-                </span>
-              </li>
-            ))}
+                  <span className="whitespace-nowrap font-cita text-base">
+                    {formatCop(precioLinea)}
+                  </span>
+                </li>
+              );
+            })}
           </ul>
 
           <div className="mt-5 border-t border-cacao/10 pt-4">

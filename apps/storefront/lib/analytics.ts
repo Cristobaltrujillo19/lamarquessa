@@ -20,6 +20,7 @@
 
 import { enviarEvento, enviarEventoMeta } from "@/components/Analitica";
 import type { LineaCarrito } from "./carrito";
+import { addOnsPorUnidad, type Personalizacion } from "./personalizacion";
 
 const CURRENCY = "COP";
 const SNAPSHOT_KEY = "lm_pending_purchase";
@@ -34,15 +35,34 @@ export type ItemGA4 = {
   quantity: number;
 };
 
+/** Enriquece item_variant con la personalización (iniciales, color a
+ *  disposición) para separarlas en los reportes de GA4/Meta. */
+function variantEtiqueta(
+  colorNombre: string,
+  tamanoNombre: string,
+  personalizacion?: Personalizacion,
+): string {
+  const partes = [colorNombre, tamanoNombre];
+  if (personalizacion?.iniciales) {
+    partes.push(`Iniciales ${personalizacion.iniciales.texto}`);
+  }
+  if (personalizacion?.colorPersonalizado) {
+    partes.push("Color a disposición");
+  }
+  return partes.join(" · ");
+}
+
 function itemDeLinea(l: LineaCarrito): ItemGA4 {
   return {
     // Un id por VARIANTE (bolso × color × tamaño): que dos filas con distinto
     // color no aparezcan como el mismo producto en los reportes de GA4.
     item_id: `${l.slug}|${l.colorId}|${l.tamanoId}`,
     item_name: `Bolso ${l.nombre}`,
-    item_variant: `${l.colorNombre} · ${l.tamanoNombre}`,
+    item_variant: variantEtiqueta(l.colorNombre, l.tamanoNombre, l.personalizacion),
     item_category: "Bolsos",
-    price: l.precioCop,
+    // Precio efectivo (base + add-ons de personalización). GA4/Meta reciben
+    // lo que el cliente realmente paga por unidad.
+    price: l.precioCop + addOnsPorUnidad(l.personalizacion),
     quantity: l.cantidad,
   };
 }

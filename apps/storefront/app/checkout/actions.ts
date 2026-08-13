@@ -12,6 +12,10 @@ export type LineaCheckout = {
   colorId: string;
   tamanoId: string;
   cantidad: number;
+  personalizacion?: {
+    iniciales?: { texto: string; fuenteId: string };
+    colorPersonalizado?: { descripcion: string };
+  };
 };
 
 export type ResultadoCheckout =
