@@ -4,6 +4,7 @@ import { v } from "convex/values";
 import { internalAction } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { formatCop } from "../lib/productos";
+import { addOnsPorUnidad, nombreFuente } from "../lib/personalizacion";
 import nodemailer from "nodemailer";
 
 // WhatsApp de la marca. Convex y Next viven en paquetes separados, así que
@@ -33,11 +34,36 @@ export const enviarConfirmacionCliente = internalAction({
     const d = pedido.direccion; // las ventas presenciales "en mano" no la tienen
 
     const items = pedido.items
-      .map(
-        (i) =>
-          `<li>${i.cantidad}× ${i.nombre} · ${i.colorNombre} ${i.tamanoNombre} — ${formatCop(i.precioCop)}</li>`,
-      )
+      .map((i) => {
+        const efectivo = i.precioCop + addOnsPorUnidad(i.personalizacion);
+        const extras: string[] = [];
+        if (i.personalizacion?.iniciales) {
+          extras.push(
+            `Iniciales <strong>${i.personalizacion.iniciales.texto}</strong> (${nombreFuente(i.personalizacion.iniciales.fuenteId)})`,
+          );
+        }
+        if (i.personalizacion?.colorPersonalizado) {
+          extras.push(
+            `Color a disposición: <em>${i.personalizacion.colorPersonalizado.descripcion}</em>`,
+          );
+        }
+        const detallePers = extras.length
+          ? `<br/><span style="color:#805337;font-size:13px">${extras.join(" · ")}</span>`
+          : "";
+        return `<li>${i.cantidad}× ${i.nombre} · ${i.colorNombre} ${i.tamanoNombre} — ${formatCop(efectivo * i.cantidad)}${detallePers}</li>`;
+      })
       .join("");
+
+    const hayColorPersonalizado = pedido.items.some(
+      (i) => i.personalizacion?.colorPersonalizado,
+    );
+    const avisoCoordinacion = hayColorPersonalizado
+      ? `<div style="background:#fff8e6;border-left:3px solid #B38561;padding:12px 14px;margin-top:14px">
+           <strong>Un detalle</strong> — pediste un color a disposición. Te escribimos
+           por WhatsApp en las próximas 24 h hábiles para confirmar el tono exacto antes
+           de fabricar.
+         </div>`
+      : "";
 
     const bloqueEnvio = d
       ? `<p><strong>Lo enviaremos a:</strong><br/>
@@ -57,6 +83,7 @@ export const enviarConfirmacionCliente = internalAction({
         <p>${lineaDescuento}Envío: ${formatCop(pedido.envioCop)}<br/>
            <strong>Total: ${formatCop(pedido.totalCop)}</strong></p>
         ${bloqueEnvio}
+        ${avisoCoordinacion}
         <div style="background:#F4E8D7;border-radius:12px;padding:14px 18px;margin-top:18px">
           <p style="margin:0">📱 <strong>Coordinamos el envío por WhatsApp:</strong><br/>
             <a href="https://wa.me/${WHATSAPP}" style="color:#B38561;font-weight:bold;text-decoration:none">+57 ${WHATSAPP_VISIBLE}</a>

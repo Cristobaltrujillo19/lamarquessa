@@ -13,6 +13,7 @@ import {
   whatsappLink,
 } from "@/app/panel/lib/ui";
 import { formatCop } from "@/lib/productos";
+import { addOnsPorUnidad, nombreFuente } from "@/lib/personalizacion";
 import { TRANSPORTADORAS } from "@/lib/transportadoras";
 
 export const dynamic = "force-dynamic";
@@ -67,20 +68,41 @@ export default async function PedidoDetalle({
         {pedido.vendedorNombre ? ` · por ${pedido.vendedorNombre}` : ""}
       </p>
 
+      {pedido.items.some((i) => i.personalizacion?.colorPersonalizado) && (
+        <div className="mt-4 rounded-lg border-l-4 border-[#c07a2f] bg-[#fff4e0] px-4 py-3 text-sm text-[#5a3d10]">
+          <strong>Requiere coordinar color.</strong> Este pedido tiene un color a
+          disposición — contactar al cliente por WhatsApp antes de fabricar.
+        </div>
+      )}
+
       {/* Items */}
       <div className={`mt-5 ${tarjeta}`}>
-        <ul className="grid gap-1.5">
-          {pedido.items.map((i, idx) => (
-            <li key={idx} className="flex justify-between gap-3 text-sm">
-              <span>
-                {i.cantidad}× {i.nombre}{" "}
-                <span className="text-cacao-suave">
-                  · {i.colorNombre} · {i.tamanoNombre}
+        <ul className="grid gap-3">
+          {pedido.items.map((i, idx) => {
+            const efectivo = i.precioCop + addOnsPorUnidad(i.personalizacion);
+            return (
+              <li key={idx} className="flex justify-between gap-3 text-sm">
+                <span>
+                  {i.cantidad}× {i.nombre}{" "}
+                  <span className="text-cacao-suave">
+                    · {i.colorNombre} · {i.tamanoNombre}
+                  </span>
+                  {i.personalizacion?.iniciales && (
+                    <span className="mt-0.5 block text-xs text-cobre-texto">
+                      Iniciales <strong>{i.personalizacion.iniciales.texto}</strong>{" "}
+                      ({nombreFuente(i.personalizacion.iniciales.fuenteId)})
+                    </span>
+                  )}
+                  {i.personalizacion?.colorPersonalizado && (
+                    <span className="mt-0.5 block text-xs text-cobre-texto">
+                      Color: <em>{i.personalizacion.colorPersonalizado.descripcion}</em>
+                    </span>
+                  )}
                 </span>
-              </span>
-              <span className="shrink-0">{formatCop(i.precioCop * i.cantidad)}</span>
-            </li>
-          ))}
+                <span className="shrink-0">{formatCop(efectivo * i.cantidad)}</span>
+              </li>
+            );
+          })}
         </ul>
         <div className="mt-3 space-y-1 border-t border-cacao/10 pt-3 text-sm">
           {pedido.descuentoCop ? (
