@@ -102,6 +102,24 @@ export async function cancelarPedidoAction(formData: FormData): Promise<void> {
   revalidatePath(`/panel/pedido/${pedidoId}`);
 }
 
+/** Borra permanentemente el pedido y vuelve a la lista. El server-side de
+ *  Convex ya bloquea eliminar cualquier estado que no sea "cancelado". */
+export async function eliminarPedidoAction(formData: FormData): Promise<void> {
+  await requireAuth();
+  const pedidoId = String(formData.get("pedidoId")) as Id<"pedidos">;
+  await fetchMutation(api.admin.eliminarPedido, { secret: secret(), pedidoId });
+  revalidatePath("/panel");
+  redirect("/panel?estado=cancelado");
+}
+
+/** Limpieza masiva de todos los pedidos en estado "cancelado". */
+export async function eliminarCanceladosMasivoAction(): Promise<void> {
+  await requireAuth();
+  await fetchMutation(api.admin.eliminarCanceladosMasivo, { secret: secret() });
+  revalidatePath("/panel");
+  redirect("/panel");
+}
+
 // === POS: venta presencial ===
 export async function crearVentaAction(
   _prev: FormState,

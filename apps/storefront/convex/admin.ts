@@ -126,6 +126,43 @@ export const cancelarPedido = mutation({
   },
 });
 
+/** Borra permanentemente un pedido. Solo permite eliminar los que estén en
+ *  estado "cancelado": para borrar un pagado/enviado/entregado hay que
+ *  cancelarlo antes (dos pasos deliberados, para no perder registro contable
+ *  por accidente). El pedido desaparece de la base — no hay "papelera". */
+export const eliminarPedido = mutation({
+  args: { secret: v.string(), pedidoId: v.id("pedidos") },
+  handler: async (ctx, { secret, pedidoId }) => {
+    exigirSecreto(secret);
+    const pedido = await ctx.db.get(pedidoId);
+    if (!pedido) throw new Error("El pedido no existe");
+    if (pedido.estado !== "cancelado") {
+      throw new Error(
+        "Solo se pueden eliminar pedidos cancelados. Cancela primero.",
+      );
+    }
+    await ctx.db.delete(pedidoId);
+  },
+});
+
+/** Limpieza masiva: borra TODOS los pedidos en estado "cancelado" de una.
+ *  Devuelve cuántos se eliminaron para poder confirmar en el UI. Recorre por
+ *  el índice by_estado, así que no lee toda la tabla. */
+export const eliminarCanceladosMasivo = mutation({
+  args: { secret: v.string() },
+  handler: async (ctx, { secret }) => {
+    exigirSecreto(secret);
+    const cancelados = await ctx.db
+      .query("pedidos")
+      .withIndex("by_estado", (q) => q.eq("estado", "cancelado"))
+      .collect();
+    for (const p of cancelados) {
+      await ctx.db.delete(p._id);
+    }
+    return { eliminados: cancelados.length };
+  },
+});
+
 // === POS: venta presencial ===
 // Los precios y nombres salen del catálogo en Convex (fuente de verdad), nunca
 // de lo que mande el navegador. Cada línea es una variante concreta.
