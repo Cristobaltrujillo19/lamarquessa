@@ -8,9 +8,15 @@ import {
   useMemo,
   useState,
 } from "react";
+import {
+  addOnsPorUnidad,
+  hashPersonalizacion,
+  type Personalizacion,
+} from "./personalizacion";
 
 export type LineaCarrito = {
-  /** slug|colorId|tamanoId — identifica la combinación exacta. */
+  /** slug|colorId|tamanoId|hash(personalización) — dos bolsos con iniciales
+   *  distintas cuentan como líneas separadas. */
   key: string;
   slug: string;
   nombre: string;
@@ -18,9 +24,12 @@ export type LineaCarrito = {
   colorNombre: string;
   tamanoId: string;
   tamanoNombre: string;
+  /** BASE del bolso, sin add-ons. Para mostrar el efectivo, sumar
+   *  addOnsPorUnidad(personalizacion). */
   precioCop: number;
   foto: string;
   cantidad: number;
+  personalizacion?: Personalizacion;
 };
 
 type NuevaLinea = Omit<LineaCarrito, "key" | "cantidad">;
@@ -73,7 +82,10 @@ export function CarritoProvider({ children }: { children: React.ReactNode }) {
   }, [lineas, hidratado]);
 
   const agregar = useCallback((linea: NuevaLinea, cantidad = 1) => {
-    const key = `${linea.slug}|${linea.colorId}|${linea.tamanoId}`;
+    // El hash de personalización entra en la key para que dos regalos con
+    // iniciales distintas del mismo bolso no se fusionen en una sola línea.
+    const hashP = hashPersonalizacion(linea.personalizacion);
+    const key = `${linea.slug}|${linea.colorId}|${linea.tamanoId}${hashP ? `|${hashP}` : ""}`;
     setLineas((prev) => {
       const i = prev.findIndex((x) => x.key === key);
       if (i >= 0) {
@@ -105,7 +117,11 @@ export function CarritoProvider({ children }: { children: React.ReactNode }) {
     [lineas],
   );
   const subtotal = useMemo(
-    () => lineas.reduce((s, x) => s + x.precioCop * x.cantidad, 0),
+    () =>
+      lineas.reduce(
+        (s, x) => s + (x.precioCop + addOnsPorUnidad(x.personalizacion)) * x.cantidad,
+        0,
+      ),
     [lineas],
   );
 

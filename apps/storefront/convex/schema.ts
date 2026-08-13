@@ -34,7 +34,9 @@ export const direccionValidator = v.object({
 
 // Una línea de pedido = una variante concreta (color × tamaño) de un bolso, con
 // su nombre "congelado" al momento de la venta (para que el histórico no cambie
-// si luego se renombra el producto).
+// si luego se renombra el producto). `precioCop` es la BASE del bolso —los
+// add-ons de personalización se cobran encima y su costo se deriva de
+// `personalizacion` (lib/personalizacion.ts::addOnsPorUnidad).
 export const lineaPedidoV = v.object({
   slug: v.string(),
   nombre: v.string(),
@@ -44,6 +46,24 @@ export const lineaPedidoV = v.object({
   tamanoNombre: v.string(),
   cantidad: v.number(),
   precioCop: v.number(),
+  // Personalización opcional. Los pedidos viejos no la tienen y el rendering
+  // debe tolerar su ausencia. Cuando está, cada unidad de esta línea comparte
+  // la misma personalización (el hash del cart evita mezclar variantes).
+  personalizacion: v.optional(
+    v.object({
+      iniciales: v.optional(
+        v.object({
+          texto: v.string(),
+          fuenteId: v.string(),
+        }),
+      ),
+      colorPersonalizado: v.optional(
+        v.object({
+          descripcion: v.string(),
+        }),
+      ),
+    }),
+  ),
 });
 
 export default defineSchema({

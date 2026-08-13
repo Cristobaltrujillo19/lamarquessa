@@ -4,6 +4,14 @@ import { api, internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
 import { direccionValidator, lineaPedidoV } from "./schema";
 import { ENVIO_COP } from "../lib/productos";
+import {
+  addOnsPorUnidad,
+  nombreFuente,
+  PERSONALIZACION_COLOR_COP,
+  PERSONALIZACION_INICIALES_COP,
+  validarPersonalizacion,
+  type Personalizacion,
+} from "../lib/personalizacion";
 
 // --- Tipos de entrada compartidos ---
 const clienteArg = v.object({
@@ -12,14 +20,24 @@ const clienteArg = v.object({
   whatsapp: v.optional(v.string()),
 });
 
-/** Lo que manda el navegador: qué variante y cuántas. Nada más. El nombre y el
- *  precio los pone el servidor. */
+/** Lo que manda el navegador: qué variante, cuántas y (opcional) qué
+ *  personalización quiere. Nada más. El nombre y el precio los pone el
+ *  servidor. La personalización se re-valida — el cliente no puede
+ *  bajarse el costo del add-on desde devtools. */
 const itemsArg = v.array(
   v.object({
     slug: v.string(),
     colorId: v.string(),
     tamanoId: v.string(),
     cantidad: v.number(),
+    personalizacion: v.optional(
+      v.object({
+        iniciales: v.optional(
+          v.object({ texto: v.string(), fuenteId: v.string() }),
+        ),
+        colorPersonalizado: v.optional(v.object({ descripcion: v.string() })),
+      }),
+    ),
   }),
 );
 
@@ -55,7 +73,11 @@ export const createCheckout = action({
     if (!token) throw new Error("Falta MP_ACCESS_TOKEN en las variables de Convex");
 
     // 1. Precios y nombres desde el catálogo (fuente de verdad). Si alguien
-    //    manipula el carrito en el navegador, aquí se descarta.
+    //    manipula el carrito en el navegador, aquí se descarta. La
+    //    personalización se sanea y valida contra las reglas del server
+    //    (regex, fuente ∈ lista, longitud del color). El precio unitario
+    //    guardado en la línea es la BASE — los add-ons se derivan de
+    //    `personalizacion` cuando hace falta computar totales.
     const catalogo = await ctx.runQuery(api.productos.catalogo, {});
     const lineas = args.items.map((it) => {
       const p = catalogo.find((x) => x.slug === it.slug);
@@ -71,6 +93,20 @@ export const createCheckout = action({
         throw avisoCliente(`Ese tamaño ya no está disponible para ${p.nombre}.`);
       }
 
+      let personalizacion: Personalizacion | undefined;
+      if (it.personalizacion) {
+        try {
+          personalizacion = validarPersonalizacion(it.personalizacion);
+          if (!personalizacion.iniciales && !personalizacion.colorPersonalizado) {
+            personalizacion = undefined; // toggles vacíos: no persistir
+          }
+        } catch (e) {
+          throw avisoCliente(
+            e instanceof Error ? e.message : "Revisa la personalización del bolso.",
+          );
+        }
+      }
+
       return {
         slug: p.slug,
         nombre: p.nombre,
@@ -80,10 +116,14 @@ export const createCheckout = action({
         tamanoNombre: tamano.nombre,
         cantidad: Math.max(1, Math.floor(it.cantidad)),
         precioCop: tamano.precioCop,
+        ...(personalizacion ? { personalizacion } : {}),
       };
     });
 
-    const subtotal = lineas.reduce((s, l) => s + l.precioCop * l.cantidad, 0);
+    const subtotal = lineas.reduce(
+      (s, l) => s + (l.precioCop + addOnsPorUnidad(l.personalizacion)) * l.cantidad,
+      0,
+    );
     const envioCop = ENVIO_COP;
 
     // Cupón: se re-valida en el servidor. El precio final NUNCA lo decide el
@@ -125,7 +165,9 @@ export const createCheckout = action({
 
     // Mercado Pago no admite líneas negativas: con descuento mandamos un único
     // ítem con el total ya rebajado (MP cobra la suma de los ítems). Sin
-    // descuento, mandamos el detalle real, que es lo que el cliente espera ver.
+    // descuento, mandamos el detalle real que es lo que el cliente espera
+    // ver — incluyendo add-ons de personalización como líneas separadas para
+    // que el desglose del extracto sea transparente.
     const mpItems =
       descuentoCop > 0
         ? [
@@ -137,12 +179,33 @@ export const createCheckout = action({
             },
           ]
         : [
-            ...lineas.map((l) => ({
-              title: `Bolso ${l.nombre} · ${l.colorNombre}`,
-              quantity: l.cantidad,
-              unit_price: l.precioCop,
-              currency_id: "COP",
-            })),
+            ...lineas.flatMap((l) => {
+              const lineasMp = [
+                {
+                  title: `Bolso ${l.nombre} · ${l.colorNombre}`,
+                  quantity: l.cantidad,
+                  unit_price: l.precioCop,
+                  currency_id: "COP",
+                },
+              ];
+              if (l.personalizacion?.iniciales) {
+                lineasMp.push({
+                  title: `Iniciales grabadas (${l.personalizacion.iniciales.texto}, ${nombreFuente(l.personalizacion.iniciales.fuenteId)}) — ${l.nombre}`,
+                  quantity: l.cantidad,
+                  unit_price: PERSONALIZACION_INICIALES_COP,
+                  currency_id: "COP",
+                });
+              }
+              if (l.personalizacion?.colorPersonalizado) {
+                lineasMp.push({
+                  title: `Color a disposición — ${l.nombre}`,
+                  quantity: l.cantidad,
+                  unit_price: PERSONALIZACION_COLOR_COP,
+                  currency_id: "COP",
+                });
+              }
+              return lineasMp;
+            }),
             { title: "Envío", quantity: 1, unit_price: envioCop, currency_id: "COP" },
           ];
 
