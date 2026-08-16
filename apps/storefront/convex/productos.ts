@@ -215,6 +215,7 @@ export const sembrarCatalogoReal = mutation({
           "/fotos/bolso-kruta-impresion-3d-frente.jpg",
           "/fotos/bolso-kruta-impresion-3d-angulo.jpg",
           "/fotos/bolso-kruta-en-uso.jpg",
+          "/fotos/bolso-kruta-en-uso-horizonte.jpg",
           "/fotos/bolso-kruta-ambiente.jpg",
         ],
         insignia: undefined,
@@ -287,6 +288,58 @@ export const juntarRendersDeEstudio = mutation({
     }
 
     return { reordenados };
+  },
+});
+
+// Reemplaza las fotos de los 4 bolsos en el catálogo vivo con las nuevas
+// tomadas en la sesión editorial (2026-08-16). Kruta pasa a 5 fotos (dos
+// en-uso: Caribe y Horizonte) para mostrar la pieza en sus dos acabados
+// principales; los otros se mantienen en 4 slots (estudio + estudio +
+// en-uso + ambiente). Idempotente y no destructiva — igual patrón que
+// actualizarSeoDeCatalogo. Los productos no listados quedan intactos.
+export const actualizarFotosDeCatalogo = mutation({
+  args: { secret: v.string() },
+  handler: async (ctx, { secret }) => {
+    exigirSecreto(secret);
+
+    const fotosPorSlug: Record<string, string[]> = {
+      menorca: [
+        "/fotos/bolso-menorca-impresion-3d-frente.jpg",
+        "/fotos/bolso-menorca-impresion-3d-angulo.jpg",
+        "/fotos/bolso-menorca-en-uso.jpg",
+        "/fotos/bolso-menorca-ambiente.jpg",
+      ],
+      mallorca: [
+        "/fotos/bolso-mallorca-impresion-3d-frente.jpg",
+        "/fotos/bolso-mallorca-impresion-3d-angulo.jpg",
+        "/fotos/bolso-mallorca-en-uso.jpg",
+        "/fotos/bolso-mallorca-ambiente.jpg",
+      ],
+      kruta: [
+        "/fotos/bolso-kruta-impresion-3d-frente.jpg",
+        "/fotos/bolso-kruta-impresion-3d-angulo.jpg",
+        "/fotos/bolso-kruta-en-uso.jpg",
+        "/fotos/bolso-kruta-en-uso-horizonte.jpg",
+        "/fotos/bolso-kruta-ambiente.jpg",
+      ],
+      montt: [
+        "/fotos/bolso-montt-impresion-3d-frente.jpg",
+        "/fotos/bolso-montt-impresion-3d-angulo.jpg",
+        "/fotos/bolso-montt-en-uso.jpg",
+        "/fotos/bolso-montt-ambiente.jpg",
+      ],
+    };
+
+    const productos = await ctx.db.query("productos").collect();
+    const actualizados: string[] = [];
+    for (const p of productos) {
+      const nuevas = fotosPorSlug[p.slug];
+      if (!nuevas) continue;
+      if (nuevas.join("|") === p.fotos.join("|")) continue;
+      await ctx.db.patch(p._id, { fotos: nuevas });
+      actualizados.push(p.slug);
+    }
+    return { actualizados };
   },
 });
 

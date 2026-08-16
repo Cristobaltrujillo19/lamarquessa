@@ -17,3 +17,7 @@ dist
 # os / editor
 .DS_Store
 Thumbs.db
+
+# backups (fotos originales que reemplacé, previews de correo, etc.)
+_backup-fotos-*/
+
