@@ -1,0 +1,75 @@
+/* Footer de la interfaz nueva. Portado de LM_MOCKUP/components/Footer.module.css
+   con una columna más: el mockup tenía dos (marca | datos) y producción necesita
+   tres, porque su inventario de enlaces es mayor —FAQ, Privacidad y WhatsApp no
+   existen en el mockup y no se pueden perder. */
+
+.footer {
+  background: var(--tinta);
+  color: var(--espuma);
+  padding-block: var(--s-6);
+  margin-top: 0;
+}
+
+.fila {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: var(--s-5);
+  align-items: start;
+}
+
+.marca img {
+  height: 32px;
+  width: auto;
+  opacity: 0.9;
+}
+
+.serie {
+  margin-top: var(--s-3);
+  color: var(--cobre);
+}
+
+/* Sobre --tinta el cobre mide 4.9:1: aquí sí pasa AA. En superficies claras
+   no lo haría — ver el corolario del capítulo 4 del handoff. */
+
+.columna {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s-2);
+  font-size: 15px;
+}
+
+.tituloColumna {
+  color: rgba(251, 250, 247, 0.55);
+  margin-bottom: calc(var(--s-1) * -1);
+}
+
+.legal {
+  margin-top: var(--s-5);
+  padding-top: var(--s-3);
+  border-top: 1px solid rgba(251, 250, 247, 0.12);
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-3);
+  font-size: 14px;
+  color: rgba(251, 250, 247, 0.6);
+}
+
+@media (max-width: 768px) {
+  .fila {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--s-4);
+  }
+  .marca {
+    grid-column: 1 / -1;
+  }
+  .legal {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .fila {
+    grid-template-columns: 1fr;
+  }
+}
