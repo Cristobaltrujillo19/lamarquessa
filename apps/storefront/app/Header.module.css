@@ -1,0 +1,177 @@
+/* Cabecera de la interfaz nueva. Portada de LM_MOCKUP/components/Nav.module.css.
+
+   Banner marino a sangre: sobre --espuma el logo cobre medía 3.1:1 y se
+   lavaba; sobre --tinta sube a 4.9:1 —el mismo par que ya usa el footer—.
+   Con esto el nav deja de ser una franja pálida y pasa a enmarcar. */
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--tinta);
+  border-bottom: 1px solid rgba(251, 250, 247, 0.14);
+}
+
+.fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+  min-height: 72px;
+  padding-block: var(--s-2);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  flex-shrink: 0;
+}
+
+.logo img {
+  height: 28px;
+  width: auto;
+}
+
+.enlaces {
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Sobre marino los enlaces viven en --espuma al 82%: legibles sin competir
+   con el logo. El estado activo y el hover suben al blanco pleno. */
+.enlace {
+  position: relative;
+  display: inline-block;
+  font-size: 15px;
+  line-height: 1;
+  padding-block: var(--s-2);
+  color: rgba(251, 250, 247, 0.82);
+  transition: color var(--dur) var(--curva);
+}
+
+.enlace:hover,
+.enlace:focus-visible,
+.activo {
+  color: var(--espuma);
+}
+
+.enlace::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--s-2) - 4px);
+  height: 1px;
+  background: var(--cobre);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur) var(--curva);
+}
+
+.enlace:hover::after,
+.enlace:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.activo::after {
+  transform: scaleX(1);
+}
+
+/* Zona derecha: el botón del carrito y, en móvil, la hamburguesa. El mockup
+   tenía aquí un enlace suelto a /carrito; producción conserva el botón que
+   abre el cajón, porque es donde se dispara view_cart. */
+.acciones {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  flex-shrink: 0;
+}
+
+/* ---------------- Hamburguesa y panel móvil ----------------
+   En escritorio el botón no existe. */
+
+.hamburguesa {
+  display: none;
+  width: 44px;
+  height: 44px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  padding: 0;
+}
+
+.barra {
+  display: block;
+  width: 22px;
+  height: 1.5px;
+  background: var(--espuma);
+  transition: transform var(--dur) var(--curva), opacity var(--dur) var(--curva);
+}
+
+/* Abierto: las barras se cruzan en aspa. La del medio se desvanece. */
+.barraSup { transform: translateY(6.5px) rotate(45deg); }
+.barraMed { opacity: 0; }
+.barraInf { transform: translateY(-6.5px) rotate(-45deg); }
+
+.panel {
+  display: none;
+  background: var(--tinta);
+  border-top: 1px solid rgba(251, 250, 247, 0.14);
+}
+
+.panelLista {
+  list-style: none;
+  margin: 0;
+  padding: var(--s-2) var(--pad-lateral) var(--s-4);
+}
+
+.panelEnlace {
+  display: block;
+  padding-block: var(--s-2);
+  font-size: 18px;
+  color: rgba(251, 250, 247, 0.82);
+  border-bottom: 1px solid rgba(251, 250, 247, 0.10);
+  transition: color var(--dur) var(--curva);
+}
+
+.panelEnlace:hover,
+.panelEnlace:focus-visible {
+  color: var(--espuma);
+}
+
+.panelActivo {
+  color: var(--espuma);
+}
+
+@media (max-width: 860px) {
+  /* El menú de escritorio cede su sitio: sus entradas viven en el panel.
+     El botón del carrito NO se esconde: es acceso directo a la compra y
+     esconderlo tras la hamburguesa le añade un toque al camino. */
+  .enlaces {
+    display: none;
+  }
+  .hamburguesa {
+    display: flex;
+  }
+  /* [hidden] gana a este display gracias a la regla de más abajo. */
+  .panel {
+    display: block;
+  }
+}
+
+/* El atributo hidden debe imponerse sobre cualquier display de las clases;
+   si no, el panel quedaría visible en móvil aunque el botón dijera que
+   está cerrado. */
+.panel[hidden] {
+  display: none;
+}
