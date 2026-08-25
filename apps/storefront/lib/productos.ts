@@ -9,8 +9,11 @@ export type Color = {
   nombre: string;
   /** Muestra de color para el selector. */
   hex: string;
-  /** Segundo color, solo en los acabados bicolor (Horizonte: negro y rojo). */
+  /** Segundo color, solo en los acabados bicolor (Horizonte: rojo y negro). */
   hex2?: string;
+  /** Frase de marca que describe el color, para el configurador de la ficha.
+   *  Opcional: los productos sembrados antes de agosto de 2026 no la traen. */
+  descripcion?: string;
 };
 
 /** Valor CSS de la muestra de un acabado. Un acabado bicolor se pinta partido

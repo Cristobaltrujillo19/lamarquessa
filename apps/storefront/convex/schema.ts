@@ -13,10 +13,15 @@ export const colorV = v.object({
   id: v.string(),
   nombre: v.string(),
   hex: v.string(),
-  // Segundo color, solo para acabados bicolor (Horizonte es negro y rojo). Si
+  // Segundo color, solo para acabados bicolor (Horizonte es rojo y negro). Si
   // está, la muestra del selector se parte en dos en vez de mentir con un
   // color plano. Opcional: los acabados de un solo color no lo llevan.
   hex2: v.optional(v.string()),
+  // Frase de una línea que describe el color con el lenguaje de la marca
+  // ("Beige cálido. El tono de la arena antes de que llegue nadie."). La
+  // muestra el configurador de la ficha. Opcional: los productos sembrados
+  // antes de agosto de 2026 no la tienen y renderizan sin ella.
+  descripcion: v.optional(v.string()),
 });
 
 export const tamanoV = v.object({
