@@ -17,10 +17,10 @@ import styles from "./Header.module.css";
 //    (y ViewCart en Meta). Un enlace plano habría perdido ese evento en su
 //    punto más frecuente.
 //
-// 2. Las entradas. El mockup lista Colección, Nuestra historia, Envíos y
-//    devoluciones, y Contacto. Las dos últimas todavía no existen como ruta:
-//    enlazarlas daría 404. Se omiten hasta crearlas, y en su lugar va
-//    Preguntas frecuentes, que sí existe y responde a lo mismo.
+// 2. Las entradas son las cuatro del mockup. Envíos y Contacto se enlazan
+//    desde que existen como ruta. Preguntas frecuentes no está en el nav del
+//    mockup, así que vive en el pie: sigue a un clic de distancia sin cargar
+//    la barra con una quinta entrada.
 //
 // El menú móvil está en la lista de "no tocar" del handoff, así que conserva
 // sus cuatro conductas: Escape cierra y devuelve el foco al botón, se cierra
@@ -28,7 +28,8 @@ import styles from "./Header.module.css";
 const ENTRADAS = [
   { href: "/tienda", texto: "Colección" },
   { href: "/nosotros", texto: "Nuestra historia" },
-  { href: "/preguntas-frecuentes", texto: "Preguntas frecuentes" },
+  { href: "/envios", texto: "Envíos" },
+  { href: "/contacto", texto: "Contacto" },
 ];
 
 export default function Header() {

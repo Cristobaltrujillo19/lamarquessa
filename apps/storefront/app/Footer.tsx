@@ -57,6 +57,9 @@ export default function Footer() {
               <Link href="/nosotros" className="link-terciario">
                 Nuestra historia
               </Link>
+              <Link href="/envios" className="link-terciario">
+                Envíos y devoluciones
+              </Link>
               <Link href="/preguntas-frecuentes" className="link-terciario">
                 Preguntas frecuentes
               </Link>
