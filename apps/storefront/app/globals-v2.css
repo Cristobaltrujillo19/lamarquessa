@@ -628,24 +628,24 @@
 
 /* ======================== Reveal en scroll ======================== */
 
-.ui-v2 .reveal {
+.ui-v2 .aparece {
   transition: opacity var(--dur-reveal) var(--curva), transform var(--dur-reveal) var(--curva);
 }
 
 /* El estado oculto lo arma el JS añadiendo .reveal-armado. Nunca vive en el
    CSS base: si el JS falla o está desactivado, el contenido se ve igual. */
-.ui-v2 .reveal-armado {
+.ui-v2 .aparece-armado {
   opacity: 0;
   transform: translateY(12px);
   will-change: opacity, transform;
 }
-.ui-v2 .reveal.is-visible {
+.ui-v2 .aparece.is-visible {
   opacity: 1;
   transform: translateY(0);
   will-change: auto;
 }
 @media (prefers-reduced-motion: reduce) {
-  .ui-v2 .reveal, .ui-v2 .reveal-armado, .ui-v2 .reveal.is-visible {
+  .ui-v2 .aparece, .ui-v2 .aparece-armado, .ui-v2 .aparece.is-visible {
     opacity: 1 !important;
     transform: none !important;
     transition: none !important;

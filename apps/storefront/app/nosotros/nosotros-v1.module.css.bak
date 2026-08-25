@@ -1,0 +1,25 @@
+.cabecera {
+  background:
+    radial-gradient(
+      ellipse 70% 70% at 50% 0%,
+      color-mix(in srgb, var(--cielo) 38%, transparent),
+      transparent 70%
+    ),
+    var(--crema);
+  padding-block: clamp(70px, 12vw, 130px) clamp(20px, 4vw, 40px);
+  text-align: center;
+}
+
+.titulo {
+  font-size: clamp(40px, 8vw, 80px);
+  color: var(--cacao);
+  line-height: 1;
+}
+
+.titulo :global(.script) {
+  font-size: 1.3em;
+}
+
+/* El relato pasó a <Manifiesto/>, que trae su propio estilo y el lockup de
+   olas. Los estilos que lo acompañaban (.relato, .centro, .parrafo, .lema) se
+   quitaron al quedar sin uso. */
