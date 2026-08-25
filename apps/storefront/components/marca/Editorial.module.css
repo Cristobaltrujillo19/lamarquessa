@@ -1,12 +1,14 @@
 .editorial {
-  background: var(--blanco);
+  background: var(--crema);
+  padding-block: clamp(60px, 8vw, 96px);
 }
 
-/* Estas fotos son verticales y editoriales. Con la franja ancha del hero
-   (2,47:1) solo se veía una tira del 27% de la foto y los bolsos quedaban
-   cortados por arriba y por abajo. Más angosta y más alta, cada bolso entra
-   completo. */
+/* Editorial "gallery print": cada foto se muestra COMPLETA (ajuste=contain)
+   dentro de una ventana portrait 4:5. El fondo crema alrededor las hace leer
+   como una impresión enmarcada — es lo que hacen las marcas luxury (Hermès,
+   Loewe): jamás recortan la composición del fotógrafo. Diferente al hero
+   donde sí queremos wall-to-wall. */
 .carrete {
-  --carrusel-ancho: 820px;
-  --carrusel-alto: clamp(440px, 56vw, 560px);
+  --carrusel-ancho: 720px;
+  --carrusel-alto: clamp(540px, 82vw, 900px);
 }

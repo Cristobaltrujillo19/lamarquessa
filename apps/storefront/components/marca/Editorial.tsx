@@ -60,7 +60,7 @@ export default function Editorial() {
     <section className={`seccion ${css.editorial}`}>
       <div className="contenedor">
         <div className={css.carrete}>
-          <Carrusel slides={slides} />
+          <Carrusel slides={slides} ajuste="contain" />
         </div>
       </div>
     </section>
