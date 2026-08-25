@@ -367,7 +367,17 @@ export const actualizarColoresDeCatalogo = mutation({
     // Comparación campo a campo, no JSON.stringify: Convex no garantiza el
     // orden de las claves al leer un documento, así que stringify daba falsos
     // negativos y la mutación reescribía siempre.
-    const yaCoincide = (guardados: typeof ACABADOS_MARCA) =>
+    // El tipo va explícito y laxo: `typeof ACABADOS_MARCA` infiere una unión
+    // estricta (una forma con hex2, otra sin él) que no encaja con lo que
+    // devuelve la base, donde hex2 y descripcion son simplemente opcionales.
+    type ColorGuardado = {
+      id: string;
+      nombre: string;
+      hex: string;
+      hex2?: string;
+      descripcion?: string;
+    };
+    const yaCoincide = (guardados: ColorGuardado[]) =>
       guardados.length === ACABADOS_MARCA.length &&
       ACABADOS_MARCA.every((esperado, i) => {
         const actual = guardados[i];

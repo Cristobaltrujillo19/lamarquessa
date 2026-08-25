@@ -1,0 +1,709 @@
+/* ========================================================================
+   La Marquessa — sistema de diseño de la NUEVA INTERFAZ (v2)
+
+   GENERADO desde LM_MOCKUP/app/globals.css. No editar a mano mientras el
+   mockup siga siendo la especificación viva: editar allí y regenerar.
+
+   Todo va encapsulado bajo `.ui-v2` porque producción tiene tokens con los
+   mismos nombres y distintos valores (--crema, --cobre, --cobre-texto). Las
+   páginas ya portadas se envuelven en <div className="ui-v2">; el resto del
+   sitio sigue con la paleta anterior hasta que le toque.
+
+   Cuando el porting termine: promover los tokens a :root, borrar los viejos
+   y quitar los wrappers, todo en un mismo commit.
+
+   El reset del mockup no se porta: Tailwind preflight ya lo cubre.
+   ======================================================================== */
+
+/* ========================================================================
+   La Marquessa — sistema de diseño
+   Todos los colores, tamaños y espaciados se derivan de estos tokens.
+   Ningún valor de color/tamaño/espacio puede vivir fuera de este archivo.
+   ======================================================================== */
+
+/* ------------------------------------------------------------------
+   FUENTE DISPLAY
+
+   El mockup especifica "Queens" (Displaay Type Foundry) y declaraba tres
+   .woff2 que nunca llegaron al proyecto. Producción, en cambio, sí tiene un
+   archivo real desde julio: /fonts/queen-serif.otf — la versión FREE de
+   Queen Serif, que NO es la misma tipografía pero es de la misma familia
+   visual y es lo único licenciado que hay.
+
+   Así que el src apunta a ese archivo. Se conserva el nombre de familia
+   "Queens" para que el CSS portado del mockup funcione sin reescribir una
+   sola declaración, y los local() delante para que el día que Queens de
+   verdad se licencie y se instale, la tome sin tocar nada.
+
+   Sin unicode-range a propósito: la versión FREE no trae acentos ni
+   puntuación, y el navegador hace fallback POR GLIFO al siguiente tipo de
+   la pila (Fraunces). Acotar el rango aquí no aportaría nada y arriesga
+   tofu en las eñes.
+
+   ⚠️ DECISIÓN PENDIENTE: si "Queens" se licencia para web, subir los .woff2
+   a /public/fonts y añadirlos a este src ANTES del .otf. Si no se licencia,
+   asumir que la display del sitio es Queen Serif FREE + Fraunces y retirar
+   de una vez la mención a Queens del handoff. Ver capítulo 4. */
+@font-face {
+  font-family: "Queens";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local("Queens Regular"), local("Queens"),
+       url("/fonts/queen-serif.otf") format("opentype");
+}
+/* Queen Serif FREE es de un solo peso. Se mapea también al 500 para que las
+   declaraciones del mockup que piden medium no caigan en negrita sintética,
+   que en una display se ve mal. */
+@font-face {
+  font-family: "Queens";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: local("Queens Medium"),
+       url("/fonts/queen-serif.otf") format("opentype");
+}
+/* Sin cursiva propia: se deja que Fraunces, que sí la trae, la resuelva. */
+@font-face {
+  font-family: "Queens";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local("Queens Italic");
+}
+
+.ui-v2 {
+
+  /* Lo que en el mockup vivía en la regla `html`. Bajo scope pasa aquí:
+     los descendientes de .ui-v2 heredan superficie, color y tipografía. */
+  background: var(--crema);
+  color: var(--tinta);
+  font-family: var(--font-text);
+  font-size: 17px;
+  line-height: 1.65;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+
+  /* -------- Paleta — jerarquía de superficies --------
+     La familia dominante es CAFÉ, tono 59° en LCh, derivada del #6F5443
+     que fijó el cliente.
+
+     Ese hex NO puede ocupar el papel de ancla: mide L* 38.1, mientras que
+     el ancla necesita L* ~14. Medido, usarlo tal cual como --tinta producía
+     cinco fallos de contraste — el texto secundario caía a 3.05:1 (sin
+     arreglo ni subiendo el alfa al 85%) y el cobre moría sobre él a 1.19:1,
+     porque cobre y café son el mismo tono. Así que la rampa conserva las
+     luminosidades de cada papel y solo gira el tono. Resultado: cero fallos,
+     ratios idénticos a la paleta marina anterior.
+
+     El #6F5443 exacto vive en --cafe, como tono medio. */
+  --tinta:          #2F2016; /* Café profundo — ancla, texto y secciones a sangre */
+  --tinta-profunda: #453022; /* Segundo tono de display, solo H1 y H2 */
+  --cafe:           #6F5443; /* Tono medio: elevación en hover del primario */
+  --crema:          #EAE8DF; /* NUEVO — superficie base del sitio */
+  --espuma:         #FBFAF7; /* Superficie ELEVADA: ficha técnica, carrito */
+  --cobre:          #BB825A; /* Marca gráfica; NUNCA texto > 14px */
+  --cobre-texto:    #8A5A34; /* Cobre oscurecido para texto pequeño (5.6:1) */
+  --profundo:       #1E6E70; /* Estados (foco, éxito) y textura del fondo */
+  /* Velo de --crema para las islas de contenido. No es una superficie
+     nueva del sistema: es el MISMO crema con alfa, para calmar la textura
+     animada bajo el texto sin llegar a taparla. Ver .isla. */
+  --crema-velo:     rgba(234, 232, 223, 0.88);
+
+  /* --arena queda eliminada del proyecto: a dos pasos del --crema, dos
+     superficies casi idénticas no son sistema, son descuido. */
+
+  /* Derivados de tinta con opacidad — únicos permitidos. Son el rgb de
+     --tinta (#2F2016 = 47,32,22); si se cambia el ancla hay que cambiarlos
+     aquí también, no admiten var() dentro de rgba().
+     --tinta-70 es el piso para texto: mide 5.29:1 sobre crema. */
+  --tinta-70: rgba(47, 32, 22, 0.70);
+  --tinta-40: rgba(47, 32, 22, 0.40);
+  --tinta-12: rgba(47, 32, 22, 0.12);
+  --tinta-06: rgba(47, 32, 22, 0.06);
+
+  /* -------- Colores de PRODUCTO — no son del sistema --------
+     Los cinco colores en que se fabrica cada bolso. Viven aquí porque este
+     archivo prohíbe hexes sueltos fuera de él, pero NO forman parte del
+     sistema de diseño: no se usan para superficies, texto ni estados.
+     Su único destino son las muestras del selector de color y del filtro
+     de colección.
+
+     Son APROXIMACIONES tomadas de la descripción verbal del cliente
+     (beige, chocolate, rojo con negro, azul, azul marino). Nadie ha medido
+     todavía una pieza real. Cuando lleguen las fotos definitivas, calibrar
+     estos cinco valores contra el producto físico antes de dar el sitio
+     por bueno: una muestra que miente es peor que no tener muestra.
+
+     Horizonte son DOS colores (rojo sobre negro), así que su muestra es un
+     degradado duro a 45°, no un plano. */
+  --prod-amanecer:      #D9C7A8; /* Beige cálido */
+  --prod-manglar:       #4B3122; /* Chocolate */
+  --prod-horizonte:     #8F2B23; /* Rojo — mitad superior de la muestra */
+  --prod-horizonte-2:   #171310; /* Negro — mitad inferior */
+  --prod-caribe:        #2C8CA8; /* Azul de agua clara */
+  --prod-marea:         #1E2C4A; /* Azul marino */
+
+  /* -------- Tipografía — dos familias, no tres --------
+     Queens es la display del sitio; Archivo el texto. Fraunces aparece en
+     la font-family solo como respaldo REAL mientras los .woff2 de Queens
+     no estén en el proyecto: sin ella el sitio no se rompe pero se ve mal.
+     Cuando Queens esté auto-hospedada, retirar Fraunces del fallback y
+     del loader en app/layout.tsx. */
+  --font-display: "Queens",
+                  var(--font-fraunces), "Fraunces",
+                  "Iowan Old Style", "Times New Roman", serif;
+  --font-text:    var(--font-archivo), "Archivo",
+                  -apple-system, "Helvetica Neue", Arial, sans-serif;
+
+  /* -------- Espacio -------- */
+  --s-1:   8px;
+  --s-2:  16px;
+  --s-3:  24px;
+  --s-4:  40px;
+  --s-5:  64px;
+  --s-6:  96px;
+  --s-7: 120px;
+
+  /* Cadencia de espaciado — sistema cerrado, cuatro valores.
+     Antes todo corría a 120px exactos: correcto pero monótono, se leía
+     como una lista uniforme. Cada bloque respira ahora según su peso. */
+  --pad-respiro:  96px;   /* franjas de valores, fichas de datos */
+  --pad-base:    128px;   /* colección, medidas y cuidado */
+  --pad-enfasis: 176px;   /* hecho a pedido, proceso en 3 pasos */
+  --pad-momento: 224px;   /* prueba social, cierre de /nosotros */
+
+  --pad-lateral: var(--s-5);
+  --max-ancho: 1280px;
+  --max-ancho-texto: 34em; /* 68 caracteres */
+
+  /* -------- Forma -------- */
+  --radio: 2px;
+  --hairline: 1px solid var(--tinta-12);
+
+  /* -------- Movimiento -------- */
+  --curva: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur:   480ms;
+  --dur-reveal: 600ms;
+}
+
+
+/* Foco de teclado — visible siempre */
+.ui-v2 :focus-visible {
+  outline: 2px solid var(--profundo);
+  outline-offset: 3px;
+  border-radius: var(--radio);
+}
+:focus:not(:focus-visible) { outline: none; }
+
+/* Skip-link — invisible hasta que recibe foco por Tab. Aterriza sobre
+   #contenido para saltar el nav en teclado y lectores. */
+.ui-v2 .skip-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translateY(-120%);
+  z-index: 100;
+  padding: var(--s-2) var(--s-3);
+  background: var(--tinta);
+  color: var(--espuma);
+  font-size: 14px;
+  transition: transform var(--dur) var(--curva);
+}
+.skip-link:focus,
+.ui-v2 .skip-link:focus-visible {
+  transform: translateY(0);
+  outline-offset: 2px;
+}
+
+/* ======================== Tipografía ======================== */
+
+/* H1 y H2 en Queens. Trackings más apretados (Queens tiene x-height alta
+   y contraste didona; con los valores de Fraunces se leía suelta).
+   El tamaño mínimo es 40px en H1 y 28px en H2: Queens no se usa nunca
+   por debajo de 28px — a ese tamaño las hairlines desaparecen. Los
+   font-variation-settings de Fraunces se retiran, Queens no es variable. */
+.ui-v2 .h1 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(40px, 5.4vw, 64px);
+  letter-spacing: -0.035em;
+  line-height: 1.0;
+  margin: 0;
+  color: var(--tinta-profunda);
+}
+.ui-v2 .h2 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(28px, 3.4vw, 40px);
+  letter-spacing: -0.025em;
+  line-height: 1.08;
+  margin: 0;
+  color: var(--tinta-profunda);
+}
+/* Sobre fondo oscuro el titular vuelve a espuma */
+.seccion-tinta .h1,
+.seccion-tinta .h2,
+.sobre-foto .h1,
+.ui-v2 .sobre-foto .h2 {
+  color: var(--espuma);
+}
+
+/* Sobre foto, Queens sube a peso 500. La hairline de una didona a peso
+   regular se pierde sobre las zonas claras de la imagen; con Medium
+   sobrevive incluso donde el overlay es menos denso. */
+.sobre-foto .h1 { font-weight: 500; }
+/* H3 vive en Archivo, NO en la display. Nombres de producto y títulos
+   de bloques pequeños están a 20–22px: Queens no se usa por debajo de
+   28px (a ese tamaño sus hairlines desaparecen). Archivo Medium hace
+   este rol perfectamente y refuerza que el sitio tiene dos familias. */
+.ui-v2 .h3 {
+  font-family: var(--font-text);
+  font-weight: 500;
+  font-size: clamp(20px, 2vw, 22px);
+  letter-spacing: 0.005em;
+  line-height: 1.3;
+  margin: 0;
+  color: var(--tinta);
+}
+.ui-v2 .cuerpo {
+  font-size: clamp(16px, 1.4vw, 17px);
+  line-height: 1.65;
+  max-width: var(--max-ancho-texto);
+  margin: 0;
+}
+.ui-v2 .precio {
+  font-family: var(--font-text);
+  font-weight: 500;
+  font-size: clamp(18px, 1.6vw, 20px);
+  letter-spacing: 0.01em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  margin: 0;
+}
+.ui-v2 .eyebrow {
+  font-family: var(--font-text);
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  line-height: 1;
+  text-transform: uppercase;
+  margin: 0;
+}
+/* Eyebrow de sección: rotula un bloque entero, lleva el acento.
+   Máximo uno por pantalla para no gastar la cuota de cobre. */
+.ui-v2 .eyebrow-seccion {
+  color: var(--cobre-texto);
+}
+/* Eyebrow de dato: acompaña una pieza concreta (color, atribución). */
+.ui-v2 .eyebrow-dato {
+  color: var(--tinta-70);
+}
+
+/* Cursiva en display para frase evocativa y testimonios. 28px mínimo
+   porque es el piso al que Queens Italic se lee bien. La subida gana
+   presencia justo donde el mockup era más débil. */
+.ui-v2 .display-italic {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(28px, 2.4vw, 32px);
+  line-height: 1.28;
+  letter-spacing: -0.005em;
+  margin: 0;
+}
+
+/* ======================== Layout ======================== */
+
+.ui-v2 .contenedor {
+  width: 100%;
+  max-width: var(--max-ancho);
+  margin: 0 auto;
+  padding-inline: var(--pad-lateral);
+}
+/* Superficies:
+   - default    → --crema (viene de html)
+   - .seccion-elevada → --espuma, para fichas y bloques que deben levantar
+   - .seccion-tinta   → --tinta a sangre, texto en --espuma
+   La antigua .seccion-arena queda retirada. */
+.ui-v2 .seccion-elevada {
+  background: var(--espuma);
+}
+.ui-v2 .seccion-tinta {
+  background: var(--tinta);
+  color: var(--espuma);
+}
+/* Texto en secciones oscuras: los tokens de tinta con opacidad no aplican;
+   usamos --espuma con opacidad para los mismos roles.
+   No incluimos aquí las clases cifradas por CSS Modules (ej. filaClave):
+   ese ajuste vive en el propio módulo cuando haga falta. */
+.seccion-tinta .texto-suave,
+.ui-v2 .seccion-tinta .eyebrow-dato {
+  color: rgba(251, 250, 247, 0.72);
+}
+.hairline { border-top: var(--hairline); }
+.hairline-b { border-bottom: var(--hairline); }
+
+/* Cuatro pesos de sección. Cada padding vertical viene solo de un token;
+   no se usa ningún otro valor libre. En móvil se contraen proporcionalmente. */
+.seccion-respiro  { padding-block: var(--pad-respiro); }
+.seccion-base     { padding-block: var(--pad-base); }
+.seccion-enfasis  { padding-block: var(--pad-enfasis); }
+.seccion-momento  { padding-block: var(--pad-momento); }
+
+@media (max-width: 768px) {
+  .ui-v2 :root {
+    --pad-respiro:   56px;
+    --pad-base:      72px;
+    --pad-enfasis:   96px;
+    --pad-momento:  120px;
+    --pad-lateral: var(--s-3);
+  }
+}
+
+/* ======================== Fondo topográfico ========================
+   Capa fija bajo todo el contenido: curvas de nivel que texturizan el
+   --crema sin tocar las superficies opacas (--espuma y --tinta la tapan,
+   que es lo correcto: los bloques marinos se quedan limpios).
+
+   El dibujo y su movimiento viven en components/FondoTopografico.tsx —
+   el patrón se regenera por frame en GPU, así que aquí solo queda la
+   caja. El tamaño del buffer lo fija el componente; el elemento siempre
+   ocupa el viewport y el reescalado no se nota en un patrón difuso. */
+/* El blur es el dial de difuminado de la textura. Va aquí y no en el
+   shader porque es un gaussiano real, se mide en píxeles de pantalla y no
+   depende de la resolución del buffer. Difuminar bajando ESCALA_BUFFER
+   parecía equivalente y no lo es: producía puntilleo donde las curvas se
+   apiñan, porque faltaban píxeles para dibujarlas.
+
+   El canvas se desborda 32px por cada lado para que el blur no chupe
+   transparencia de los bordes del viewport y deje halos claros. */
+.ui-v2 .fondo-topo {
+  position: fixed;
+  inset: -32px;
+  z-index: -1;
+  pointer-events: none;
+  width: calc(100% + 64px);
+  height: calc(100% + 64px);
+  display: block;
+  filter: blur(9px);
+}
+
+/* Respaldo sin WebGL2: la misma topografía, rasterizada una vez desde SVG
+   y enmascarada, con la deriva de color resuelta en CSS. Pierde el flujo
+   de las curvas — que es justo lo que no se puede hacer barato sin GPU —
+   pero conserva la textura y el tono. */
+.ui-v2 .fondo-topo--estatico {
+  -webkit-mask-image: url("/assets/svg/topografia.svg");
+          mask-image: url("/assets/svg/topografia.svg");
+  -webkit-mask-size: cover;
+          mask-size: cover;
+  -webkit-mask-position: center;
+          mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+
+  background-color: rgba(30, 110, 112, 0.46);
+  animation: deriva-topo 120s ease-in-out infinite;
+}
+
+/* Mismo recorrido que el shader: de --profundo hacia --tinta, con
+   tope en el 30% para que no deje de leerse como bronce. */
+@keyframes deriva-topo {
+  0%   { background-color: rgba(30, 110, 112, 0.46); } /* --profundo */
+  50%  { background-color: rgba(26, 88, 92, 0.46); }  /* 30% hacia --tinta */
+  100% { background-color: rgba(30, 110, 112, 0.46); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fondo-topo--estatico { animation: none; }
+}
+
+/* Solo para lectores de pantalla. Sirve para dar a un enlace un destino
+   explícito cuando lo visible es una imagen. No se usa display:none ni
+   visibility:hidden porque ambos lo sacarían también del árbol de
+   accesibilidad, que es justo lo contrario de lo que se busca. */
+.ui-v2 .sr-solo {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ======================== Islas de contenido ========================
+   El texto no debe apoyarse directamente sobre una textura en movimiento:
+   compite con la lectura. La isla interpone un velo del MISMO crema, así
+   que no añade una superficie nueva a la jerarquía (--crema / --espuma /
+   --tinta) — es la misma superficie, solo que calmada.
+
+   Decisiones deliberadas:
+   - Al 88% la topografía se sigue intuyendo por debajo. Opaco del todo
+     convertiría cada bloque en una tarjeta, que es el cliché de boutique
+     que la dirección de arte evita.
+   - El velo DESBORDA la columna (inset lateral negativo) para que su borde
+     caiga en el margen y nunca justo al lado de una línea de texto.
+   - Se disuelve arriba y abajo con una máscara: un rectángulo de bordes
+     duros se leería como una caja pegada encima del fondo.
+   - NADA de isolation:isolate aquí, aunque sería lo natural. Crearía un
+     contexto de apilamiento y atraparía dentro cualquier elemento fijo que
+     viva en la columna: en la ficha de producto el Lightbox (z:200) pasaría
+     a quedar POR DEBAJO del nav (z:10). Con position:relative y z-index
+     auto no se crea contexto: el ::before en z:-1 participa del contexto
+     raíz, donde queda por debajo de todo el contenido en flujo y por encima
+     del canvas del fondo, que está en el mismo z:-1 pero antes en el árbol.
+
+   Se aplica de dos maneras: automáticamente a toda columna sobre crema
+   (ver el selector de abajo) y a mano con .isla cuando haga falta. */
+.isla,
+.seccion-respiro > .contenedor,
+.seccion-base    > .contenedor,
+.seccion-enfasis > .contenedor,
+.ui-v2 .seccion-momento > .contenedor {
+  position: relative;
+}
+
+.isla::before,
+.seccion-respiro > .contenedor::before,
+.seccion-base    > .contenedor::before,
+.seccion-enfasis > .contenedor::before,
+.ui-v2 .seccion-momento > .contenedor::before {
+  content: "";
+  position: absolute;
+  inset: -40px calc(var(--pad-lateral) * -1);
+  z-index: -1;
+  pointer-events: none;
+  background: var(--crema-velo);
+  /* Desvanecido por los CUATRO lados, componiendo dos degradados con
+     mask-composite. Con solo el vertical, los bordes laterales del velo
+     cortaban en seco y dejaban una línea vertical visible contra la
+     textura del margen.
+
+     El min() acota el fundido a un porcentaje del lado: sin él, en un
+     bloque bajo (la franja de valores mide 48px) los dos degradados de
+     56px se solapaban y el velo se quedaba casi transparente justo donde
+     hacía falta. */
+  --velo-alto: min(56px, 22%);
+  --velo-ancho: min(90px, 12%);
+  -webkit-mask-image:
+    linear-gradient(to bottom, transparent 0, #000 var(--velo-alto),
+                    #000 calc(100% - var(--velo-alto)), transparent 100%),
+    linear-gradient(to right, transparent 0, #000 var(--velo-ancho),
+                    #000 calc(100% - var(--velo-ancho)), transparent 100%);
+          mask-image:
+    linear-gradient(to bottom, transparent 0, #000 var(--velo-alto),
+                    #000 calc(100% - var(--velo-alto)), transparent 100%),
+    linear-gradient(to right, transparent 0, #000 var(--velo-ancho),
+                    #000 calc(100% - var(--velo-ancho)), transparent 100%);
+  -webkit-mask-composite: source-in;
+          mask-composite: intersect;
+}
+
+/* Las secciones que ya traen superficie opaca propia no llevan velo: no hay
+   textura debajo que calmar. Cubre .seccion-tinta (bloque marino de la home)
+   y .seccion-elevada (el proceso en la ficha de producto).
+
+   Va DESPUÉS de la regla del velo a propósito: tiene la misma especificidad
+   (0,2,1), así que si se declara antes pierde por orden de cascada y la
+   exclusión no surte efecto. Ya me pasó. */
+.seccion-tinta   > .contenedor::before,
+.ui-v2 .seccion-elevada > .contenedor::before {
+  content: none;
+}
+
+@media (max-width: 768px) {
+  /* En móvil el margen lateral es estrecho: el velo se lleva al borde de
+     la pantalla para que no quede una franja de textura de 8px. */
+  .isla::before,
+  .seccion-respiro > .contenedor::before,
+  .seccion-base    > .contenedor::before,
+  .seccion-enfasis > .contenedor::before,
+  .seccion-momento > .contenedor::before { inset: -24px -100vw; }
+}
+
+/* ======================== Botones ========================
+   Tres reglas, sin excepción:
+     1. Primario sobre fondo claro       → fondo --tinta,  texto --espuma
+     2. Primario sobre fotografía/oscuro → fondo --espuma, texto --tinta
+        (aplica cuando el botón vive dentro de .sobre-foto o .seccion-tinta)
+     3. Secundario en cualquier fondo    → borde 1px, fondo transparente
+   El hover del primario lleva a --cafe, no a --cobre. Con --cobre medía
+   3.12:1 contra --espuma: era el único fallo de contraste del sistema, y
+   venía de antes del cambio de paleta. Sobre café el cobre sería aún peor
+   (mismo tono). Con --cafe sube a 6.65:1 y además el hover se lee como una
+   elevación dentro de la misma familia, que es lo que hace un botón. */
+
+.ui-v2 .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 32px;
+  min-height: 48px;
+  min-width: 44px;
+  border-radius: var(--radio);
+  font-family: var(--font-text);
+  font-weight: 500;
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: background-color var(--dur) var(--curva), color var(--dur) var(--curva), border-color var(--dur) var(--curva);
+  text-align: center;
+  cursor: pointer;
+}
+.ui-v2 .btn-primario {
+  background: var(--tinta);
+  color: var(--espuma);
+}
+.ui-v2 .btn-primario:hover {
+  background: var(--cafe);
+  color: var(--espuma);
+}
+.ui-v2 .btn-secundario {
+  background: transparent;
+  color: var(--tinta);
+  border: 1px solid var(--tinta);
+}
+.ui-v2 .btn-secundario:hover {
+  background: var(--tinta);
+  color: var(--espuma);
+}
+/* En sección oscura y sobre fotografía */
+.seccion-tinta .btn-primario,
+.ui-v2 .sobre-foto .btn-primario {
+  background: var(--espuma);
+  color: var(--tinta);
+}
+.seccion-tinta .btn-primario:hover,
+.ui-v2 .sobre-foto .btn-primario:hover {
+  background: var(--cafe);
+  color: var(--espuma);
+}
+.ui-v2 .seccion-tinta .btn-secundario {
+  color: var(--espuma);
+  border-color: var(--espuma);
+}
+.ui-v2 .seccion-tinta .btn-secundario:hover {
+  background: var(--espuma);
+  color: var(--tinta);
+}
+
+/* Enlace terciario — subrayado cobre en hover */
+.ui-v2 .link-terciario {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 2px;
+}
+.ui-v2 .link-terciario::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--cobre);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur) var(--curva);
+}
+.link-terciario:hover::after,
+.ui-v2 .link-terciario:focus-visible::after {
+  transform: scaleX(1);
+}
+
+/* Objetivo táctil de 44px sin alterar el ritmo visual del texto */
+@media (pointer: coarse) {
+  .ui-v2 .link-terciario {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+  .link-terciario::after { bottom: var(--s-1); }
+}
+
+/* ======================== Reveal en scroll ======================== */
+
+.ui-v2 .reveal {
+  transition: opacity var(--dur-reveal) var(--curva), transform var(--dur-reveal) var(--curva);
+}
+
+/* El estado oculto lo arma el JS añadiendo .reveal-armado. Nunca vive en el
+   CSS base: si el JS falla o está desactivado, el contenido se ve igual. */
+.ui-v2 .reveal-armado {
+  opacity: 0;
+  transform: translateY(12px);
+  will-change: opacity, transform;
+}
+.ui-v2 .reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  will-change: auto;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ui-v2 .reveal, .ui-v2 .reveal-armado, .ui-v2 .reveal.is-visible {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  * { animation: none !important; transition: none !important; }
+}
+
+/* ======================== Utilidades semánticas ======================== */
+
+.texto-suave { color: var(--tinta-70); }
+.centrado { text-align: center; }
+.centrado-caja { margin-inline: auto; }
+.ancho-texto { max-width: var(--max-ancho-texto); }
+.ui-v2 .bloque-hairline {
+  border-top: var(--hairline);
+  padding-top: var(--s-3);
+  margin-top: var(--s-4);
+}
+.aire-arriba { margin-top: var(--s-4); }
+.aire-arriba-lg { margin-top: var(--s-5); }
+.aire-abajo { margin-bottom: var(--s-4); }
+.stack > * + * { margin-top: var(--s-3); }
+.stack-lg > * + * { margin-top: var(--s-4); }
+
+/* Placeholder para foto pendiente — visible, no confundible con real */
+.ui-v2 .foto-pendiente {
+  background: var(--tinta-06);
+  border: var(--hairline);
+  color: var(--tinta-70);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--s-3);
+  font-family: var(--font-text);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* Marcador de andamiaje: línea propia, separado del rótulo que acompaña.
+   Se distingue por la regla al margen y el tamaño, no por un color lavado. */
+.ui-v2 .pendiente-inline {
+  display: block;
+  width: fit-content;
+  color: var(--tinta-70);
+  font-family: var(--font-text);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border-left: 2px solid var(--tinta-40);
+  padding-left: var(--s-1);
+  margin-top: var(--s-2);
+}
+
+/* Variante en línea: para meter un marcador dentro de un párrafo sin
+   partir el flujo. Mismo estilo, sin salto de línea. */
+.ui-v2 .pendiente-inline--inline {
+  display: inline-block;
+  margin-top: 0;
+}
