@@ -36,6 +36,42 @@ export type PostInstagram = {
   fecha: string;
 };
 
+/* ---------------------------------------------------------------------
+   PUBLICACIONES QUE EL DUENO YA ELIGIO (2026-08-26), A LA ESPERA DE IMAGEN
+
+   Estas siete son las que van al muro. NO se pueden activar todavia porque
+   falta la miniatura de cada una en /public/instagram.
+
+   Por que no se descargaron solas: Instagram no sirve el contenido de una
+   publicacion sin sesion iniciada. Comprobado el 2026-08-26 contra la pagina
+   del post y contra /embed/captioned/ — las dos devuelven un cascaron de
+   ~614 KB de CSS y JS, con CERO URLs de imagen de contenido. Es control de
+   acceso de Instagram, no un fallo nuestro, y no se rodea.
+
+   Las dos marcadas CARRUSEL llevaban ?img_index=2 en el enlace que paso el
+   dueno: de esas hay que tomar la SEGUNDA imagen del carrusel, no la primera.
+
+     1. https://www.instagram.com/p/DceieuXT8QQ/
+     2. https://www.instagram.com/p/Dcb0Oq-zoyQ/
+     3. https://www.instagram.com/p/DcRjhMQTjRd/
+     4. https://www.instagram.com/p/DcOUnAJuTrr/
+     5. https://www.instagram.com/p/Db6yEZrDGH-/?img_index=2   CARRUSEL, imagen 2
+     6. https://www.instagram.com/p/Db4EobPDAi_/?img_index=2   CARRUSEL, imagen 2
+     7. https://www.instagram.com/p/DbE-MpUspAX/
+
+   PARA ACTIVARLAS hacen falta dos cosas del dueno:
+     a) Las siete imagenes en /public/instagram (el original que subio a
+        Instagram vale mas que lo que Instagram devolveria: llega sin la
+        recompresion de la plataforma).
+     b) La fecha de cada publicacion, porque `recientesPrimero()` ordena por
+        `fecha` y una fecha inventada cambiaria el orden del muro. Si no las
+        hay, sirve confirmar que el orden de arriba ES el orden de exhibicion.
+
+   El `alt` se escribe MIRANDO cada foto, no adivinando: un alt que describe
+   algo que no esta en la imagen es peor que no tener alt, porque quien usa
+   lector de pantalla no puede detectar el error.
+   --------------------------------------------------------------------- */
+
 /** Publicaciones reales. Vacio = la seccion no existe en produccion. */
 export const POSTS: PostInstagram[] = [];
 
