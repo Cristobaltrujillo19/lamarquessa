@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Foto, { altDeFoto } from "@/components/Foto";
+import Lightbox from "@/components/v2/Lightbox";
 import { type Producto, rotuloColorDeFoto } from "@/lib/productos";
 import styles from "./ConfiguradorPieza.module.css";
 
@@ -51,6 +52,16 @@ export default function GaleriaPieza({
 }) {
   const pista = useRef<HTMLDivElement | null>(null);
   const [indice, setIndice] = useState(0);
+
+  /** Foto ampliada. `i` es la que se abrio, no la que se este viendo dentro
+   *  del modal: el modal lleva su propio indice. */
+  const [lightbox, setLightbox] = useState<{ abierto: boolean; i: number }>({
+    abierto: false,
+    i: 0,
+  });
+  /** Al cerrar el modal el foco vuelve aqui. Sin esto, cerrar con Escape
+   *  devuelve el foco al <body> y la navegacion por teclado se pierde. */
+  const disparador = useRef<HTMLButtonElement | null>(null);
 
   /** El visitante tomó el control. A partir de ahí no vuelve a moverse solo. */
   const [detenido, setDetenido] = useState(false);
@@ -152,7 +163,13 @@ export default function GaleriaPieza({
             aria-roledescription="diapositiva"
             aria-label={`${i + 1} de ${total}`}
           >
-            <div className={styles.marcoFoto}>
+            <button
+              type="button"
+              ref={i === 0 ? disparador : undefined}
+              className={`${styles.marcoFoto} ${styles.marcoFotoBtn}`}
+              onClick={() => setLightbox({ abierto: true, i })}
+              aria-label={`Ampliar foto ${i + 1}: ${altDeFoto(src, producto.nombre)}`}
+            >
               <Foto
                 src={src}
                 alt={altDeFoto(src, producto.nombre)}
@@ -168,7 +185,7 @@ export default function GaleriaPieza({
               <span className={styles.marcaAgua} aria-hidden="true">
                 {rotuloColorDeFoto(producto, src)}
               </span>
-            </div>
+            </button>
           </div>
         ))}
       </div>
@@ -218,6 +235,19 @@ export default function GaleriaPieza({
           </button>
         </div>
       )}
+
+      <Lightbox
+        fotos={fotos.map((src) => ({
+          src,
+          alt: altDeFoto(src, producto.nombre),
+        }))}
+        indiceInicial={lightbox.i}
+        abierto={lightbox.abierto}
+        onCerrar={() => {
+          setLightbox((x) => ({ ...x, abierto: false }));
+          disparador.current?.focus();
+        }}
+      />
     </div>
   );
 }

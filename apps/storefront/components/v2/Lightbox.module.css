@@ -1,0 +1,93 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(69, 48, 34, 0.94);
+  display: grid;
+  place-items: center;
+  padding: var(--s-4);
+  animation: aparecer 240ms var(--curva);
+}
+
+@keyframes aparecer {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.marco {
+  position: relative;
+  width: min(90vw, 1100px);
+  aspect-ratio: 4 / 5;
+  max-height: 88vh;
+}
+
+.marco :global(picture),
+.marco :global(img) {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.marco :global(img) {
+  object-fit: contain;
+}
+
+.cerrar,
+.flecha {
+  position: absolute;
+  color: var(--espuma);
+  background: rgba(47, 32, 22, 0.55);
+  border: 1px solid rgba(251, 250, 247, 0.24);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 28px;
+  line-height: 1;
+  transition: background var(--dur) var(--curva), transform var(--dur) var(--curva);
+}
+
+.cerrar:hover,
+.flecha:hover {
+  background: var(--tinta);
+}
+
+.cerrar {
+  top: var(--s-3);
+  right: var(--s-3);
+  font-size: 24px;
+}
+
+.flecha {
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 32px;
+}
+
+.flechaIzq { left: var(--s-3); }
+.flechaDer { right: var(--s-3); }
+
+.contador {
+  position: absolute;
+  bottom: var(--s-3);
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--espuma);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+@media (max-width: 600px) {
+  .cerrar { top: var(--s-2); right: var(--s-2); }
+  .flechaIzq { left: 4px; }
+  .flechaDer { right: 4px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay { animation: none; }
+  .cerrar, .flecha { transition: none; }
+}
