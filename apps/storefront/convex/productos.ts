@@ -503,30 +503,45 @@ export const actualizarFotosDeCatalogo = mutation({
   handler: async (ctx, { secret }) => {
     exigirSecreto(secret);
 
+    // ORDEN DEL ARREGLO — no es cosmetico, lo leen tres sitios:
+    //
+    //   fotos[0] = PORTADA de la tarjeta de coleccion, y primera del carrusel
+    //              de la ficha.
+    //   fotos[1] = foto de HOVER de la tarjeta: la que aparece en cross-fade
+    //              al pasar el cursor (TarjetaProducto lee `producto.fotos[1]`).
+    //   el resto  = siguen el carrusel de la ficha en este orden.
+    //
+    // Decidido el 2026-08-26: el hover pasa de la toma de angulo a la toma
+    // EN USO. La de angulo repetia el mismo plano de estudio que la portada,
+    // asi que el cross-fade apenas se notaba; la de en uso cambia de contexto
+    // y ensena la pieza puesta, que es lo que resuelve la duda de tamano.
+    //
+    // Kruta usa la variante -horizonte porque es la unica que tiene dos tomas
+    // en uso, y esa ensena el acabado bicolor.
     const fotosPorSlug: Record<string, string[]> = {
       menorca: [
         "/fotos/bolso-menorca-impresion-3d-frente.jpg",
-        "/fotos/bolso-menorca-impresion-3d-angulo.jpg",
         "/fotos/bolso-menorca-en-uso.jpg",
+        "/fotos/bolso-menorca-impresion-3d-angulo.jpg",
         "/fotos/bolso-menorca-ambiente.jpg",
       ],
       mallorca: [
         "/fotos/bolso-mallorca-impresion-3d-frente.jpg",
-        "/fotos/bolso-mallorca-impresion-3d-angulo.jpg",
         "/fotos/bolso-mallorca-en-uso.jpg",
+        "/fotos/bolso-mallorca-impresion-3d-angulo.jpg",
         "/fotos/bolso-mallorca-ambiente.jpg",
       ],
       kruta: [
         "/fotos/bolso-kruta-impresion-3d-frente.jpg",
+        "/fotos/bolso-kruta-en-uso-horizonte.jpg",
         "/fotos/bolso-kruta-impresion-3d-angulo.jpg",
         "/fotos/bolso-kruta-en-uso.jpg",
-        "/fotos/bolso-kruta-en-uso-horizonte.jpg",
         "/fotos/bolso-kruta-ambiente.jpg",
       ],
       montt: [
         "/fotos/bolso-montt-impresion-3d-frente.jpg",
-        "/fotos/bolso-montt-impresion-3d-angulo.jpg",
         "/fotos/bolso-montt-en-uso.jpg",
+        "/fotos/bolso-montt-impresion-3d-angulo.jpg",
         "/fotos/bolso-montt-ambiente.jpg",
       ],
     };
