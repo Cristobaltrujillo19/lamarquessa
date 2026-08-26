@@ -1,6 +1,6 @@
 # ESTADO — La Marquessa · Handoff para la próxima sesión
 
-Última actualización: **25 de agosto de 2026**
+Última actualización: **26 de agosto de 2026**
 Rama activa: **`feat/nueva-interfaz`** — porting de la interfaz nueva, terminado
 y pendiente de revisión. `main` sigue en `b150351` sirviendo producción.
 
@@ -239,17 +239,36 @@ siguiendo `HANDOFF-IMPLEMENTACION.md` de ese repositorio.
 
 ### Qué está portado
 
-Sistema de diseño, cabecera, pie, y las siete rutas: home, `/tienda`,
-`/producto/[slug]`, `/nosotros`, `/envios`, `/contacto`, `/carrito` y
-`/checkout`.
+**El sitio público entero.** Ya no quedan páginas con la interfaz anterior:
+home, `/tienda`, `/producto/[slug]`, `/nosotros`, `/envios`, `/contacto`,
+`/carrito`, `/checkout`, `/gracias`, `/pago-fallido`,
+`/preguntas-frecuentes` y `/privacidad`, más la cabecera, el pie y el cajón
+del carrito.
 
-Los tokens del mockup viven **encapsulados bajo `.ui-v2`** en
-`app/globals-v2.css`, porque colisionan por nombre con los de producción
-(`--crema`, `--cobre`, `--cobre-texto` existen en los dos con valores
-distintos). Cada página portada se envuelve en `<div className="ui-v2">`.
+Los tokens **ya están promovidos a `:root`** en `app/globals-v2.css`. Los
+viejos que colisionaban por nombre (`--crema`, `--cobre`, `--cobre-texto`,
+`--radio`, `--ancho`, las fuentes) se borraron de `globals.css`, y los
+envoltorios `.ui-v2` desaparecieron de las doce rutas.
 
-**Al terminar la revisión**: promover esos tokens a `:root`, borrar los viejos
-de `globals.css` y quitar los wrappers, todo en un mismo commit.
+El panel (`/panel`) NO se tocó: usa las utilidades de color de Tailwind, que
+salen del bloque `@theme` de `globals.css` y siguen con los hex anteriores a
+propósito.
+
+Un efecto secundario que arregló un fallo real: la media query de espaciado
+móvil estaba escrita como `.ui-v2 :root`, que **nunca casaba** (`:root` es
+`<html>`, no puede ser descendiente de nada). Con los tokens en `:root` vuelve
+a funcionar — medido: `--pad-base` pasa de 128px a 72px por debajo de 768px.
+
+### Portado en la ronda del 26 de agosto
+
+- **`FondoTopografico`** (+ `topografia-shader.ts` y `topografia.svg`): la
+  textura de curvas de nivel en movimiento que el mockup monta en el layout y
+  que faltaba en todo el sitio. Verificada en modo `webgl`.
+- **`Lightbox`** en la ficha: el marco de la foto pasa a ser botón. Verificado
+  abrir, flechas, `Escape`, bloqueo del scroll de fondo y retorno del foco.
+- **`PruebaSocial`** y **`MuroInstagram`** en la home. Los dos se auto-ocultan
+  sin datos reales: en producción devuelven `null` hoy. Ver §12.1.
+- **Enlace «Saltar al contenido»** y `id="contenido"` en el `<main>`.
 
 ### Decisiones que siguen esperando al dueño de la marca
 
@@ -261,7 +280,7 @@ de `globals.css` y quitar los wrappers, todo en un mismo commit.
 | **Horario de atención** | Único marcador PENDIENTE visible del sitio, en `/contacto` |
 | **El vídeo del hero lleva "La Marquessa" incrustado** | Compite con el H1. Anotado desde el mockup, sin resolver |
 | **Nav y pie usan logos distintos sobre el mismo fondo** | `logo-cobre` arriba, `logo-claro` abajo, ambos sobre `--tinta` |
-| **Testimonios, destinos entregados y publicaciones de Instagram** | `PruebaSocial` y `CarruselInstagram` NO se portaron: se auto-ocultan sin datos y habrían sido dos componentes que renderizan nada |
+| **Testimonios, destinos entregados y publicaciones de Instagram** | `PruebaSocial` y `MuroInstagram` ya están portados, pero **invisibles en producción** hasta que haya material. Ver §12.1 |
 
 ### Colores del catálogo
 
@@ -271,6 +290,29 @@ física con luz neutra.** Recalibrar antes de usarlos en material impreso.
 
 El salto más visible respecto a lo que había: Caribe pasó de un gris lavanda
 `#bcc1d2` a un turquesa `#2C8CA8`.
+
+### 12.1 Cómo encender la prueba social y el muro de Instagram
+
+Las dos secciones están cableadas y estilizadas, y **no hay que tocar la
+home** para activarlas. Hoy no se ven en producción porque no hay dato real:
+
+| Sección | Qué la enciende | Dónde |
+|---|---|---|
+| Testimonios | Al menos una entrada, **aprobada por escrito por quien la dijo** | `lib/testimonios.ts` → `TESTIMONIOS` |
+| Contador de piezas | Un número de piezas **entregadas** (no pedidas) | `lib/marca.ts` → `PIEZAS_ENTREGADAS` |
+| Muro de Instagram | Publicaciones con la miniatura **descargada a `/public`** | `lib/instagram.ts` → `POSTS` |
+
+⚠️ **Las URL del CDN de Instagram caducan.** Guardar el enlace que devuelve
+la API produce fotos rotas en pocos días: hay que descargar la imagen.
+
+⚠️ **No se publican los ejemplos.** Los arreglos traen andamiaje marcado como
+PENDIENTE que **solo se ve en `dev`**; en producción las secciones devuelven
+`null`. Publicar esos ejemplos serían reseñas inventadas, y tampoco se emite
+`Review` ni `AggregateRating` en el JSON-LD.
+
+El muro dispara `instagram_click` con `link_location: "muro_home"` (y
+`"muro_home_pie"` en el enlace de la cuenta). Es un parámetro nuevo, no un
+evento nuevo: el contrato de los 17 eventos no cambia.
 
 ### Antes de fusionar a `main`
 
