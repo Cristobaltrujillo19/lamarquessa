@@ -36,6 +36,12 @@ export type Tamano = {
 export type Producto = {
   slug: string;
   nombre: string;
+  /** Número de serie de la pieza. Todavía no se pinta: falta decidir desde
+   *  qué número arranca el contador. */
+  serie?: number;
+  /** Qué color enseña cada foto, por ruta. Una ruta ausente significa color
+   *  no identificado — se rotula pendiente, nunca se adivina. */
+  fotoColores?: Record<string, string>;
   /** Frase corta bajo el H1 (H2 en la ficha). Opcional: productos que aún no
    *  tienen subtitulo renderizan solo el nombre. */
   subtitulo?: string;
@@ -51,6 +57,34 @@ export type Producto = {
  *  Un solo valor: lo que muestra la tienda y lo que cobra el checkout no pueden
  *  separarse nunca. */
 export const ENVIO_COP = SHIPPING_COP;
+
+/** Color que enseña una foto concreta, o null si no está declarado.
+ *  Null NO significa que la foto no tenga color: significa que nadie lo
+ *  registró, y rotularla de memoria sería inventar. */
+export function colorDeFoto(p: Producto, src: string): Color | null {
+  const id = p.fotoColores?.[src];
+  if (!id) return null;
+  return p.colores.find((c) => c.id === id) ?? null;
+}
+
+/** Los acabados de los que existe al menos una foto de esta pieza.
+ *
+ *  Es lo que alimenta el filtro de la colección. Se filtra por colores
+ *  FOTOGRAFIADOS, no por colores en los que la pieza se fabrica: las cuatro
+ *  se hacen en los cinco, así que filtrar por pertenencia devolvería o todo
+ *  o nada, y el filtro no diría nada. */
+export function coloresConFoto(p: Producto): Color[] {
+  const ids = new Set(Object.values(p.fotoColores ?? {}));
+  return p.colores.filter((c) => ids.has(c.id));
+}
+
+/** Rótulo del color de una foto, listo para pintar. Trae ya la palabra
+ *  "Color" cuando lo hay, porque el marcador de ausencia no la lleva y
+ *  anteponerla fuera daría "Color COLOR PENDIENTE". */
+export function rotuloColorDeFoto(p: Producto, src: string): string {
+  const c = colorDeFoto(p, src);
+  return c ? `Color ${c.nombre}` : "COLOR PENDIENTE";
+}
 
 /** Precio de la pieza (el más bajo si hubiera varias tallas). */
 export function precioDesde(p: Pick<Producto, "tamanos">): number {

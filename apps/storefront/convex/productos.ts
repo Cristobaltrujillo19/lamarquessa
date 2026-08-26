@@ -403,6 +403,90 @@ export const actualizarColoresDeCatalogo = mutation({
   },
 });
 
+// Declara qué color enseña cada foto del catálogo.
+//
+// De dónde sale cada valor, que es lo que hace el dato defendible:
+//
+//  - Las tomas de contexto de agosto venían nombradas por acabado en origen
+//    (bolso-kruta-caribe-en-uso, bolso-mallorca-horizonte-en-uso) antes de
+//    renombrarse al esquema por rol. No se adivina: se recupera el dato que
+//    traía el nombre.
+//
+//  - Los renders de estudio son inspección directa sobre fondo gris neutro,
+//    que es exactamente la condición que el capítulo 9 del handoff declara
+//    fiable para juzgar color. Los ocho son Amanecer.
+//
+//  - Las tomas de atardecer de julio se leen ROSA, no beige, y ese es
+//    justamente el caso que el capítulo 9 documenta: "el mismo bolso Amanecer
+//    mide #F4D2C6 en la foto de atardecer y #D6BB9E en el render de estudio
+//    con luz neutra". Son Amanecer bajo luz cálida, no otro acabado.
+//
+// Si mañana entra una foto cuyo acabado nadie registró, se deja fuera de este
+// mapa y se rotula como pendiente. Un rótulo inventado es peor que ninguno.
+//
+// Idempotente y no destructiva, como el resto de mutaciones de mantenimiento.
+export const actualizarColoresDeFotos = mutation({
+  args: { secret: v.string() },
+  handler: async (ctx, { secret }) => {
+    exigirSecreto(secret);
+
+    const mapaPorSlug: Record<string, Record<string, string>> = {
+      menorca: {
+        "/fotos/bolso-menorca-impresion-3d-frente.jpg": "amanecer",
+        "/fotos/bolso-menorca-impresion-3d-angulo.jpg": "amanecer",
+        "/fotos/bolso-menorca-en-uso.jpg": "amanecer",
+        "/fotos/bolso-menorca-ambiente.jpg": "amanecer",
+      },
+      mallorca: {
+        "/fotos/bolso-mallorca-impresion-3d-frente.jpg": "amanecer",
+        "/fotos/bolso-mallorca-impresion-3d-angulo.jpg": "amanecer",
+        "/fotos/bolso-mallorca-en-uso.jpg": "horizonte",
+        "/fotos/bolso-mallorca-ambiente.jpg": "amanecer",
+      },
+      kruta: {
+        "/fotos/bolso-kruta-impresion-3d-frente.jpg": "amanecer",
+        "/fotos/bolso-kruta-impresion-3d-angulo.jpg": "amanecer",
+        "/fotos/bolso-kruta-en-uso.jpg": "caribe",
+        "/fotos/bolso-kruta-en-uso-horizonte.jpg": "horizonte",
+        "/fotos/bolso-kruta-ambiente.jpg": "caribe",
+      },
+      montt: {
+        "/fotos/bolso-montt-impresion-3d-frente.jpg": "amanecer",
+        "/fotos/bolso-montt-impresion-3d-angulo.jpg": "amanecer",
+        "/fotos/bolso-montt-en-uso.jpg": "caribe",
+        "/fotos/bolso-montt-ambiente.jpg": "amanecer",
+      },
+    };
+
+    const productos = await ctx.db.query("productos").collect();
+    const actualizados: string[] = [];
+
+    for (const p of productos) {
+      const nuevo = mapaPorSlug[p.slug];
+      if (!nuevo) continue;
+
+      const actual = p.fotoColores ?? {};
+      const clavesNuevas = Object.keys(nuevo);
+      const igual =
+        Object.keys(actual).length === clavesNuevas.length &&
+        clavesNuevas.every((k) => actual[k] === nuevo[k]);
+      if (igual) continue;
+
+      await ctx.db.patch(p._id, { fotoColores: nuevo });
+      actualizados.push(p.slug);
+    }
+
+    return {
+      actualizados,
+      // Cuántas fotos quedan sin color declarado, para tenerlo a la vista.
+      sinColor: productos.reduce(
+        (n, p) => n + p.fotos.filter((f) => !(mapaPorSlug[p.slug] ?? {})[f]).length,
+        0,
+      ),
+    };
+  },
+});
+
 // Reemplaza las fotos de los 4 bolsos en el catálogo vivo con las nuevas
 // tomadas en la sesión editorial (2026-08-16). Kruta pasa a 5 fotos (dos
 // en-uso: Caribe y Horizonte) para mostrar la pieza en sus dos acabados

@@ -1,0 +1,61 @@
+/* Portado de LM_MOCKUP/components/TarjetaProducto.module.css.
+   Sin las reglas del sello de serie: ese elemento no se pinta todavía porque
+   falta decidir desde qué número arranca el contador. */
+
+.tarjeta {
+  display: block;
+}
+
+.marco {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--tinta-06);
+  border-radius: 0;
+}
+
+.foto {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity var(--dur) var(--curva);
+}
+
+.hover {
+  opacity: 0;
+}
+
+/* Cross-fade a la segunda foto. Sin zoom, sin elevación, sin botón emergente. */
+.tarjeta:hover .hover,
+.tarjeta:focus-visible .hover {
+  opacity: 1;
+}
+.tarjeta:hover .principal,
+.tarjeta:focus-visible .principal {
+  opacity: 0;
+}
+
+.datos {
+  margin-top: var(--s-3);
+}
+
+.nombre {
+  margin: 0;
+}
+
+.color {
+  margin-top: var(--s-1);
+  color: var(--tinta-70);
+}
+
+.precio {
+  margin-top: var(--s-2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .foto {
+    transition: none;
+  }
+}

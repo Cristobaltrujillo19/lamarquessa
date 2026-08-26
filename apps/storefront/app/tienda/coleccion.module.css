@@ -1,0 +1,13 @@
+/* Portado de LM_MOCKUP/app/coleccion/coleccion.module.css.
+   La grilla vive en FiltroColeccion, que es quien decide qué se pinta. */
+
+.encabezado {
+  max-width: 34em;
+  margin-bottom: var(--s-7);
+}
+
+@media (max-width: 768px) {
+  .encabezado {
+    margin-bottom: var(--s-5);
+  }
+}

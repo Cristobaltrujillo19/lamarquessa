@@ -1,0 +1,46 @@
+/* Portado de LM_MOCKUP/components/FiltroColeccion.module.css */
+
+.filtro {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin-bottom: var(--s-5);
+}
+
+.chip {
+  min-height: 44px;
+  padding: 0 var(--s-3);
+  border: 1px solid var(--tinta-12);
+  border-radius: 999px;
+  font-size: 14px;
+  color: var(--tinta);
+  background: transparent;
+  cursor: pointer;
+  transition:
+    border-color var(--dur) var(--curva),
+    color var(--dur) var(--curva),
+    background var(--dur) var(--curva);
+}
+
+.chip:hover {
+  border-color: var(--tinta-40);
+}
+
+.chipActivo {
+  border-color: var(--tinta);
+  background: var(--tinta);
+  color: var(--espuma);
+}
+
+.grilla {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--s-6);
+}
+
+@media (max-width: 768px) {
+  .grilla {
+    grid-template-columns: 1fr;
+    gap: var(--s-5);
+  }
+}
