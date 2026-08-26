@@ -22,6 +22,11 @@ export const colorV = v.object({
   // muestra el configurador de la ficha. Opcional: los productos sembrados
   // antes de agosto de 2026 no la tienen y renderizan sin ella.
   descripcion: v.optional(v.string()),
+  // Foto de referencia del acabado: la familia entera en ese color, sobre
+  // fondo neutro. Es lo que abre el panel del selector al pasar el cursor.
+  // Ausente = todavía no se ha fotografiado ese acabado, y el panel lo dice
+  // en vez de prometer algo que no hay.
+  fotoReferencia: v.optional(v.string()),
 });
 
 export const tamanoV = v.object({

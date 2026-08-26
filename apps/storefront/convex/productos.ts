@@ -7,6 +7,7 @@ const colorV = v.object({
   hex: v.string(),
   hex2: v.optional(v.string()),
   descripcion: v.optional(v.string()),
+  fotoReferencia: v.optional(v.string()),
 });
 const tamanoV = v.object({ id: v.string(), nombre: v.string(), precioCop: v.number() });
 
@@ -37,6 +38,7 @@ const ACABADOS_MARCA = [
     nombre: "Amanecer",
     hex: "#D9C7A8",
     descripcion: "Beige cálido. El tono de la arena antes de que llegue nadie.",
+    fotoReferencia: "/assets/colores/amanecer.jpg",
   },
   {
     id: "manglar",
@@ -59,6 +61,7 @@ const ACABADOS_MARCA = [
     nombre: "Caribe",
     hex: "#2C8CA8",
     descripcion: "Azul de agua clara, el que solo se ve a poca profundidad.",
+    fotoReferencia: "/assets/colores/caribe.jpg",
   },
   {
     id: "marea",
@@ -376,6 +379,7 @@ export const actualizarColoresDeCatalogo = mutation({
       hex: string;
       hex2?: string;
       descripcion?: string;
+      fotoReferencia?: string;
     };
     const yaCoincide = (guardados: ColorGuardado[]) =>
       guardados.length === ACABADOS_MARCA.length &&
@@ -386,7 +390,8 @@ export const actualizarColoresDeCatalogo = mutation({
           actual?.nombre === esperado.nombre &&
           actual?.hex === esperado.hex &&
           actual?.hex2 === esperado.hex2 &&
-          actual?.descripcion === esperado.descripcion
+          actual?.descripcion === esperado.descripcion &&
+          actual?.fotoReferencia === esperado.fotoReferencia
         );
       });
 

@@ -14,6 +14,9 @@ export type Color = {
   /** Frase de marca que describe el color, para el configurador de la ficha.
    *  Opcional: los productos sembrados antes de agosto de 2026 no la traen. */
   descripcion?: string;
+  /** Foto de referencia del acabado, para el panel del selector. Ausente
+   *  significa que ese acabado todavía no se ha fotografiado. */
+  fotoReferencia?: string;
 };
 
 /** Valor CSS de la muestra de un acabado. Un acabado bicolor se pinta partido
@@ -84,6 +87,22 @@ export function coloresConFoto(p: Producto): Color[] {
 export function rotuloColorDeFoto(p: Producto, src: string): string {
   const c = colorDeFoto(p, src);
   return c ? `Color ${c.nombre}` : "COLOR PENDIENTE";
+}
+
+/** Las fotos de la pieza con las del color elegido delante.
+ *
+ *  REORDENA, NO FILTRA. La ficha enseña siempre todas las fotos que existen,
+ *  en cualquier acabado; elegir un color solo cambia el orden. Filtrar
+ *  escondería tomas que sí tenemos, y con un acabado sin fotografiar dejaría
+ *  la galería vacía — que es enseñar menos que nada.
+ *
+ *  La honestidad la sostienen la marca de agua de cada foto, que dice el
+ *  color que esa foto enseña, y el panel de referencia del selector, que
+ *  avisa cuando el acabado elegido no tiene ninguna toma. */
+export function galeriaOrdenada(p: Producto, colorId: string): string[] {
+  const delColor = p.fotos.filter((f) => p.fotoColores?.[f] === colorId);
+  const resto = p.fotos.filter((f) => p.fotoColores?.[f] !== colorId);
+  return [...delColor, ...resto];
 }
 
 /** Precio de la pieza (el más bajo si hubiera varias tallas). */

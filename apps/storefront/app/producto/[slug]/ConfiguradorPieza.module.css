@@ -1,0 +1,311 @@
+/* El configurador vive dentro de .pieza — solo controla la galería y
+   el selector. La composición de dos columnas y el bloque de datos siguen
+   viniendo de producto.module.css. */
+
+/* ---------------- Carrusel de la ficha ----------------
+   Antes las fotos iban apiladas en vertical. Ahora es un carrusel con
+   auto-avance: mismo número de fotos, una pantalla de alto en vez de
+   cuatro o cinco. */
+.galeria {
+  position: relative;
+}
+
+/* Pista con scroll horizontal y anclaje. `mandatory` y no `proximity`:
+   con proximity una diapositiva puede quedarse a medias entre dos y el
+   índice calculado por scrollLeft baila. */
+.pista {
+  display: flex;
+  overflow-x: auto;
+  /* Declarado a mano: con solo overflow-x el eje vertical pasa a `auto` por
+     defecto y la pista se convierte en un segundo contenedor desplazable
+     anidado, que en táctil se traga gestos verticales. */
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;           /* Firefox */
+  -ms-overflow-style: none;
+  /* El navegador no debe "recordar" la posición al reordenar por color:
+     lo hacemos nosotros en un efecto. */
+  overscroll-behavior-x: contain;
+}
+.pista::-webkit-scrollbar { display: none; }
+
+.diapositiva {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+  min-inline-size: 0;
+}
+
+.marcoFoto {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--tinta-06);
+}
+
+.marcoFoto img { object-fit: cover; }
+
+/* La foto es interactiva: abre el lightbox. El botón hereda el marco
+   pero elimina padding/borde nativos y añade un leve zoom en hover. */
+.marcoFotoBtn {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  cursor: zoom-in;
+}
+.marcoFotoBtn img {
+  transition: transform 600ms var(--curva);
+}
+.marcoFotoBtn:hover img,
+.marcoFotoBtn:focus-visible img {
+  transform: scale(1.02);
+}
+@media (prefers-reduced-motion: reduce) {
+  .marcoFotoBtn img { transition: none; }
+}
+
+/* ---- Mandos del carrusel ----
+   Fuera de la foto, no encima: sobre una foto clara las flechas necesitan
+   pastilla propia y acaban compitiendo con la marca de agua, que ya vive
+   en la esquina inferior derecha.
+
+   Centrados como un bloque: flecha · puntos · flecha. Antes el botón de
+   pausa se empujaba al extremo con margin-left:auto y descentraba el
+   conjunto; ese botón ya no existe. */
+.mandos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  margin-top: var(--s-2);
+}
+
+.flecha {
+  min-height: 44px;      /* objetivo táctil */
+  min-width: 44px;
+  border: 1px solid var(--tinta-12);
+  background: transparent;
+  color: var(--tinta);
+  cursor: pointer;
+  transition: border-color var(--dur) var(--curva);
+  font-size: 20px;
+  line-height: 1;
+}
+.flecha:hover { border-color: var(--tinta-40); }
+
+/* Los puntos son botones de 44px con el punto dibujado dentro: el objetivo
+   táctil cumple aunque la marca visible sea de 8px. */
+.puntos {
+  display: flex;
+  gap: 2px;
+}
+
+.punto {
+  width: 22px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+}
+.punto::after {
+  content: "";
+  position: absolute;
+  inset: 50% auto auto 50%;
+  translate: -50% -50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--tinta-40);
+  transition: background var(--dur) var(--curva);
+}
+.punto:hover::after { background: var(--tinta-70); }
+/* El punto activo va en --tinta pleno: 12.78:1 sobre crema, y contra el
+   inactivo (--tinta-40, 2.32:1 sobre crema) la diferencia se ve sin
+   depender solo del color, porque además crece. */
+.puntoActivo::after {
+  background: var(--tinta);
+  width: 10px;
+  height: 10px;
+}
+
+.hueco {
+  aspect-ratio: 4 / 5;
+}
+
+/* ---------------- Selector ---------------- */
+
+/* Radiogroup: no es <fieldset>, es un <div role="radiogroup">.
+   Fieldset no permite el reflow libre de opciones ni el manejo de flechas
+   con foco continuo entre botones. */
+/* Cinco colores, no cuatro. Un repeat(5, 1fr) fijo obligaría a la etiqueta
+   más larga ("Horizonte" + muestra) a apretarse en móvil, y el repeat(4)
+   anterior dejaba a Marea huérfana en una segunda fila. auto-fit con un
+   mínimo de 7.5rem = 120px resuelve las dos: medido, la columna de datos
+   da 691px y entran los cinco a 132px cada uno en una sola fila; al
+   estrecharse baja a 3 y luego a 2 sin cortar texto. */
+.opciones {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
+  gap: var(--s-1);
+  margin-top: var(--s-3);
+  min-inline-size: 0;
+}
+
+.opcion {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-1);
+  min-height: 44px;
+  padding: var(--s-1);
+  border: 1px solid var(--tinta-12);
+  border-radius: var(--radio);
+  font-size: 14px;
+  background: transparent;
+  color: var(--tinta);
+  transition: border-color var(--dur) var(--curva), color var(--dur) var(--curva);
+  cursor: pointer;
+}
+
+.opcion:hover { border-color: var(--tinta-40); }
+.opcionActiva { border-color: var(--tinta); }
+
+.muestra {
+  width: var(--s-3);
+  height: var(--s-3);
+  border-radius: var(--radio);
+  border: 1px solid var(--tinta-12);
+  flex-shrink: 0;
+}
+/* Muestras: el COLOR REAL de la pieza, no un token del sistema.
+   Antes usaban --cobre/--crema/--profundo/--espuma, que valía cuando este
+   eje describía texturas abstractas. Como color de producto sería mentir.
+
+   Medido cada relleno contra --crema (la superficie donde vive el selector):
+   Manglar 9.71:1 · Marea 11.30:1 · Horizonte 6.74:1 y 15.04:1 · Caribe
+   3.15:1 — todos se sostienen solos con el borde decorativo de --tinta-12.
+   El único que falla es Amanecer: 1.35:1, prácticamente invisible sobre
+   crema. Solo a ese se le sube el borde a --tinta-70, que mide 5.30:1
+   contra la superficie y le devuelve un contorno legible.
+
+   (Manglar sí choca con el interfaz, pero en otro sitio: contra --tinta
+   mide 1.32:1. No afecta aquí porque el selector nunca vive sobre --tinta;
+   si algún día se mueve a .seccion-tinta, hay que darle contorno claro.)
+   Los valores viven en globals.css. */
+.muestraAmanecer  { background: var(--prod-amanecer); border-color: var(--tinta-70); }
+.muestraManglar   { background: var(--prod-manglar); }
+.muestraCaribe    { background: var(--prod-caribe); }
+.muestraMarea     { background: var(--prod-marea); }
+
+/* Horizonte es rojo CON negro: dos colores, no uno. Corte duro a 45° —
+   el degradado suave inventaría tonos intermedios que la pieza no tiene. */
+.muestraHorizonte {
+  background: linear-gradient(
+    135deg,
+    var(--prod-horizonte) 0 50%,
+    var(--prod-horizonte-2) 50% 100%
+  );
+}
+
+/* ---------------- Marca de agua de color ----------------
+   Dice el color que enseña ESA foto. Va sobre la imagen por CSS, nunca
+   quemada en el JPG: los originales quedan intactos y la etiqueta se
+   corrige cuando el dueño confirme un color.
+
+   La pastilla existe porque el texto cae sobre fotos impredecibles — arena
+   clara, agua, piel. Medido el peor caso, la pastilla sobre una zona blanca
+   pura: a alfa 0.72 el texto en --espuma da 6.02:1. A 0.45, que era lo
+   bastante discreto a ojo, daba 2.63:1 y no pasaba. */
+.marcaAgua {
+  position: absolute;
+  right: var(--s-2);
+  bottom: var(--s-2);
+  z-index: 1;
+  padding: 4px var(--s-1);
+  border-radius: var(--radio);
+  background: rgba(47, 32, 22, 0.72);
+  color: var(--espuma);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  line-height: 1;
+  pointer-events: none;
+}
+
+/* En el hueco de un color sin foto no hay imagen debajo: la pastilla
+   sobraría. (Hoy no ocurre en la galería, pero el marcador se reutiliza.) */
+.marcoFoto.foto-pendiente .marcaAgua { display: none; }
+
+/* ---------------- Vista previa de color ----------------
+   Sustituye al modal que había: ya no hay que hacer clic ni cerrar nada.
+   Se asoma al pasar el cursor, al recibir el foco o al tocar una muestra.
+
+   Ancla en la fila de muestras. Sale HACIA ARRIBA (bottom: 100%) por dos
+   razones medidas: hacia abajo taparía el botón de añadir al carrito, y en
+   móvil el selector queda tan cerca del borde inferior que el panel se
+   saldría de la ventana. */
+.zonaColores {
+  position: relative;
+}
+
+.vistaColor {
+  position: absolute;
+  bottom: calc(100% + var(--s-1));
+  left: 0;
+  z-index: 20; /* por encima de la ficha, por debajo del Lightbox (200) */
+  width: min(100%, 420px);
+  padding: var(--s-2);
+  background: var(--espuma);
+  border: 1px solid var(--tinta-12);
+  box-shadow: 0 12px 32px rgba(47, 32, 22, 0.16);
+  animation: asomar 160ms var(--curva);
+  pointer-events: none; /* el panel nunca roba el hover a la muestra */
+}
+
+@keyframes asomar {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vistaColor { animation: none; }
+}
+
+/* La referencia es un plano largo de toda la familia: apaisada. */
+.vistaMarco {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 8;
+  background: var(--tinta-06);
+}
+.vistaMarco :global(img) { object-fit: contain; }
+
+.vistaNombre {
+  margin: var(--s-2) 0 0;
+  font-family: var(--font-display);
+  font-size: 20px;
+  line-height: 1.2;
+  color: var(--tinta);
+}
+
+.vistaTexto {
+  margin: 4px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--tinta-70);
+}
+
+/* Aviso de ausencia. --cobre-texto (4.76:1 sobre espuma), nunca --cobre
+   puro, que a 12px no pasa AA. */
+.vistaAviso {
+  margin: var(--s-1) 0 0;
+  font-size: 12px;
+  color: var(--cobre-texto);
+}
+
+/* En pantallas estrechas el panel ocupa el ancho de la columna. */
+@media (max-width: 860px) {
+  .vistaColor { width: 100%; }
+}

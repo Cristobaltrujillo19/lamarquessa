@@ -1,0 +1,391 @@
+/* En móvil la columna de datos va primero para que el precio
+   nunca quede bajo el pliegue. */
+
+.pieza {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: var(--s-6);
+  align-items: start;
+}
+
+/* Columna de datos, pegajosa en desktop */
+.datos {
+  position: sticky;
+  top: var(--s-6);
+}
+
+.migas {
+  color: var(--tinta-70);
+  margin-bottom: var(--s-3);
+}
+
+.nombre {
+  margin: 0;
+}
+
+.precio {
+  margin-top: var(--s-3);
+}
+
+.serie {
+  margin-top: var(--s-3);
+}
+
+.frase {
+  margin-top: var(--s-4);
+  color: var(--tinta-70);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 20px;
+  line-height: 1.4;
+  max-width: var(--max-ancho-texto);
+}
+
+.acciones {
+  margin-top: var(--s-5);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--s-2);
+}
+
+.acciones .btnAncho {
+  width: 100%;
+}
+
+/* Resumen de la elección — el eco escrito de lo configurado. Archivo 14px
+   a --tinta-70; no es CTA ni etiqueta técnica, es la línea que dice al
+   cliente "sí, tenemos claro qué te vas a llevar". */
+.resumen {
+  margin: 0;
+  padding-top: var(--s-2);
+  font-family: var(--font-text);
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--tinta-70);
+  letter-spacing: 0.005em;
+}
+
+/* Serie asignada — cuerpo normal, sin adornos. La forma "Tu pieza será
+   la Nº 043" hace la promesa; la alternativa "…recibe su número al entrar
+   a producción" evita cifras inventadas cuando el dueño no lo ha resuelto. */
+.serieAsignada {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--tinta);
+}
+
+@media (max-width: 960px) {
+  .pieza {
+    grid-template-columns: 1fr;
+    gap: var(--s-5);
+  }
+  .datos {
+    position: static;
+    order: -1;
+  }
+  .galeria {
+    gap: var(--s-1);
+  }
+}
+
+/* ---------------- Selector de color ----------------
+   Los estilos de opciones y muestras viven en ConfiguradorPieza.module.css,
+   junto al componente. Aquí solo queda la caja contenedora y el texto. */
+
+.colores {
+  margin-top: var(--s-5);
+  padding-top: var(--s-4);
+  border-top: var(--hairline);
+}
+
+.notaColor {
+  margin-top: var(--s-3);
+  color: var(--tinta-70);
+  max-width: var(--max-ancho-texto);
+}
+
+.notaColorFuerte {
+  color: var(--tinta);
+}
+
+/* ---------------- Proceso ---------------- */
+
+.proceso {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s-5);
+  margin-top: var(--s-6);
+}
+
+.paso {
+  display: block;
+}
+
+.pasoMarco {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--tinta-06);
+}
+
+.pasoMarco img { object-fit: cover; }
+
+.pasoNumero {
+  margin-top: var(--s-3);
+  color: var(--tinta-70);
+}
+
+.pasoTitulo {
+  margin-top: var(--s-1);
+}
+
+@media (max-width: 768px) {
+  .proceso { grid-template-columns: 1fr; gap: var(--s-4); margin-top: var(--s-4); }
+}
+
+/* ---------------- Ficha técnica ---------------- */
+
+.ficha {
+  margin-top: var(--s-6);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 var(--s-6);
+  max-width: 900px;
+}
+
+.fila {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-3);
+  padding-block: var(--s-2);
+  border-bottom: var(--hairline);
+}
+
+.filaClave {
+  color: var(--tinta-70);
+}
+
+.filaValor {
+  margin: 0;
+  text-align: right;
+}
+
+@media (max-width: 768px) {
+  .ficha { grid-template-columns: 1fr; margin-top: var(--s-4); }
+}
+
+/* Pista de la vista previa. --tinta-70 es el piso de texto del sistema
+   (5.29:1 sobre crema); a 12px sigue pasando AA. */
+.pistaColor {
+  margin-top: var(--s-2);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--tinta-70);
+}
+
+/* ------------------------------------------------------------------
+   PERSONALIZACIÓN Y COMPRA
+   No vienen del mockup: el mockup no tiene add-ons ni carrito real. Siguen
+   su lenguaje —hairline, cadencia de espacios, tipografía— para que no se
+   note la costura.
+   ------------------------------------------------------------------ */
+
+.personalizacionCabecera {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  cursor: pointer;
+  padding-block: var(--s-2);
+}
+
+.personalizacionCabecera input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--cobre);
+  flex-shrink: 0;
+  margin: 0;
+}
+
+.personalizacionPrecio {
+  margin-left: auto;
+  color: var(--cobre-texto);
+  font-size: 15px;
+  white-space: nowrap;
+}
+
+.personalizacionCuerpo {
+  margin-top: var(--s-2);
+}
+
+.campo {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--tinta-12);
+  border-radius: var(--radio);
+  background: var(--espuma);
+  color: var(--tinta);
+  font-family: var(--font-text);
+  /* 16px evita el zoom automático de iOS Safari al enfocar. */
+  font-size: 16px;
+}
+
+.campo:focus-visible {
+  border-color: var(--profundo);
+}
+
+.fuentes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-2);
+  margin-top: var(--s-2);
+}
+
+.fuente {
+  padding: var(--s-2);
+  border: 1px solid var(--tinta-12);
+  border-radius: var(--radio);
+  background: var(--espuma);
+  cursor: pointer;
+  text-align: center;
+  transition: border-color var(--dur) var(--curva);
+}
+
+.fuente:hover {
+  border-color: var(--tinta-40);
+}
+
+.fuenteActiva {
+  border-color: var(--tinta);
+}
+
+.fuenteMuestra {
+  display: block;
+  font-size: 26px;
+  line-height: 1;
+  color: var(--tinta);
+  margin-bottom: 4px;
+}
+
+.vistaPreviaIniciales {
+  margin-top: var(--s-2);
+  padding: var(--s-3);
+  border: 1px dashed var(--tinta-12);
+  border-radius: var(--radio);
+  background: var(--espuma);
+  text-align: center;
+  font-size: 42px;
+  line-height: 1;
+  letter-spacing: 0.15em;
+  color: var(--tinta);
+}
+
+.error {
+  margin-top: var(--s-2);
+  color: #8a3b32;
+  font-size: 14px;
+}
+
+.avisoLegal {
+  margin-top: var(--s-3);
+  padding: var(--s-2) var(--s-3);
+  border-left: 2px solid var(--cobre);
+  background: rgba(187, 130, 90, 0.06);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.desglose {
+  margin-top: var(--s-3);
+  padding-top: var(--s-3);
+  border-top: var(--hairline);
+}
+
+.filaTotal {
+  margin-top: var(--s-2);
+  padding-top: var(--s-2);
+  border-top: var(--hairline);
+  font-family: var(--font-display);
+  font-size: 18px;
+}
+
+/* ---- CTA fijo en móvil ---- */
+
+.ctaFijo {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 40;
+  border-top: var(--hairline);
+  background: color-mix(in srgb, var(--crema) 96%, transparent);
+  backdrop-filter: blur(10px);
+  padding: var(--s-2) var(--s-3);
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--s-2));
+  transform: translateY(100%);
+  transition: transform 200ms var(--curva);
+}
+
+.ctaFijoVisible {
+  transform: translateY(0);
+}
+
+.ctaFijoFila {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  max-width: 520px;
+  margin-inline: auto;
+}
+
+.ctaFijoTexto {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+}
+
+.ctaFijoTexto p {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ctaFijoTexto span {
+  color: var(--tinta-70);
+}
+
+.ctaFijoPrecio {
+  font-family: var(--font-display);
+  font-size: 17px;
+}
+
+/* En escritorio no hace falta: el CTA principal está siempre a la vista. */
+@media (min-width: 861px) {
+  .ctaFijo {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ctaFijo {
+    transition: none;
+  }
+}
+
+/* Retícula de piezas relacionadas. Cuatro columnas en escritorio, dos en
+   móvil: aquí sí caben cuatro porque las tarjetas son secundarias, a
+   diferencia de la colección, donde dos columnas leen curaduría. */
+.relacionadas {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--s-4);
+  margin-top: var(--s-5);
+}
+
+@media (max-width: 860px) {
+  .relacionadas {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--s-3);
+  }
+}
