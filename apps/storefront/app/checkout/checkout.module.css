@@ -1,0 +1,192 @@
+/* Checkout con el lenguaje visual de la interfaz nueva.
+   Reutiliza la retícula y los campos del carrito del mockup: es la misma
+   familia de pantalla y no tiene sentido inventarle una segunda gramática. */
+
+.disposicion {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: var(--s-6);
+  align-items: start;
+  margin-top: var(--s-5);
+}
+
+.grupo + .grupo {
+  margin-top: var(--s-5);
+}
+
+.rejilla {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-3);
+  margin-top: var(--s-3);
+}
+
+.anchoCompleto {
+  grid-column: 1 / -1;
+}
+
+.campo {
+  display: block;
+}
+
+.etiqueta {
+  display: block;
+  font-family: var(--font-text);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tinta-70);
+}
+
+.entrada {
+  width: 100%;
+  min-height: 48px;
+  margin-top: var(--s-1);
+  padding: var(--s-2);
+  background: var(--espuma);
+  border: 1px solid var(--tinta-12);
+  border-radius: var(--radio);
+  color: var(--tinta);
+  font-family: var(--font-text);
+  /* 16px evita el zoom automático de iOS Safari al enfocar un campo. */
+  font-size: 16px;
+  transition: border-color var(--dur) var(--curva);
+}
+
+.entrada:hover {
+  border-color: var(--tinta-40);
+}
+
+.entrada:focus-visible {
+  border-color: var(--profundo);
+}
+
+.obligatorio {
+  color: var(--cobre-texto);
+  margin-left: 2px;
+}
+
+.resumen {
+  border: var(--hairline);
+  padding: var(--s-4);
+  position: sticky;
+  top: calc(72px + var(--s-3));
+}
+
+.resumenLinea {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-3);
+  padding-block: var(--s-2);
+  border-bottom: var(--hairline);
+  font-size: 14px;
+}
+
+.resumenLinea:last-of-type {
+  border-bottom: 0;
+}
+
+.resumenDetalle {
+  display: block;
+  color: var(--tinta-70);
+  font-size: 12px;
+}
+
+.resumenPersonalizacion {
+  display: block;
+  color: var(--cobre-texto);
+  font-size: 12px;
+}
+
+.totales {
+  margin-top: var(--s-3);
+  padding-top: var(--s-3);
+  border-top: var(--hairline);
+}
+
+.totalFila {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-3);
+  padding-block: 4px;
+  font-size: 14px;
+}
+
+.totalFinal {
+  margin-top: var(--s-2);
+  padding-top: var(--s-2);
+  border-top: var(--hairline);
+  font-family: var(--font-display);
+  font-size: 20px;
+}
+
+.cupon {
+  margin-top: var(--s-4);
+  padding-top: var(--s-3);
+  border-top: var(--hairline);
+}
+
+.cuponFila {
+  display: flex;
+  gap: var(--s-2);
+  margin-top: var(--s-1);
+}
+
+.cuponFila .entrada {
+  flex: 1;
+  text-transform: uppercase;
+}
+
+.aviso {
+  margin-top: var(--s-3);
+  padding: var(--s-2) var(--s-3);
+  border-left: 2px solid var(--cobre);
+  background: rgba(187, 130, 90, 0.06);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.error {
+  margin-top: var(--s-3);
+  padding-left: var(--s-2);
+  border-left: 2px solid #8a3b32;
+  color: #8a3b32;
+  font-size: 14px;
+}
+
+.exito {
+  margin-top: var(--s-2);
+  color: var(--profundo);
+  font-size: 14px;
+}
+
+.btnAncho {
+  width: 100%;
+  margin-top: var(--s-3);
+}
+
+.notaPie {
+  margin-top: var(--s-2);
+  text-align: center;
+  color: var(--tinta-70);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.vacio {
+  padding-block: var(--s-6);
+  max-width: 34em;
+}
+
+@media (max-width: 860px) {
+  .disposicion {
+    grid-template-columns: 1fr;
+    gap: var(--s-4);
+  }
+  .resumen {
+    position: static;
+  }
+  .rejilla {
+    grid-template-columns: 1fr;
+  }
+}
