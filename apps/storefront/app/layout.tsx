@@ -15,6 +15,7 @@ import Chrome from "./Chrome";
 import Reveal from "@/components/marca/Reveal";
 import FabWhatsApp from "@/components/marca/FabWhatsApp";
 import Analitica from "@/components/Analitica";
+import FondoTopografico from "@/components/v2/FondoTopografico";
 import { CarritoProvider } from "@/lib/carrito";
 import {
   MARCA,
@@ -145,6 +146,14 @@ export default function RootLayout({
           añaden atributos al <body> antes de que React hidrate, lo que dispara
           un aviso de hidratación que no viene de nuestro código. */}
       <body className="flex min-h-screen flex-col" suppressHydrationWarning>
+        <a href="#contenido" className="skip-link">
+          Saltar al contenido
+        </a>
+        {/* Textura de curvas de nivel en movimiento. Decorativa pura: fija,
+            sin eventos y fuera del arbol de accesibilidad. Va antes del
+            contenido y en z-index negativo, asi que no intercepta ningun
+            clic del embudo. */}
+        <FondoTopografico />
         <CarritoProvider>
           <Chrome
             header={<Header />}
@@ -152,7 +161,9 @@ export default function RootLayout({
             drawer={<CartDrawer />}
             fab={<FabWhatsApp mensaje={MENSAJES.general} />}
           >
-            <main className="flex-1">{children}</main>
+            <main id="contenido" className="flex-1">
+              {children}
+            </main>
           </Chrome>
         </CarritoProvider>
         <Reveal />
