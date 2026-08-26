@@ -32,13 +32,15 @@ Mar, olas, Caribe. Titular del hero **en inglés** (decisión de marca): *"Colom
 | **Kruta** | 230.000 | 20,5 × 12,8 × 12,8 cm | 190 g | Vertical, lisa, un pliegue |
 | **Montt** | 195.000 | 17,5 × 18,2 × 12,3 cm | 290 g | Ancha y baja, pliegue diagonal |
 
-**Acabados (3):** Amanecer `#e8bca6` (rosa nude) · Caribe `#bcc1d2` (azul con destellos) · **Horizonte** (bicolor negro `#111111` + rojo `#b3121a`, seda; se pinta partido en diagonal con `muestraColor()`).
+**Acabados (5)**, con los hex del sistema de diseño aprobado: Amanecer `#D9C7A8` · Manglar `#4B3122` · **Horizonte** (bicolor rojo `#8F2B23` + negro `#171310`, se pinta partido en diagonal con `muestraColor()`) · Caribe `#2C8CA8` · Marea `#1E2C4A`.
+
+⚠️ Son aproximaciones a una descripción verbal: nadie ha medido una pieza física con luz neutra. **Manglar y Marea no tienen ni una sola foto.**
 
 **Material:** PLA de proveedor colombiano. **El proveedor NO se menciona en la web.**
 
 ### Personalización
 
-Dos formas: color específico o iniciales en la parte inferior. Se cotiza al momento por WhatsApp. Las piezas personalizadas no aceptan cambio ni retracto.
+Dos formas, ya **self-service con precio fijo** en la ficha: iniciales grabadas (+$30.000, hasta 3 letras, dos fuentes) y color a disposición (+$60.000, texto libre que se confirma por WhatsApp antes de fabricar). Combinables. Las piezas personalizadas no aceptan cambio ni retracto.
 
 ---
 
@@ -108,7 +110,7 @@ npx convex deploy -y               # desde apps/storefront, para desplegar a PRO
 
 ### ✅ Configuración
 - **Vars en Convex prod**: `ADMIN_API_SECRET`, `MP_ACCESS_TOKEN`, `SITE_URL`, `GMAIL_USER`, `GMAIL_APP_PASSWORD`. Todas puestas y verificadas.
-- **Google Tag Manager** `GTM-P76W5D68` cargado (falta cablear GA4 dentro de GTM).
+- **Analítica**: GTM `GTM-56LQL4LL` + GA4 `G-Q5PW0TY6SX` (gtag.js directo) + Meta Pixel `1046242051600058`. 17 eventos cableados — ver `docs/HANDOFF-INVENTARIO-ANALITICA.md`.
 - **Cuenta MP**: `id=515941663`, nombre visible **"Amor y Brillitos"** (paraguas para SER + La Marquessa).
 
 ---
