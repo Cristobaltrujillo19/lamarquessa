@@ -7,18 +7,23 @@ import Aparece from "@/components/v2/Aparece";
 import Cortina from "@/components/v2/Cortina";
 import Cintilla from "@/components/v2/Cintilla";
 import HeroVideo from "@/components/v2/HeroVideo";
+import PruebaSocial from "@/components/v2/PruebaSocial";
+import MuroInstagram from "@/components/v2/MuroInstagram";
 import { PRODUCCION_SEMANAS, TAGLINE, urlAbsoluta } from "@/lib/site";
 import styles from "./home.module.css";
 
 // Home con la interfaz nueva.
 //
-// DOS COMPONENTES DEL MOCKUP QUE NO SE PORTAN, Y POR QUÉ:
+// PRUEBA SOCIAL Y MURO DE INSTAGRAM: ya portados, y ambos se auto-ocultan
+// mientras no haya datos reales. Hoy no los hay — no existen testimonios
+// aprobados por escrito ni publicaciones descargadas —, así que en
+// PRODUCCIÓN las dos secciones devuelven null y la home se pinta igual que
+// antes de portarlos, sin hueco visible.
 //
-// PruebaSocial y CarruselInstagram se auto-ocultan cuando no hay datos, y
-// hoy no los hay: no existen testimonios recogidos, ni destinos entregados,
-// ni publicaciones de Instagram descargadas. Portarlos habría añadido dos
-// componentes y sus ficheros de datos vacíos para renderizar exactamente
-// nada. Entran cuando el material exista.
+// En DESARROLLO sí se ven, con andamiaje marcado como PENDIENTE, para poder
+// revisar la maqueta. Para encenderlas de verdad basta llenar los arreglos
+// de lib/testimonios.ts y lib/instagram.ts; no hay que tocar esta página.
+// Lo que NO se hace es publicar los ejemplos: serían reseñas inventadas.
 //
 // El vídeo del hero SÍ se porta, pero con una salvedad que el capítulo 8 del
 // handoff ya anota como decisión abierta: lleva "La Marquessa" incrustado y
@@ -35,7 +40,7 @@ export default async function Home() {
   const piezas = await fetchQuery(api.productos.catalogo, {});
 
   return (
-    <div className="ui-v2">
+    <div>
       <Cortina />
 
       {/* ---------- HERO ----------
@@ -112,6 +117,16 @@ export default async function Home() {
           </Aparece>
         </div>
       </section>
+
+      {/* ---------- PRUEBA SOCIAL ----------
+          El componente decide qué bloques renderiza según los datos que
+          haya. Si no hay ninguno, la sección entera se oculta. */}
+      <PruebaSocial piezas={piezas} />
+
+      {/* ---------- INSTAGRAM ----------
+          Última sección de contenido. Mismo criterio: sin publicaciones
+          reales no se renderiza nada. */}
+      <MuroInstagram />
     </div>
   );
 }

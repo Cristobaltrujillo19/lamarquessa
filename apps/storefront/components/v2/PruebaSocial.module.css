@@ -1,0 +1,63 @@
+/* Prueba social — peso Momento. Padding vertical de --pad-momento (224px)
+   ya viene aplicado por .seccion-momento en globals.css. */
+
+.encabezado {
+  text-align: center;
+  max-width: 28em;
+  margin: 0 auto var(--s-6);
+}
+
+/* Retículo con columnas que se estiran a la misma altura. Cada testimonio
+   es una columna flex; la cita crece y la atribución se pega al pie con
+   margin-top:auto. Con eso, MARÍA C. · BOGOTÁ y la referencia de pieza
+   quedan alineadas en una misma línea base entre columnas, sin importar
+   que las citas midan distinto. */
+.testimonios {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s-5);
+  align-items: stretch;
+}
+
+.testimonio {
+  display: flex;
+  flex-direction: column;
+  border-top: var(--hairline);
+  padding-top: var(--s-3);
+  height: 100%;
+}
+
+.cita {
+  margin: 0;
+}
+
+.atribucion {
+  margin-top: auto;
+  padding-top: var(--s-4);
+  color: var(--tinta-70);
+}
+
+/* Referencia a la pieza: eyebrow en cobre, propia línea, tabular para que
+   los números de serie alineen aunque tengan cifras distintas. */
+.referenciaPieza {
+  margin-top: var(--s-1);
+  color: var(--cobre-texto);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Contador de serie: una frase en display, centrada. La cifra va en
+   palabras: se lee deliberada, no pequeña. */
+.contador {
+  text-align: center;
+  max-width: 22em;
+  margin: var(--s-6) auto 0;
+  padding-top: var(--s-5);
+  border-top: var(--hairline);
+}
+
+@media (max-width: 860px) {
+  .testimonios { grid-template-columns: 1fr; gap: var(--s-4); }
+}
