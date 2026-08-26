@@ -166,7 +166,7 @@ export default async function ProductoPage({
 
 
   return (
-    <div className="ui-v2">
+    <div>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaProducto) }}

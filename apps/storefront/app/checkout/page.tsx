@@ -67,7 +67,7 @@ export default function CheckoutPage() {
 
   if (lineas.length === 0) {
     return (
-      <div className="ui-v2">
+      <div>
         <section className="seccion-base">
           <div className="contenedor">
             <div className={styles.vacio}>
@@ -171,7 +171,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="ui-v2">
+    <div>
       <section className="seccion-base">
       <div className="contenedor">
       <h1 className="h1">Finalizar compra.</h1>
@@ -320,12 +320,12 @@ export default function CheckoutPage() {
                       {l.colorNombre} · {l.tamanoNombre}
                     </span>
                     {l.personalizacion?.iniciales && (
-                      <span className="block text-xs text-cobre-texto">
+                      <span className="block text-xs text-[var(--cobre-texto)]">
                         Iniciales {l.personalizacion.iniciales.texto}
                       </span>
                     )}
                     {l.personalizacion?.colorPersonalizado && (
-                      <span className="block text-xs text-cobre-texto">
+                      <span className="block text-xs text-[var(--cobre-texto)]">
                         Color: {l.personalizacion.colorPersonalizado.descripcion}
                       </span>
                     )}
@@ -359,7 +359,7 @@ export default function CheckoutPage() {
             </div>
             {avisoCupon && <p className="mt-2 text-sm text-red-700">{avisoCupon}</p>}
             {cupon && (
-              <p className="mt-2 text-sm text-cobre-texto">
+              <p className="mt-2 text-sm text-[var(--cobre-texto)]">
                 Código {cupon.codigo} aplicado.
               </p>
             )}

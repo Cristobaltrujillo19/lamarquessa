@@ -4,13 +4,14 @@
    GENERADO desde LM_MOCKUP/app/globals.css. No editar a mano mientras el
    mockup siga siendo la especificación viva: editar allí y regenerar.
 
-   Todo va encapsulado bajo `.ui-v2` porque producción tiene tokens con los
-   mismos nombres y distintos valores (--crema, --cobre, --cobre-texto). Las
-   páginas ya portadas se envuelven en <div className="ui-v2">; el resto del
-   sitio sigue con la paleta anterior hasta que le toque.
+   Los tokens viven en :root y rigen TODO el sitio. Durante el porting
+   estuvieron encapsulados bajo un envoltorio, porque produccion tenia tokens
+   con los mismos nombres y distintos valores (--crema, --cobre, --cobre-texto);
+   al completarse el porting se promovieron y los viejos se borraron de
+   globals.css.
 
-   Cuando el porting termine: promover los tokens a :root, borrar los viejos
-   y quitar los wrappers, todo en un mismo commit.
+   El panel (/panel) NO depende de estos tokens: usa las utilidades de color
+   de Tailwind, que salen del bloque @theme de globals.css y siguen intactas.
 
    El reset del mockup no se porta: Tailwind preflight ya lo cubre.
    ======================================================================== */
@@ -72,10 +73,10 @@
   src: local("Queens Italic");
 }
 
-.ui-v2 {
+:root {
 
-  /* Lo que en el mockup vivía en la regla `html`. Bajo scope pasa aquí:
-     los descendientes de .ui-v2 heredan superficie, color y tipografía. */
+  /* Lo que en el mockup vivia en la regla `html`. Aqui, en :root, lo
+     hereda el documento entero. */
   background: var(--crema);
   color: var(--tinta);
   font-family: var(--font-text);
@@ -191,7 +192,7 @@
 
 
 /* Foco de teclado — visible siempre */
-.ui-v2 :focus-visible {
+:focus-visible {
   outline: 2px solid var(--profundo);
   outline-offset: 3px;
   border-radius: var(--radio);
@@ -200,7 +201,7 @@
 
 /* Skip-link — invisible hasta que recibe foco por Tab. Aterriza sobre
    #contenido para saltar el nav en teclado y lectores. */
-.ui-v2 .skip-link {
+.skip-link {
   position: absolute;
   top: 0;
   left: 0;
@@ -213,7 +214,7 @@
   transition: transform var(--dur) var(--curva);
 }
 .skip-link:focus,
-.ui-v2 .skip-link:focus-visible {
+.skip-link:focus-visible {
   transform: translateY(0);
   outline-offset: 2px;
 }
@@ -225,7 +226,7 @@
    El tamaño mínimo es 40px en H1 y 28px en H2: Queens no se usa nunca
    por debajo de 28px — a ese tamaño las hairlines desaparecen. Los
    font-variation-settings de Fraunces se retiran, Queens no es variable. */
-.ui-v2 .h1 {
+.h1 {
   font-family: var(--font-display);
   font-weight: 400;
   font-size: clamp(40px, 5.4vw, 64px);
@@ -234,7 +235,7 @@
   margin: 0;
   color: var(--tinta-profunda);
 }
-.ui-v2 .h2 {
+.h2 {
   font-family: var(--font-display);
   font-weight: 400;
   font-size: clamp(28px, 3.4vw, 40px);
@@ -247,7 +248,7 @@
 .seccion-tinta .h1,
 .seccion-tinta .h2,
 .sobre-foto .h1,
-.ui-v2 .sobre-foto .h2 {
+.sobre-foto .h2 {
   color: var(--espuma);
 }
 
@@ -259,7 +260,7 @@
    de bloques pequeños están a 20–22px: Queens no se usa por debajo de
    28px (a ese tamaño sus hairlines desaparecen). Archivo Medium hace
    este rol perfectamente y refuerza que el sitio tiene dos familias. */
-.ui-v2 .h3 {
+.h3 {
   font-family: var(--font-text);
   font-weight: 500;
   font-size: clamp(20px, 2vw, 22px);
@@ -268,13 +269,13 @@
   margin: 0;
   color: var(--tinta);
 }
-.ui-v2 .cuerpo {
+.cuerpo {
   font-size: clamp(16px, 1.4vw, 17px);
   line-height: 1.65;
   max-width: var(--max-ancho-texto);
   margin: 0;
 }
-.ui-v2 .precio {
+.precio {
   font-family: var(--font-text);
   font-weight: 500;
   font-size: clamp(18px, 1.6vw, 20px);
@@ -283,7 +284,7 @@
   font-variant-numeric: tabular-nums;
   margin: 0;
 }
-.ui-v2 .eyebrow {
+.eyebrow {
   font-family: var(--font-text);
   font-weight: 500;
   font-size: 12px;
@@ -294,18 +295,18 @@
 }
 /* Eyebrow de sección: rotula un bloque entero, lleva el acento.
    Máximo uno por pantalla para no gastar la cuota de cobre. */
-.ui-v2 .eyebrow-seccion {
+.eyebrow-seccion {
   color: var(--cobre-texto);
 }
 /* Eyebrow de dato: acompaña una pieza concreta (color, atribución). */
-.ui-v2 .eyebrow-dato {
+.eyebrow-dato {
   color: var(--tinta-70);
 }
 
 /* Cursiva en display para frase evocativa y testimonios. 28px mínimo
    porque es el piso al que Queens Italic se lee bien. La subida gana
    presencia justo donde el mockup era más débil. */
-.ui-v2 .display-italic {
+.display-italic {
   font-family: var(--font-display);
   font-style: italic;
   font-weight: 400;
@@ -317,7 +318,7 @@
 
 /* ======================== Layout ======================== */
 
-.ui-v2 .contenedor {
+.contenedor {
   width: 100%;
   max-width: var(--max-ancho);
   margin: 0 auto;
@@ -328,10 +329,10 @@
    - .seccion-elevada → --espuma, para fichas y bloques que deben levantar
    - .seccion-tinta   → --tinta a sangre, texto en --espuma
    La antigua .seccion-arena queda retirada. */
-.ui-v2 .seccion-elevada {
+.seccion-elevada {
   background: var(--espuma);
 }
-.ui-v2 .seccion-tinta {
+.seccion-tinta {
   background: var(--tinta);
   color: var(--espuma);
 }
@@ -340,7 +341,7 @@
    No incluimos aquí las clases cifradas por CSS Modules (ej. filaClave):
    ese ajuste vive en el propio módulo cuando haga falta. */
 .seccion-tinta .texto-suave,
-.ui-v2 .seccion-tinta .eyebrow-dato {
+.seccion-tinta .eyebrow-dato {
   color: rgba(251, 250, 247, 0.72);
 }
 .hairline { border-top: var(--hairline); }
@@ -354,7 +355,7 @@
 .seccion-momento  { padding-block: var(--pad-momento); }
 
 @media (max-width: 768px) {
-  .ui-v2 :root {
+  :root {
     --pad-respiro:   56px;
     --pad-base:      72px;
     --pad-enfasis:   96px;
@@ -380,7 +381,7 @@
 
    El canvas se desborda 32px por cada lado para que el blur no chupe
    transparencia de los bordes del viewport y deje halos claros. */
-.ui-v2 .fondo-topo {
+.fondo-topo {
   position: fixed;
   inset: -32px;
   z-index: -1;
@@ -395,7 +396,7 @@
    y enmascarada, con la deriva de color resuelta en CSS. Pierde el flujo
    de las curvas — que es justo lo que no se puede hacer barato sin GPU —
    pero conserva la textura y el tono. */
-.ui-v2 .fondo-topo--estatico {
+.fondo-topo--estatico {
   -webkit-mask-image: url("/assets/svg/topografia.svg");
           mask-image: url("/assets/svg/topografia.svg");
   -webkit-mask-size: cover;
@@ -425,7 +426,7 @@
    explícito cuando lo visible es una imagen. No se usa display:none ni
    visibility:hidden porque ambos lo sacarían también del árbol de
    accesibilidad, que es justo lo contrario de lo que se busca. */
-.ui-v2 .sr-solo {
+.sr-solo {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -465,7 +466,7 @@
 .seccion-respiro > .contenedor,
 .seccion-base    > .contenedor,
 .seccion-enfasis > .contenedor,
-.ui-v2 .seccion-momento > .contenedor {
+.seccion-momento > .contenedor {
   position: relative;
 }
 
@@ -473,7 +474,7 @@
 .seccion-respiro > .contenedor::before,
 .seccion-base    > .contenedor::before,
 .seccion-enfasis > .contenedor::before,
-.ui-v2 .seccion-momento > .contenedor::before {
+.seccion-momento > .contenedor::before {
   content: "";
   position: absolute;
   inset: -40px calc(var(--pad-lateral) * -1);
@@ -513,7 +514,7 @@
    (0,2,1), así que si se declara antes pierde por orden de cascada y la
    exclusión no surte efecto. Ya me pasó. */
 .seccion-tinta   > .contenedor::before,
-.ui-v2 .seccion-elevada > .contenedor::before {
+.seccion-elevada > .contenedor::before {
   content: none;
 }
 
@@ -539,7 +540,7 @@
    (mismo tono). Con --cafe sube a 6.65:1 y además el hover se lee como una
    elevación dentro de la misma familia, que es lo que hace un botón. */
 
-.ui-v2 .btn {
+.btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -556,50 +557,50 @@
   text-align: center;
   cursor: pointer;
 }
-.ui-v2 .btn-primario {
+.btn-primario {
   background: var(--tinta);
   color: var(--espuma);
 }
-.ui-v2 .btn-primario:hover {
+.btn-primario:hover {
   background: var(--cafe);
   color: var(--espuma);
 }
-.ui-v2 .btn-secundario {
+.btn-secundario {
   background: transparent;
   color: var(--tinta);
   border: 1px solid var(--tinta);
 }
-.ui-v2 .btn-secundario:hover {
+.btn-secundario:hover {
   background: var(--tinta);
   color: var(--espuma);
 }
 /* En sección oscura y sobre fotografía */
 .seccion-tinta .btn-primario,
-.ui-v2 .sobre-foto .btn-primario {
+.sobre-foto .btn-primario {
   background: var(--espuma);
   color: var(--tinta);
 }
 .seccion-tinta .btn-primario:hover,
-.ui-v2 .sobre-foto .btn-primario:hover {
+.sobre-foto .btn-primario:hover {
   background: var(--cafe);
   color: var(--espuma);
 }
-.ui-v2 .seccion-tinta .btn-secundario {
+.seccion-tinta .btn-secundario {
   color: var(--espuma);
   border-color: var(--espuma);
 }
-.ui-v2 .seccion-tinta .btn-secundario:hover {
+.seccion-tinta .btn-secundario:hover {
   background: var(--espuma);
   color: var(--tinta);
 }
 
 /* Enlace terciario — subrayado cobre en hover */
-.ui-v2 .link-terciario {
+.link-terciario {
   position: relative;
   display: inline-block;
   padding-bottom: 2px;
 }
-.ui-v2 .link-terciario::after {
+.link-terciario::after {
   content: "";
   position: absolute;
   left: 0;
@@ -612,13 +613,13 @@
   transition: transform var(--dur) var(--curva);
 }
 .link-terciario:hover::after,
-.ui-v2 .link-terciario:focus-visible::after {
+.link-terciario:focus-visible::after {
   transform: scaleX(1);
 }
 
 /* Objetivo táctil de 44px sin alterar el ritmo visual del texto */
 @media (pointer: coarse) {
-  .ui-v2 .link-terciario {
+  .link-terciario {
     display: inline-flex;
     align-items: center;
     min-height: 44px;
@@ -628,24 +629,24 @@
 
 /* ======================== Reveal en scroll ======================== */
 
-.ui-v2 .aparece {
+.aparece {
   transition: opacity var(--dur-reveal) var(--curva), transform var(--dur-reveal) var(--curva);
 }
 
 /* El estado oculto lo arma el JS añadiendo .reveal-armado. Nunca vive en el
    CSS base: si el JS falla o está desactivado, el contenido se ve igual. */
-.ui-v2 .aparece-armado {
+.aparece-armado {
   opacity: 0;
   transform: translateY(12px);
   will-change: opacity, transform;
 }
-.ui-v2 .aparece.is-visible {
+.aparece.is-visible {
   opacity: 1;
   transform: translateY(0);
   will-change: auto;
 }
 @media (prefers-reduced-motion: reduce) {
-  .ui-v2 .aparece, .ui-v2 .aparece-armado, .ui-v2 .aparece.is-visible {
+  .aparece, .aparece-armado, .aparece.is-visible {
     opacity: 1 !important;
     transform: none !important;
     transition: none !important;
@@ -659,7 +660,7 @@
 .centrado { text-align: center; }
 .centrado-caja { margin-inline: auto; }
 .ancho-texto { max-width: var(--max-ancho-texto); }
-.ui-v2 .bloque-hairline {
+.bloque-hairline {
   border-top: var(--hairline);
   padding-top: var(--s-3);
   margin-top: var(--s-4);
@@ -671,7 +672,7 @@
 .stack-lg > * + * { margin-top: var(--s-4); }
 
 /* Placeholder para foto pendiente — visible, no confundible con real */
-.ui-v2 .foto-pendiente {
+.foto-pendiente {
   background: var(--tinta-06);
   border: var(--hairline);
   color: var(--tinta-70);
@@ -688,7 +689,7 @@
 
 /* Marcador de andamiaje: línea propia, separado del rótulo que acompaña.
    Se distingue por la regla al margen y el tamaño, no por un color lavado. */
-.ui-v2 .pendiente-inline {
+.pendiente-inline {
   display: block;
   width: fit-content;
   color: var(--tinta-70);
@@ -703,7 +704,7 @@
 
 /* Variante en línea: para meter un marcador dentro de un párrafo sin
    partir el flujo. Mismo estilo, sin salto de línea. */
-.ui-v2 .pendiente-inline--inline {
+.pendiente-inline--inline {
   display: inline-block;
   margin-top: 0;
 }

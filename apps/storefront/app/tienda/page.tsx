@@ -39,7 +39,7 @@ export default async function TiendaPage() {
   const items = await fetchQuery(api.productos.catalogo, {});
 
   return (
-    <div className="ui-v2">
+    <div>
       <section className="seccion-base" aria-labelledby="titular-coleccion">
         <div className="contenedor">
           <script

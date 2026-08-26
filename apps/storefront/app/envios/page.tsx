@@ -59,7 +59,7 @@ const BLOQUES = [
 
 export default function Envios() {
   return (
-    <div className="ui-v2">
+    <div>
       <section className="seccion-base" aria-labelledby="titular-envios">
         <div className="contenedor">
           <Aparece className="ancho-texto">

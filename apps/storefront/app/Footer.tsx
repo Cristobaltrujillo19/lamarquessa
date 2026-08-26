@@ -31,7 +31,7 @@ import styles from "./Footer.module.css";
 // Gmail y responde de verdad.
 export default function Footer() {
   return (
-    <div className="ui-v2">
+    <div>
       <footer className={`${styles.footer} seccion-tinta`}>
         <div className="contenedor">
           <div className={styles.fila}>

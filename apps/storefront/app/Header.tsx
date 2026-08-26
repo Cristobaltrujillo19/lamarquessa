@@ -81,7 +81,7 @@ export default function Header() {
     ruta === href || ruta.startsWith(`${href}/`);
 
   return (
-    <div className="ui-v2">
+    <div>
       <nav className={styles.nav} aria-label="Navegación principal">
         <div className={`contenedor ${styles.fila}`}>
           <Link

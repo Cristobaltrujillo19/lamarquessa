@@ -6,9 +6,9 @@ import Foto from "@/components/Foto";
 import { urlAbsoluta } from "@/lib/site";
 import styles from "./nosotros.module.css";
 
-// Primera ruta con la interfaz nueva. Va envuelta en `.ui-v2`, que es lo que
-// activa el sistema de diseño portado del mockup (app/globals-v2.css). El
-// resto del sitio sigue con la paleta anterior hasta que le toque.
+// Primera ruta que se porto a la interfaz nueva. El sistema de diseno vive en
+// app/globals-v2.css y rige el sitio entero desde :root, asi que esta pagina
+// ya no necesita ningun envoltorio para activarlo.
 //
 // La MAQUETA viene del mockup aprobado; el COPY es el que ya estaba publicado
 // en esta ruta. El mockup traía instrucciones a un redactor en el cuerpo
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
 
 export default function Nosotros() {
   return (
-    <div className="ui-v2">
+    <div>
       <section className="seccion-base" aria-labelledby="titular-historia">
         <div className="contenedor">
           <Aparece className={styles.encabezado}>

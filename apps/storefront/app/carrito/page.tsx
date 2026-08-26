@@ -41,7 +41,7 @@ export default function CarritoPage() {
 
   if (lineas.length === 0) {
     return (
-      <div className="ui-v2">
+      <div>
         <section className="seccion-base">
           <div className="contenedor">
             <div className={styles.vacio}>
@@ -65,7 +65,7 @@ export default function CarritoPage() {
   const total = subtotal + SHIPPING_COP;
 
   return (
-    <div className="ui-v2">
+    <div>
       <section className="seccion-base" aria-labelledby="titular-carrito">
         <div className="contenedor">
           <p className="eyebrow eyebrow-seccion">Tu selección</p>
