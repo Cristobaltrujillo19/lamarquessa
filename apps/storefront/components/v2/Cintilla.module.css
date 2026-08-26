@@ -1,0 +1,102 @@
+/* Cintilla a sangre. No vive dentro de .contenedor porque una cintilla que
+   se corta en la columna deja de leerse como cinta continua.
+
+   Al ir a sangre pierde el velo automático de las islas, así que se lo pone
+   ella misma con el mismo token: el texto no debe apoyarse en la textura
+   animada del fondo. */
+.cintilla {
+  position: relative;
+  overflow: hidden;
+  background: var(--crema-velo);
+  border-top: var(--hairline);
+  border-bottom: var(--hairline);
+  padding-block: var(--s-3);
+
+  /* Las frases se disuelven en los extremos en vez de aparecer y
+     desaparecer de golpe contra el borde de la ventana. */
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 96px,
+                                      #000 calc(100% - 96px), transparent 100%);
+          mask-image: linear-gradient(to right, transparent 0, #000 96px,
+                                      #000 calc(100% - 96px), transparent 100%);
+}
+
+.pista {
+  display: flex;
+  width: max-content;
+  animation: desfilar 48s linear infinite;
+}
+
+/* Al pasar el ratón se detiene: si algo se mueve y el usuario quiere leerlo,
+   perseguirlo con la vista es una molestia gratuita. */
+.cintilla:hover .pista {
+  animation-play-state: paused;
+}
+
+@keyframes desfilar {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.grupo {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.pieza {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.frase {
+  font-family: var(--font-text);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tinta-70);
+}
+
+/* El punto separador es la única nota de cobre aquí. Va en --cobre y no en
+   --cobre-texto porque es marca gráfica, no texto: no transporta contenido
+   y queda fuera del árbol de accesibilidad. */
+.punto {
+  color: var(--cobre);
+  font-size: 14px;
+  padding-inline: var(--s-4);
+  transform: translateY(-0.08em);
+}
+
+@media (max-width: 768px) {
+  .frase { font-size: 13px; }
+  .punto { padding-inline: var(--s-3); }
+  .cintilla {
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 40px,
+                                        #000 calc(100% - 40px), transparent 100%);
+            mask-image: linear-gradient(to right, transparent 0, #000 40px,
+                                        #000 calc(100% - 40px), transparent 100%);
+  }
+}
+
+/* Sin movimiento: la pista se detiene y se centra. La segunda copia se
+   oculta — sin animación que la desplace solo sería texto repetido
+   desbordando por la derecha. */
+@media (prefers-reduced-motion: reduce) {
+  .pista {
+    animation: none;
+    width: 100%;
+    justify-content: center;
+  }
+  .pista .grupo[aria-hidden="true"] {
+    display: none;
+  }
+  .grupo {
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: var(--s-1);
+  }
+}
