@@ -45,26 +45,36 @@ manualmente:
 
 ### GA4 — `Ga4PageViews` (en `components/Analitica.tsx`)
 
-Envuelto en `<Suspense>` porque usa `useSearchParams`. `useEffect` en cambio de
-`pathname/searchParams` dispara:
+`useEffect` que depende **solo del `pathname`**, nunca de los searchParams:
 
 ```js
 gtag('event', 'page_view', {
-  page_path: pathnameConSearchParams,
-  page_location: window.location.href,
+  page_path: pathname,
+  page_location: window.location.href,   // aquí sí viaja la URL completa
   page_title: document.title,
   send_to: id,  // GA4 ID
 });
 ```
 
+⚠️ **No añadir `searchParams` a las dependencias.** El configurador de la ficha
+escribe el color elegido en `?color=` con `history.replaceState`, y con los
+searchParams como dependencia cada color tanteado mandaba un `page_view` falso.
+Ver el apartado 12 para la medición. En este sitio ninguna query string
+significa "otra página".
+
 ### Meta — `MetaPixelPageViews` (en `components/Analitica.tsx`)
 
-`useRef` `primero = true` para saltar el primer render (el snippet ya disparó
-PageView en init). A partir del segundo route change:
+`useRef` para saltar el primer render (el snippet ya disparó PageView en init).
+Depende **solo del `pathname`**, por la misma razón que GA4 — en Meta un
+PageView de más es peor que un número inflado: distorsiona las audiencias
+construidas sobre frecuencia de visita.
 
 ```js
 fbq('track', 'PageView');
 ```
+
+Se añade además `whatsapp_click` con `link_location: "contacto"` desde el CTA
+de `/contacto`. Es aditivo: mismo evento, un valor más en el parámetro.
 
 ---
 
@@ -108,11 +118,11 @@ preservar durante el porting.**
 | Momento | Helper | GA4 | Meta | Callsite actual |
 |---|---|---|---|---|
 | Cargar `/tienda` | `trackViewItemList(productos, listName)` | `view_item_list` | `ViewList` (custom) | `app/tienda/ViewItemListTracker.tsx` en mount |
-| Click en tarjeta de producto | `trackSelectItem(producto, listName)` | `select_item` | `SelectItem` (custom) | `components/ProductCard.tsx` onClick del Link |
+| Click en tarjeta de producto | `trackSelectItem(producto, listName)` | `select_item` | `SelectItem` (custom) | `components/v2/TarjetaProducto.tsx` onClick del Link |
 | Cargar `/producto/[slug]` | `trackViewItem(producto)` | `view_item` | `ViewContent` (estándar) | `app/producto/[slug]/ViewItemTracker.tsx` en mount, ref-guarded por slug |
-| Cambiar color o tamaño en la ficha | `trackCustomizeProduct(producto)` | `customize_product` (GA4 no reserva este nombre, pasa como custom) | `CustomizeProduct` (estándar) | `app/producto/[slug]/ComprarPanel.tsx` onClick swatches, solo si cambia de la actual |
-| Activar toggle iniciales o color a disposición | `trackCustomizeProduct(producto)` | idem | idem | `ComprarPanel.tsx` onChange checkbox |
-| Click "Agregar al carrito" | `trackAddToCart(linea)` | `add_to_cart` | `AddToCart` (estándar) | `ComprarPanel.tsx` onClick del CTA |
+| Cambiar color o tamaño en la ficha | `trackCustomizeProduct(producto)` | `customize_product` (GA4 no reserva este nombre, pasa como custom) | `CustomizeProduct` (estándar) | `app/producto/[slug]/ConfiguradorPieza.tsx` → `SelectorColor.tsx`, solo si cambia de la actual |
+| Activar toggle iniciales o color a disposición | `trackCustomizeProduct(producto)` | idem | idem | `ConfiguradorPieza.tsx` onChange checkbox |
+| Click "Agregar al carrito" | `trackAddToCart(linea)` | `add_to_cart` | `AddToCart` (estándar) | `ConfiguradorPieza.tsx` onClick del CTA (principal y fijo móvil) |
 | Abrir el drawer del carrito | `trackViewCart(lineas, subtotal)` | `view_cart` | `ViewCart` (custom) | `app/CartDrawer.tsx` useEffect ref-guarded (transición cerrado→abierto) |
 | Cargar `/carrito` | `trackViewCart(lineas, subtotal)` | idem | idem | `app/carrito/page.tsx` useEffect en mount, tras hidratar localStorage |
 | Click "Quitar" en el carrito | `trackRemoveFromCart(linea)` | `remove_from_cart` | `RemoveFromCart` (custom) | `CartDrawer.tsx` y `carrito/page.tsx` |
@@ -316,3 +326,99 @@ Archivos clave a revisar al portar cada punto del funnel:
 - `app/preguntas-frecuentes/Pregunta.tsx` (faq_open)
 - `components/ProductCard.tsx` (select_item)
 - `app/tienda/ViewItemListTracker.tsx` (view_item_list)
+
+---
+
+## 12. Fase 4 — verificación de paridad (2026-08-25)
+
+Recorrido completo del embudo en la rama `feat/nueva-interfaz`, con `gtag` y
+`fbq` instrumentados para capturar cada llamada.
+
+### Embudo, de una pasada
+
+Home → colección → ficha → cambiar color → añadir al carrito:
+
+```
+ga4:view_item_list      meta:ViewList
+ga4:page_view           meta:PageView
+ga4:select_item         meta:SelectItem
+ga4:view_item           meta:ViewContent
+ga4:page_view           meta:PageView
+ga4:customize_product   meta:CustomizeProduct
+ga4:add_to_cart         meta:AddToCart
+ga4:view_cart           meta:ViewCart
+```
+
+Ocho pares. Ninguno perdido, ninguno duplicado.
+
+### Checkout
+
+`begin_checkout` dispara una sola vez al montar. El submit dispara
+`add_payment_info` + `AddPaymentInfo`.
+
+`purchase` verificado inyectando el snapshot y volviendo a `/gracias`:
+`transaction_id`, `value` 316500, `currency` COP, `shipping` 16500, 1 item.
+El snapshot se consume (`sessionStorage` queda limpio) y el carrito se vacía.
+
+### Parámetros con personalización
+
+`add_to_cart` con iniciales y color a disposición activos:
+
+```
+value        300000          ← efectivo, no la base de 210000
+item_id      menorca|amanecer|unica
+item_variant Amanecer · Talla única · Iniciales MJT · Color a disposición
+```
+
+### Un fallo encontrado y corregido durante el porte
+
+El configurador de la ficha escribe el color elegido en `?color=` con
+`history.replaceState`. `Ga4PageViews` y `MetaPixelPageViews` llevaban
+`searchParams` en sus dependencias, así que **cada color tanteado mandaba un
+`page_view` y un `PageView` falsos**.
+
+No daba ningún error: la página se veía perfecta y los datos se ensuciaban.
+Habría inflado el conteo de páginas vistas, arruinado la tasa de rebote y el
+tiempo por página, y en Meta distorsionado las audiencias construidas sobre
+frecuencia de visita.
+
+Corregido: ambos efectos dependen solo del `pathname`. En este sitio ninguna
+query string significa "otra página" — son estado de interfaz (`?color=`) o
+retorno de la pasarela (`?payment_id=`), y ese último llega junto a un cambio
+de ruta. La URL completa sigue viajando en `page_location`.
+
+Verificado después: tres cambios de color dan **cero** page_views espurios y
+tres `customize_product`; navegar a otra ruta sigue dando el suyo.
+
+### Lo que no se pudo verificar aquí
+
+- **Volumen comparado contra baseline.** No hay baseline: los eventos llevaban
+  ~48 h activos al empezar y no había señal suficiente. La verificación fue
+  evento por evento en tiempo real, no de magnitud.
+- **Un pago real de principio a fin.** El Convex de desarrollo no tiene
+  `MP_ACCESS_TOKEN` —solo `ADMIN_API_SECRET`—, así que `createCheckout` falla
+  por diseño y muestra el mensaje genérico. Eso confirma que el camino de
+  error funciona, pero el `purchase` de una compra verdadera queda pendiente
+  de la prueba con cupón en producción.
+- **La cortina de entrada en vídeo.** Dura 2.2 s y el ida y vuelta del
+  instrumento tarda más. Queda verificada por inferencia: su bandera de
+  `sessionStorage` solo se escribe dentro de su primer `setTimeout`, así que
+  encontrarla puesta prueba que montó y corrió.
+
+### Nota sobre el instrumento
+
+Cuatro veces durante este trabajo el instrumento mintió antes que el código:
+
+1. `scrollWidth` reportó 64 px de desborde en `/nosotros`. Ningún elemento
+   excedía el viewport y ocultar secciones no cambiaba el número.
+   `window.scrollTo(300,0)` dejó `scrollX` en 0: **la página no se desplaza**.
+   Artefacto del viewport emulado (`innerWidth` 1280 / `clientWidth` 1265 /
+   `outerWidth` 0 es un trío incoherente).
+2. Dos conductas de foco del menú móvil "fallaron" midiendo a 1280 px, donde
+   el panel es `display:none` por diseño — y un enlace sin display no puede
+   recibir foco. A 375 px pasan las seis.
+3. `Purchase` de Meta pareció no dispararse; la cola de `fbq` ya estaba
+   drenada cuando la miré.
+4. La cortina "no aparecía" porque el muestreo empezaba después de su ciclo.
+
+**En este panel, comprueba siempre que el instrumento observa lo que crees.**

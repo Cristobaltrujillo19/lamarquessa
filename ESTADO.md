@@ -1,7 +1,12 @@
 # ESTADO — La Marquessa · Handoff para la próxima sesión
 
-Última actualización: **10 de agosto de 2026**
-Rama: `main` · Último commit: `f2e4ccf` (middleware) · Árbol local: limpio · Todo pusheado.
+Última actualización: **25 de agosto de 2026**
+Rama activa: **`feat/nueva-interfaz`** — porting de la interfaz nueva, terminado
+y pendiente de revisión. `main` sigue en `b150351` sirviendo producción.
+
+> ⚠️ **Antes de tocar nada, lee `docs/HANDOFF-INVENTARIO-ANALITICA.md`.** Es el
+> contrato de los 17 eventos de analítica que no se pueden romper, y trae la
+> verificación de paridad del porting.
 
 ---
 
@@ -222,3 +227,54 @@ f2e4ccf  Middleware: 301 desde subdominios de Vercel al dominio propio
 c9f5b02  Ficha de producto: CTA fijo en móvil + selectores de color a 44px táctil
 ceff9b0  Titulos partidos: espacio antes del <br /> para no pegar palabras
 ```
+
+---
+
+## 12. Porting de la interfaz nueva (rama `feat/nueva-interfaz`)
+
+Implementación del mockup aprobado (`../LM_MOCKUP`) sobre la tienda viva,
+siguiendo `HANDOFF-IMPLEMENTACION.md` de ese repositorio.
+
+### Qué está portado
+
+Sistema de diseño, cabecera, pie, y las siete rutas: home, `/tienda`,
+`/producto/[slug]`, `/nosotros`, `/envios`, `/contacto`, `/carrito` y
+`/checkout`.
+
+Los tokens del mockup viven **encapsulados bajo `.ui-v2`** en
+`app/globals-v2.css`, porque colisionan por nombre con los de producción
+(`--crema`, `--cobre`, `--cobre-texto` existen en los dos con valores
+distintos). Cada página portada se envuelve en `<div className="ui-v2">`.
+
+**Al terminar la revisión**: promover esos tokens a `:root`, borrar los viejos
+de `globals.css` y quitar los wrappers, todo en un mismo commit.
+
+### Decisiones que siguen esperando al dueño de la marca
+
+| Qué | Consecuencia hoy |
+|---|---|
+| **Desde qué número arranca la numeración de piezas** | El "elemento firma" (`Nº 042 · única en el mundo`) no se pinta. El campo `serie` ya está en el schema para activarlo sin migración |
+| **Licenciar la tipografía Queens para web** | La display es Queen Serif FREE con Fraunces cubriendo acentos y eñes por fallback por-glifo |
+| **Fotos de Manglar y Marea** | Los dos acabados se pueden comprar pero no aparecen en el filtro de la colección, y su panel de referencia dice "Referencia pendiente" |
+| **Horario de atención** | Único marcador PENDIENTE visible del sitio, en `/contacto` |
+| **El vídeo del hero lleva "La Marquessa" incrustado** | Compite con el H1. Anotado desde el mockup, sin resolver |
+| **Nav y pie usan logos distintos sobre el mismo fondo** | `logo-cobre` arriba, `logo-claro` abajo, ambos sobre `--tinta` |
+| **Testimonios, destinos entregados y publicaciones de Instagram** | `PruebaSocial` y `CarruselInstagram` NO se portaron: se auto-ocultan sin datos y habrían sido dos componentes que renderizan nada |
+
+### Colores del catálogo
+
+Pasó de 3 a 5 acabados, con los hex del sistema de diseño aprobado. **Siguen
+siendo aproximaciones a una descripción verbal: nadie ha medido una pieza
+física con luz neutra.** Recalibrar antes de usarlos en material impreso.
+
+El salto más visible respecto a lo que había: Caribe pasó de un gris lavanda
+`#bcc1d2` a un turquesa `#2C8CA8`.
+
+### Antes de fusionar a `main`
+
+1. Revisar la rama en un despliegue de vista previa de Vercel.
+2. **Prueba de compra real con cupón**, que sigue siendo el bloqueador de
+   siempre: el Convex de desarrollo no tiene `MP_ACCESS_TOKEN`, así que el
+   `purchase` de una compra verdadera nunca se ha visto de principio a fin.
+3. Confirmar en el DebugView de GA4 y en el Meta Pixel Helper que los 17
+   eventos siguen llegando desde el despliegue de vista previa.
