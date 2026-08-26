@@ -85,7 +85,9 @@ export default async function PreguntasFrecuentesPage() {
           ],
           extra: (
             <p className={css.enlace}>
-              <Link href="/nosotros#proceso">Conocer el proceso completo →</Link>
+              <Link href="/nosotros#proceso" className="link-terciario">
+                Conocer el proceso completo →
+              </Link>
             </p>
           ),
         },
@@ -114,7 +116,9 @@ export default async function PreguntasFrecuentesPage() {
           ],
           extra: (
             <p className={css.enlace}>
-              <Link href="#personalizacion">Ver cómo se personaliza →</Link>
+              <Link href="#personalizacion" className="link-terciario">
+                Ver cómo se personaliza →
+              </Link>
             </p>
           ),
         },
@@ -144,7 +148,9 @@ export default async function PreguntasFrecuentesPage() {
                   {conMedidas.map((p) => (
                     <tr key={p.slug}>
                       <th scope="row">
-                        <Link href={`/producto/${p.slug}`}>{p.nombre}</Link>
+                        <Link href={`/producto/${p.slug}`} className="link-terciario">
+                          {p.nombre}
+                        </Link>
                       </th>
                       <td>{formatCm(p.altoCm!)}</td>
                       <td>{formatCm(p.anchoCm!)}</td>
@@ -214,6 +220,7 @@ export default async function PreguntasFrecuentesPage() {
                 href={enlaceWhatsApp(MENSAJES.pedido)}
                 target="_blank"
                 rel="noopener"
+                className="link-terciario"
               >
                 Consultar por WhatsApp →
               </a>
@@ -240,6 +247,7 @@ export default async function PreguntasFrecuentesPage() {
                 href={enlaceWhatsApp(MENSAJES.pedido)}
                 target="_blank"
                 rel="noopener"
+                className="link-terciario"
               >
                 Cotizar un envío internacional →
               </a>
@@ -264,6 +272,7 @@ export default async function PreguntasFrecuentesPage() {
                 href={enlaceWhatsApp(MENSAJES.pedido)}
                 target="_blank"
                 rel="noopener"
+                className="link-terciario"
               >
                 Cotizar una personalización →
               </a>
@@ -284,6 +293,7 @@ export default async function PreguntasFrecuentesPage() {
                 href={enlaceWhatsApp(MENSAJES.pedido)}
                 target="_blank"
                 rel="noopener"
+                className="link-terciario"
               >
                 Escribirnos por WhatsApp →
               </a>
@@ -353,24 +363,22 @@ export default async function PreguntasFrecuentesPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaMigas) }}
       />
 
-      <section className={css.cabecera}>
-        <div className="contenedor">
-          <p className="kicker">Antes de su compra</p>
-          <h1 className={css.titulo}>
-            Preguntas <span className="script">frecuentes</span>
-          </h1>
-          <p className={css.entrada}>
-            Reunimos aquí lo esencial para adquirir una pieza La Marquessa con
-            plena confianza: de qué está hecha, cuánto resiste, qué puede llevar
-            dentro y qué ocurre si necesita un cambio.
-          </p>
-        </div>
-      </section>
-
-      <div className={`contenedor ${css.cuerpo}`}>
+      <section className="seccion-base" aria-labelledby="titular-faq">
+        <div className={`contenedor ${css.cuerpo}`}>
+          <div className={css.cabecera}>
+            <p className="eyebrow eyebrow-seccion">Antes de su compra</p>
+            <h1 id="titular-faq" className="h1 aire-arriba">
+              Preguntas frecuentes.
+            </h1>
+            <p className={`cuerpo ${css.entrada}`}>
+              Reunimos aquí lo esencial para adquirir una pieza La Marquessa con
+              plena confianza: de qué está hecha, cuánto resiste, qué puede
+              llevar dentro y qué ocurre si necesita un cambio.
+            </p>
+          </div>
         {grupos.map((grupo) => (
           <section key={grupo.titulo} className={css.grupo}>
-            <h2 className={css.tituloGrupo}>{grupo.titulo}</h2>
+            <h2 className={`h3 ${css.tituloGrupo}`}>{grupo.titulo}</h2>
 
             <div className={css.acordeon}>
               {grupo.preguntas.map((p, i) => (
@@ -390,8 +398,8 @@ export default async function PreguntasFrecuentesPage() {
         ))}
 
         <aside className={css.cierre}>
-          <p className="kicker">¿Le queda alguna duda?</p>
-          <h2 className={css.tituloCierre}>Estamos a su disposición</h2>
+          <p className="eyebrow eyebrow-seccion">¿Le queda alguna duda?</p>
+          <h2 className={`h3 ${css.tituloCierre}`}>Estamos a su disposición</h2>
           <p className={css.entradaCierre}>
             Detrás de {MARCA} hay una persona, no un formulario. Escríbanos con
             toda tranquilidad antes de decidirse.
@@ -401,16 +409,17 @@ export default async function PreguntasFrecuentesPage() {
               href={enlaceWhatsApp(MENSAJES.general)}
               target="_blank"
               rel="noopener"
-              className="boton boton-primario"
+              className="btn btn-primario"
             >
               Escribir por WhatsApp
             </a>
-            <Link href="/tienda" className="boton boton-fantasma">
+            <Link href="/tienda" className="btn btn-secundario">
               Ver la colección
             </Link>
           </div>
         </aside>
-      </div>
+        </div>
+      </section>
     </>
   );
 }

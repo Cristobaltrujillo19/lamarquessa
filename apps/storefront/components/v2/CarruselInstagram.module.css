@@ -1,0 +1,93 @@
+/* El muro va a sangre y sin titular, así que la sección solo aporta el aire
+   de arriba y abajo. Peso respiro: es un cierre visual, no un bloque de
+   lectura que pida énfasis. */
+.seccion {
+  padding-block: var(--pad-respiro);
+  border-top: var(--hairline);
+}
+
+/* Retícula que SIEMPRE cabe en el ancho de la ventana: columnas en 1fr, sin
+   desplazamiento horizontal. Solo cambia el reparto de las doce piezas
+   —6×2, 4×3, 3×4— así que el muro se ve entero en cualquier pantalla.
+   Sin separación entre piezas: es un muro continuo, no tarjetas sueltas. */
+.muro {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.pieza {
+  min-width: 0;
+}
+
+.enlace {
+  position: relative;
+  display: block;
+  /* Cuadrada por proporción, no por altura fija: así sigue al ancho de
+     columna sea cual sea la ventana. */
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: var(--tinta-06);
+  /* Sin separación entre piezas, un anillo de foco por fuera se solaparía
+     con la vecina: se dibuja hacia dentro. */
+  outline-offset: -3px;
+}
+
+.enlace :global(img) {
+  object-fit: cover;
+  transition: transform 600ms var(--curva);
+}
+
+/* Velo con el glifo. Aparece al pasar por encima y también al llegar por
+   teclado, para que quien navega con Tab reciba la misma señal. */
+.velo {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(47, 32, 22, 0.55);
+  color: var(--espuma);
+  opacity: 0;
+  transition: opacity var(--dur) var(--curva);
+}
+
+.enlace:hover .velo,
+.enlace:focus-visible .velo {
+  opacity: 1;
+}
+
+.enlace:hover :global(img),
+.enlace:focus-visible :global(img) {
+  transform: scale(1.04);
+}
+
+.icono {
+  width: 30px;
+  height: 30px;
+}
+
+.pie {
+  margin-top: var(--s-4);
+  font-size: 15px;
+  color: var(--tinta-70);
+}
+
+@media (max-width: 1024px) {
+  .muro { grid-template-columns: repeat(4, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .muro { grid-template-columns: repeat(3, 1fr); }
+  .icono { width: 24px; height: 24px; }
+  .pie { margin-top: var(--s-3); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .enlace :global(img),
+  .velo {
+    transition: none;
+  }
+}

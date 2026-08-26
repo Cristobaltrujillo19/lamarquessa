@@ -1,0 +1,163 @@
+.vacio {
+  padding-block: var(--s-6);
+  max-width: 34em;
+}
+
+.disposicion {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: var(--s-6);
+  align-items: start;
+  margin-top: var(--s-5);
+}
+
+.linea {
+  display: grid;
+  grid-template-columns: 96px 1fr auto;
+  gap: var(--s-3);
+  align-items: start;
+  padding-block: var(--s-3);
+  border-bottom: var(--hairline);
+}
+
+.lineaFoto {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--tinta-06);
+}
+
+.lineaFoto img { object-fit: cover; }
+
+.lineaDatos > * + * { margin-top: var(--s-1); }
+
+.resumen {
+  border: var(--hairline);
+  padding: var(--s-4);
+}
+
+.resumenFila {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-3);
+  padding-block: var(--s-2);
+}
+
+.resumenTotal {
+  border-top: var(--hairline);
+  margin-top: var(--s-2);
+  padding-top: var(--s-3);
+}
+
+.campo {
+  margin-top: var(--s-4);
+  display: block;
+}
+
+.entrada {
+  width: 100%;
+  min-height: 48px;
+  margin-top: var(--s-1);
+  padding: var(--s-2);
+  background: var(--espuma);
+  border: 1px solid var(--tinta-12);
+  border-radius: var(--radio);
+  transition: border-color var(--dur) var(--curva);
+}
+
+.entrada:hover { border-color: var(--tinta-40); }
+
+.entradaError { border-color: var(--cobre); }
+
+.error {
+  margin-top: var(--s-1);
+  color: var(--tinta);
+  border-left: 1px solid var(--cobre);
+  padding-left: var(--s-1);
+}
+
+.exito {
+  margin-top: var(--s-3);
+  color: var(--profundo);
+}
+
+.btnAncho {
+  width: 100%;
+  margin-top: var(--s-3);
+}
+
+.plazo {
+  margin-top: var(--s-3);
+  color: var(--tinta-70);
+}
+
+@media (max-width: 860px) {
+  .disposicion { grid-template-columns: 1fr; gap: var(--s-4); }
+  .linea { grid-template-columns: 72px 1fr; }
+  .lineaPrecio { grid-column: 2; }
+}
+
+/* ------------------------------------------------------------------
+   AÑADIDOS DE PRODUCCIÓN
+   El carrito del mockup es una cáscara que lee la URL: no tiene cantidades,
+   ni personalización, ni quitar. Estas clases son para lo que sí existe aquí.
+   ------------------------------------------------------------------ */
+
+.cantidad {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--tinta-12);
+  border-radius: var(--radio);
+}
+
+.cantidadBoton {
+  min-width: 40px;
+  min-height: 40px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  color: var(--tinta);
+  font-size: 16px;
+  line-height: 1;
+  transition: color var(--dur) var(--curva);
+}
+
+.cantidadBoton:hover {
+  color: var(--cobre-texto);
+}
+
+.cantidadValor {
+  min-width: 28px;
+  text-align: center;
+  font-size: 15px;
+}
+
+.lineaAcciones {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2);
+  margin-top: var(--s-2);
+}
+
+.quitar {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--tinta-70);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color var(--dur) var(--curva);
+}
+
+.quitar:hover {
+  color: var(--cobre-texto);
+}
+
+.personalizacion {
+  color: var(--cobre-texto);
+  font-size: 13px;
+  line-height: 1.5;
+}

@@ -16,10 +16,12 @@ const ACTUALIZADA = "28 de julio de 2026";
 
 export default function PrivacidadPage() {
   return (
-    <main className="seccion">
+    <section className="seccion-base" aria-labelledby="titular-privacidad">
       <article className={`contenedor ${css.texto}`}>
-        <p className="kicker">Legal</p>
-        <h1>Política de tratamiento de datos personales</h1>
+        <p className="eyebrow eyebrow-seccion">Legal</p>
+        <h1 id="titular-privacidad" className="h2 aire-arriba">
+          Política de tratamiento de datos personales
+        </h1>
         <p className={css.meta}>
           Ley 1581 de 2012 y Decreto 1377 de 2013 · Última actualización:{" "}
           {ACTUALIZADA}
@@ -42,7 +44,9 @@ export default function PrivacidadPage() {
         </p>
         <ul>
           <li>
-            Correo de contacto: <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
+            Correo de contacto: <a href={`mailto:${EMAIL}`} className="link-terciario">
+            {EMAIL}
+          </a>
           </li>
           <li>
             Teléfono / WhatsApp: <em>[pendiente]</em>
@@ -137,7 +141,9 @@ export default function PrivacidadPage() {
 
         <h2>6. Cómo ejercerlos: consultas y reclamos</h2>
         <p>
-          Escríbenos a <a href={`mailto:${EMAIL}`}>{EMAIL}</a> indicando tu
+          Escríbenos a <a href={`mailto:${EMAIL}`} className="link-terciario">
+            {EMAIL}
+          </a> indicando tu
           nombre, tu solicitud y un dato de contacto. Los plazos que cumplimos
           son los que fija la ley:
         </p>
@@ -218,9 +224,11 @@ export default function PrivacidadPage() {
         </p>
 
         <p className={css.volver}>
-          <Link href="/">← Volver al inicio</Link>
+          <Link href="/" className="link-terciario">
+            ← Volver al inicio
+          </Link>
         </p>
       </article>
-    </main>
+    </section>
   );
 }

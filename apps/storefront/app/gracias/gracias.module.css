@@ -1,0 +1,76 @@
+/* Página de confirmación — tono editorial. Sin euforia. La misma cadencia
+   de pesos del resto del sitio: encabezado en peso base, hitos con el
+   estilo de los pasos del proceso.
+
+   Portada de LM_MOCKUP/app/confirmacion/confirmacion.module.css. Se añade
+   .acciones, que el mockup no necesitaba: alli la confirmación cerraba con
+   un solo enlace, y aquí hay dos botones (WhatsApp y seguir viendo) porque
+   el de WhatsApp es donde vive `whatsapp_click`. */
+
+.encabezado {
+  max-width: 22em;
+}
+
+.dato {
+  margin-top: var(--s-4);
+  color: var(--tinta-70);
+  font-size: 15px;
+}
+
+/* Hitos: fila de tres, con la misma estructura visual que /producto */
+.hitos {
+  margin-top: var(--s-6);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s-5);
+  padding-top: var(--s-4);
+  border-top: var(--hairline);
+}
+
+.hito {
+  display: block;
+}
+
+.hitoNumero {
+  color: var(--tinta-70);
+}
+
+.hitoTitulo {
+  margin-top: var(--s-1);
+}
+
+.salida {
+  margin-top: var(--s-5);
+  padding-top: var(--s-3);
+  border-top: var(--hairline);
+  font-size: 15px;
+  color: var(--tinta);
+}
+
+.aviso {
+  margin-top: var(--s-6);
+  padding-top: var(--s-4);
+  border-top: var(--hairline);
+  color: var(--tinta-70);
+  font-size: 15px;
+  max-width: 34em;
+}
+
+@media (max-width: 768px) {
+  .hitos { grid-template-columns: 1fr; gap: var(--s-4); margin-top: var(--s-5); }
+}
+
+/* Dos botones en fila, que se apilan cuando no caben. */
+.acciones {
+  margin-top: var(--s-5);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+
+/* Cierre con el enlace a Instagram: peso de nota al pie, no de parrafo. */
+.instagram {
+  margin-top: var(--s-5);
+  color: var(--tinta-70);
+  font-size: 15px;
+}

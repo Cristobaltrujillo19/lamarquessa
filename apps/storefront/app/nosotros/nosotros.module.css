@@ -1,25 +1,50 @@
-.cabecera {
-  background:
-    radial-gradient(
-      ellipse 70% 70% at 50% 0%,
-      color-mix(in srgb, var(--cielo) 38%, transparent),
-      transparent 70%
-    ),
-    var(--crema);
-  padding-block: clamp(70px, 12vw, 130px) clamp(20px, 4vw, 40px);
-  text-align: center;
+.encabezado {
+  max-width: 34em;
 }
 
-.titulo {
-  font-size: clamp(40px, 8vw, 80px);
-  color: var(--cacao);
-  line-height: 1;
+.retrato {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: var(--tinta-06);
+  max-width: 480px;
 }
 
-.titulo :global(.script) {
-  font-size: 1.3em;
+.bloque {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-6);
+  align-items: start;
+  margin-top: var(--s-7);
 }
 
-/* El relato pasó a <Manifiesto/>, que trae su propio estilo y el lockup de
-   olas. Los estilos que lo acompañaban (.relato, .centro, .parrafo, .lema) se
-   quitaron al quedar sin uso. */
+.texto > * + * {
+  margin-top: var(--s-3);
+}
+
+.anchoTexto {
+  max-width: var(--max-ancho-texto);
+}
+
+.cita {
+  margin: var(--s-6) 0 0;
+  padding-left: var(--s-3);
+  border-left: 1px solid var(--cobre);
+  max-width: 24em;
+}
+
+.fotoAncha {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--tinta-06);
+  margin-top: var(--s-7);
+}
+
+.fotoAncha img { object-fit: cover; }
+
+@media (max-width: 860px) {
+  .bloque { grid-template-columns: 1fr; gap: var(--s-4); margin-top: var(--s-5); }
+  .fotoAncha { margin-top: var(--s-5); aspect-ratio: 4 / 5; }
+  .cita { margin-top: var(--s-4); }
+}

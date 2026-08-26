@@ -19,18 +19,23 @@ import {
 } from "@/lib/site";
 import { DEPARTAMENTOS } from "@/lib/colombia";
 import { iniciarCheckout, revisarCupon } from "./actions";
+import styles from "./checkout.module.css";
 
-const campo =
-  "mt-1 w-full rounded-sm border border-cacao/25 bg-blanco px-3 py-2.5 text-cacao " +
-  "placeholder:text-cacao-suave/50 focus-visible:border-cobre-texto";
-const etiqueta = "block text-xs uppercase tracking-[0.14em] text-cacao-suave";
+// Checkout con la interfaz nueva. SOLO cambia la presentación: el flujo
+// transaccional —validación, server action, creación de la preferencia en
+// Convex, redirección a Mercado Pago— y los dos eventos del embudo se
+// conservan literales. Este es el punto donde el sitio cobra dinero: no es
+// sitio para refactores de oportunidad.
+
+const campo = styles.entrada;
+const etiqueta = styles.etiqueta;
 
 /** Asterisco de campo obligatorio. `aria-hidden`: la marca visual sobra para
  *  quien usa lector de pantalla, porque el input ya lleva `required` y el
  *  navegador se lo anuncia. */
 function Obligatorio() {
   return (
-    <span aria-hidden="true" className="ml-1 text-cobre-texto">
+    <span aria-hidden="true" className={styles.obligatorio}>
       *
     </span>
   );
@@ -62,11 +67,17 @@ export default function CheckoutPage() {
 
   if (lineas.length === 0) {
     return (
-      <div className="mx-auto max-w-[700px] px-5 py-24 text-center">
-        <h1 className="font-titulo text-3xl">Tu carrito está vacío</h1>
-        <Link href="/tienda" className="boton boton-primario mt-6">
-          Ver la colección
-        </Link>
+      <div>
+        <section className="seccion-base">
+          <div className="contenedor">
+            <div className={styles.vacio}>
+        <h1 className="h1">Tu carrito está vacío.</h1>
+            <Link href="/tienda" className="btn btn-primario aire-arriba-lg">
+              Ver la colección
+            </Link>
+            </div>
+          </div>
+        </section>
       </div>
     );
   }
@@ -160,38 +171,40 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="mx-auto max-w-[1000px] px-5 py-12 md:px-8">
-      <h1 className="font-titulo text-4xl md:text-5xl">Finalizar compra</h1>
+    <div>
+      <section className="seccion-base">
+      <div className="contenedor">
+      <h1 className="h1">Finalizar compra.</h1>
 
       {/* Aviso de compra internacional: los envíos fuera de Colombia se cotizan
           uno a uno por WhatsApp (el formulario solo cobra dentro del país),
           así que quien viene de fuera no debería atascarse en el selector de
           departamentos. Va arriba del formulario para verse antes de empezar
           a llenar. */}
-      <p className="mt-6 rounded-sm border border-cobre/30 bg-cobre/5 p-4 text-sm text-cacao">
+      <p className={styles.aviso}>
         ¿Tu envío es fuera de Colombia? Este formulario cobra dentro del país.
         Para envíos internacionales,{" "}
         <a
           href={enlaceWhatsApp(MENSAJES.pedido)}
           target="_blank"
           rel="noopener"
-          className="font-medium text-cobre-texto underline underline-offset-4"
+          className="link-terciario"
         >
           escríbenos por WhatsApp
         </a>{" "}
         y te cotizamos el envío antes de la compra.
       </p>
 
-      <form onSubmit={alEnviar} className="mt-6 grid gap-10 md:grid-cols-[1fr_380px]">
-        <div className="space-y-8">
+      <form onSubmit={alEnviar} className={styles.disposicion}>
+        <div className={styles.grupo}>
           <section>
-            <h2 className="font-titulo text-2xl">Tus datos</h2>
-            <p className="mt-1 text-xs text-cacao-suave">
-              Los campos marcados con <span className="text-cobre-texto">*</span>{" "}
+            <h2 className="h3">Tus datos</h2>
+            <p className={styles.notaPie}>
+              Los campos marcados con <span className={styles.obligatorio}>*</span>{" "}
               son obligatorios.
             </p>
-            <div className="mt-4 grid gap-4 sm:grid-cols-2">
-              <label className="sm:col-span-2">
+            <div className={styles.rejilla}>
+              <label className={styles.anchoCompleto}>
                 <span className={etiqueta}>
                   Nombre completo<Obligatorio />
                 </span>
@@ -229,10 +242,10 @@ export default function CheckoutPage() {
                 />
               </label>
             </div>
-            <p className="mt-2 text-xs text-cacao-suave">
+            <p className={styles.notaPie}>
               Te escribimos por aquí para coordinar la entrega. Al comprar
               aceptas nuestra{" "}
-              <Link href="/privacidad" className="text-cobre-texto underline-offset-4 hover:underline">
+              <Link href="/privacidad" className="link-terciario">
                 política de datos
               </Link>
               .
@@ -240,9 +253,9 @@ export default function CheckoutPage() {
           </section>
 
           <section>
-            <h2 className="font-titulo text-2xl">¿A dónde lo enviamos?</h2>
-            <div className="mt-4 grid gap-4 sm:grid-cols-2">
-              <label className="sm:col-span-2">
+            <h2 className="h3">¿A dónde lo enviamos?</h2>
+            <div className={styles.rejilla}>
+              <label className={styles.anchoCompleto}>
                 <span className={etiqueta}>
                   Dirección<Obligatorio />
                 </span>
@@ -280,7 +293,7 @@ export default function CheckoutPage() {
                   ))}
                 </select>
               </label>
-              <label className="sm:col-span-2">
+              <label className={styles.anchoCompleto}>
                 <span className={etiqueta}>Indicaciones para la entrega (opcional)</span>
                 <input
                   name="notas"
@@ -292,32 +305,32 @@ export default function CheckoutPage() {
           </section>
         </div>
 
-        <aside className="h-fit rounded-sm border border-cacao/10 bg-blanco p-6 md:sticky md:top-28">
-          <h2 className="font-titulo text-2xl">Tu pedido</h2>
+        <aside className={styles.resumen}>
+          <h2 className="h3">Tu pedido</h2>
 
           <ul className="mt-4 space-y-3">
             {lineas.map((l) => {
               const addOns = addOnsPorUnidad(l.personalizacion);
               const precioLinea = (l.precioCop + addOns) * l.cantidad;
               return (
-                <li key={l.key} className="flex justify-between gap-3 text-sm">
-                  <span className="text-cacao-suave">
+                <li key={l.key} className={styles.resumenLinea}>
+                  <span className="texto-suave">
                     {l.cantidad}× Bolso {l.nombre}
                     <span className="block text-xs">
                       {l.colorNombre} · {l.tamanoNombre}
                     </span>
                     {l.personalizacion?.iniciales && (
-                      <span className="block text-xs text-cobre-texto">
+                      <span className="block text-xs text-[var(--cobre-texto)]">
                         Iniciales {l.personalizacion.iniciales.texto}
                       </span>
                     )}
                     {l.personalizacion?.colorPersonalizado && (
-                      <span className="block text-xs text-cobre-texto">
+                      <span className="block text-xs text-[var(--cobre-texto)]">
                         Color: {l.personalizacion.colorPersonalizado.descripcion}
                       </span>
                     )}
                   </span>
-                  <span className="whitespace-nowrap font-cita text-base">
+                  <span className="precio">
                     {formatCop(precioLinea)}
                   </span>
                 </li>
@@ -325,7 +338,7 @@ export default function CheckoutPage() {
             })}
           </ul>
 
-          <div className="mt-5 border-t border-cacao/10 pt-4">
+          <div className={styles.cupon}>
             <span className={etiqueta}>¿Tienes un código?</span>
             <div className="mt-1 flex gap-2">
               <input
@@ -339,35 +352,35 @@ export default function CheckoutPage() {
                 type="button"
                 onClick={aplicarCupon}
                 disabled={validandoCupon}
-                className="boton boton-fantasma shrink-0 px-4 py-2 disabled:opacity-50"
+                className="btn btn-secundario"
               >
                 {validandoCupon ? "…" : "Aplicar"}
               </button>
             </div>
             {avisoCupon && <p className="mt-2 text-sm text-red-700">{avisoCupon}</p>}
             {cupon && (
-              <p className="mt-2 text-sm text-cobre-texto">
+              <p className="mt-2 text-sm text-[var(--cobre-texto)]">
                 Código {cupon.codigo} aplicado.
               </p>
             )}
           </div>
 
-          <dl className="mt-5 space-y-1.5 border-t border-cacao/10 pt-4 text-sm">
-            <div className="flex justify-between">
-              <dt className="text-cacao-suave">Subtotal</dt>
+          <dl className={styles.totales}>
+            <div className={styles.totalFila}>
+              <dt className="texto-suave">Subtotal</dt>
               <dd>{formatCop(subtotal)}</dd>
             </div>
             {descuento > 0 && (
-              <div className="flex justify-between text-cobre-texto">
+              <div className={styles.totalFila} style={{ color: "var(--cobre-texto)" }}>
                 <dt>Descuento</dt>
                 <dd>−{formatCop(descuento)}</dd>
               </div>
             )}
-            <div className="flex justify-between">
-              <dt className="text-cacao-suave">Envío</dt>
+            <div className={styles.totalFila}>
+              <dt className="texto-suave">Envío</dt>
               <dd>{formatCop(envio)}</dd>
             </div>
-            <div className="flex items-baseline justify-between border-t border-cacao/10 pt-2.5 font-cita text-xl">
+            <div className={`${styles.totalFila} ${styles.totalFinal}`}>
               <dt>Total</dt>
               <dd>{formatCop(total)}</dd>
             </div>
@@ -376,7 +389,7 @@ export default function CheckoutPage() {
           {error && (
             <p
               role="alert"
-              className="mt-4 rounded-sm border border-red-700/30 bg-red-700/5 p-3 text-sm text-red-800"
+              className={styles.error}
             >
               {error}
             </p>
@@ -385,21 +398,23 @@ export default function CheckoutPage() {
           <button
             type="submit"
             disabled={enviando}
-            className="boton boton-primario mt-5 w-full disabled:opacity-60"
+            className={`btn btn-primario ${styles.btnAncho}`}
           >
             {enviando ? "Llevándote al pago…" : "Pagar con Mercado Pago"}
           </button>
 
-          <p className="mt-3 text-center text-xs text-cacao-suave">
+          <p className={styles.notaPie}>
             🔒 El pago lo procesa Mercado Pago. Nosotros no vemos ni guardamos
             los datos de tu tarjeta.
           </p>
-          <p className="mt-3 text-center text-xs text-cacao-suave">
+          <p className={styles.notaPie}>
             Tu bolso se fabrica a pedido: {PRODUCCION_SEMANAS} semanas + {ENVIO_DIAS}{" "}
             días hábiles de envío.
           </p>
         </aside>
       </form>
+      </div>
+      </section>
     </div>
   );
 }

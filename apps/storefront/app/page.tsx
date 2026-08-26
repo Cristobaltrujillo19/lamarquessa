@@ -2,12 +2,32 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { fetchQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
-import ProductCard from "@/components/ProductCard";
-import Hero from "@/components/marca/Hero";
-import Beneficios from "@/components/marca/Beneficios";
-import Editorial from "@/components/marca/Editorial";
-import FranjaIconos from "@/components/marca/FranjaIconos";
-import { DESCRIPCION_MARCA, urlAbsoluta } from "@/lib/site";
+import TarjetaProducto from "@/components/v2/TarjetaProducto";
+import Aparece from "@/components/v2/Aparece";
+import Cortina from "@/components/v2/Cortina";
+import Cintilla from "@/components/v2/Cintilla";
+import HeroVideo from "@/components/v2/HeroVideo";
+import PruebaSocial from "@/components/v2/PruebaSocial";
+import MuroInstagram from "@/components/v2/MuroInstagram";
+import { PRODUCCION_SEMANAS, TAGLINE, urlAbsoluta } from "@/lib/site";
+import styles from "./home.module.css";
+
+// Home con la interfaz nueva.
+//
+// PRUEBA SOCIAL Y MURO DE INSTAGRAM: ya portados, y ambos se auto-ocultan
+// mientras no haya datos reales. Hoy no los hay — no existen testimonios
+// aprobados por escrito ni publicaciones descargadas —, así que en
+// PRODUCCIÓN las dos secciones devuelven null y la home se pinta igual que
+// antes de portarlos, sin hueco visible.
+//
+// En DESARROLLO sí se ven, con andamiaje marcado como PENDIENTE, para poder
+// revisar la maqueta. Para encenderlas de verdad basta llenar los arreglos
+// de lib/testimonios.ts y lib/instagram.ts; no hay que tocar esta página.
+// Lo que NO se hace es publicar los ejemplos: serían reseñas inventadas.
+//
+// El vídeo del hero SÍ se porta, pero con una salvedad que el capítulo 8 del
+// handoff ya anota como decisión abierta: lleva "La Marquessa" incrustado y
+// compite con el H1. Queda pendiente de resolver con el dueño de la marca.
 
 export const metadata: Metadata = {
   title: "La Marquessa",
@@ -17,71 +37,96 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const destacados = await fetchQuery(api.productos.catalogo, {});
+  const piezas = await fetchQuery(api.productos.catalogo, {});
 
   return (
-    <>
-      <Hero />
-      <Beneficios />
+    <div>
+      <Cortina />
 
-      <section id="coleccion" className="seccion">
+      {/* ---------- HERO ----------
+          A sangre: el vídeo ocupa el ancho completo de la ventana, así que
+          esta sección NO va dentro de .contenedor. El texto sí se alinea a
+          la columna, para que el titular no se despegue del resto del sitio. */}
+      <section className={`${styles.hero} sobre-foto`} aria-labelledby="titular-hero">
+        <HeroVideo />
+        <div className={styles.heroVelo} aria-hidden="true" />
+
+        <div className={styles.heroTexto}>
+          <div className="contenedor">
+            <h1 id="titular-hero" className={`h1 ${styles.heroTitular}`}>
+              Piezas de autor inspiradas en el mar Caribe.
+            </h1>
+            <p className={`cuerpo ${styles.heroSubtitulo}`}>{TAGLINE}</p>
+            <div className={styles.heroAccion}>
+              <Link href="/tienda" className="btn btn-primario">
+                Ver la colección
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ---------- CINTILLA DE MARCA ----------
+          Va a sangre y trae su propio velo, así que no necesita contenedor. */}
+      <Cintilla />
+
+      {/* ---------- COLECCIÓN ---------- */}
+      <section className="seccion-base" aria-labelledby="titular-coleccion">
         <div className="contenedor">
-          <header className="reveal" style={{ textAlign: "center" }}>
-            <p className="kicker">La colección</p>
-            <h2 className="titulo-seccion">
-              Nuestros <span className="script">bolsos</span>
+          <div className={styles.encabezadoSeccion}>
+            <h2 id="titular-coleccion" className="h2">
+              La colección
             </h2>
-            <p
-              style={{
-                margin: "18px auto 0",
-                maxWidth: "58ch",
-                color: "var(--cacao-suave)",
-              }}
-            >
-              {DESCRIPCION_MARCA}
-            </p>
-          </header>
-
-          <div className="mt-12 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
-            {destacados.map((p) => (
-              <ProductCard key={p.slug} producto={p} />
-            ))}
+            <Link href="/tienda" className="link-terciario">
+              {piezas.length === 4
+                ? "Ver las cuatro piezas"
+                : `Ver las ${piezas.length} piezas`}
+            </Link>
           </div>
 
-          {destacados.length === 0 && (
-            <p className="mt-12 text-center text-cacao-suave">
-              Muy pronto verás aquí nuestras piezas.
+          <div className={styles.grilla}>
+            {piezas.map((p, i) => (
+              <Aparece key={p.slug} paso={i % 2}>
+                {/* Sin precio: aquí la tarjeta invita a entrar en la pieza.
+                    El precio vive en la colección y en la ficha. Está en la
+                    lista de "no tocar" del handoff. */}
+                <TarjetaProducto
+                  producto={p}
+                  mostrarPrecio={false}
+                  prioridad={i < 2}
+                  listName="Home"
+                />
+              </Aparece>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ---------- HECHO A PEDIDO ----------
+          Ancla la frase más importante del sitio en --tinta a sangre. */}
+      <section className="seccion-base seccion-tinta" aria-labelledby="titular-pedido">
+        <div className="contenedor">
+          <Aparece className={styles.pedido}>
+            <h2 id="titular-pedido" className={`h2 ${styles.pedidoTitular}`}>
+              Cada bolso se imprime y se termina a mano solo cuando ya es tuyo.
+            </h2>
+            <p className={`cuerpo ${styles.pedidoLinea}`}>
+              Listo en {PRODUCCION_SEMANAS === 2 ? "dos" : PRODUCCION_SEMANAS}{" "}
+              semanas.
             </p>
-          )}
+          </Aparece>
         </div>
       </section>
 
-      {/* El proceso (ComoSeHace) y el manifiesto viven ahora solo en /nosotros:
-          estaban duplicados aquí y allá. En su lugar, un segundo carrete con
-          las fotos editoriales que no se mostraban en ningún sitio. */}
-      <Editorial />
-      <FranjaIconos />
+      {/* ---------- PRUEBA SOCIAL ----------
+          El componente decide qué bloques renderiza según los datos que
+          haya. Si no hay ninguno, la sección entera se oculta. */}
+      <PruebaSocial piezas={piezas} />
 
-      <section className="seccion" style={{ background: "var(--arena-clara)" }}>
-        <div className="contenedor reveal" style={{ textAlign: "center" }}>
-          <h2 className="titulo-seccion">
-            Elige el <span className="script">tuyo</span>
-          </h2>
-          <p
-            style={{
-              margin: "18px auto 32px",
-              maxWidth: "46ch",
-              color: "var(--cacao-suave)",
-            }}
-          >
-            Cada bolso se fabrica a pedido y llega en poco más de dos semanas.
-            El que elijas será el único con ese relieve.
-          </p>
-          <Link className="boton boton-primario" href="/tienda">
-            Ver la colección
-          </Link>
-        </div>
-      </section>
-    </>
+      {/* ---------- INSTAGRAM ----------
+          Última sección de contenido. Mismo criterio: sin publicaciones
+          reales no se renderiza nada. */}
+      <MuroInstagram />
+    </div>
   );
 }

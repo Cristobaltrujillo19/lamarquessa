@@ -9,8 +9,14 @@ export type Color = {
   nombre: string;
   /** Muestra de color para el selector. */
   hex: string;
-  /** Segundo color, solo en los acabados bicolor (Horizonte: negro y rojo). */
+  /** Segundo color, solo en los acabados bicolor (Horizonte: rojo y negro). */
   hex2?: string;
+  /** Frase de marca que describe el color, para el configurador de la ficha.
+   *  Opcional: los productos sembrados antes de agosto de 2026 no la traen. */
+  descripcion?: string;
+  /** Foto de referencia del acabado, para el panel del selector. Ausente
+   *  significa que ese acabado todavía no se ha fotografiado. */
+  fotoReferencia?: string;
 };
 
 /** Valor CSS de la muestra de un acabado. Un acabado bicolor se pinta partido
@@ -33,6 +39,12 @@ export type Tamano = {
 export type Producto = {
   slug: string;
   nombre: string;
+  /** Número de serie de la pieza. Todavía no se pinta: falta decidir desde
+   *  qué número arranca el contador. */
+  serie?: number;
+  /** Qué color enseña cada foto, por ruta. Una ruta ausente significa color
+   *  no identificado — se rotula pendiente, nunca se adivina. */
+  fotoColores?: Record<string, string>;
   /** Frase corta bajo el H1 (H2 en la ficha). Opcional: productos que aún no
    *  tienen subtitulo renderizan solo el nombre. */
   subtitulo?: string;
@@ -48,6 +60,50 @@ export type Producto = {
  *  Un solo valor: lo que muestra la tienda y lo que cobra el checkout no pueden
  *  separarse nunca. */
 export const ENVIO_COP = SHIPPING_COP;
+
+/** Color que enseña una foto concreta, o null si no está declarado.
+ *  Null NO significa que la foto no tenga color: significa que nadie lo
+ *  registró, y rotularla de memoria sería inventar. */
+export function colorDeFoto(p: Producto, src: string): Color | null {
+  const id = p.fotoColores?.[src];
+  if (!id) return null;
+  return p.colores.find((c) => c.id === id) ?? null;
+}
+
+/** Los acabados de los que existe al menos una foto de esta pieza.
+ *
+ *  Es lo que alimenta el filtro de la colección. Se filtra por colores
+ *  FOTOGRAFIADOS, no por colores en los que la pieza se fabrica: las cuatro
+ *  se hacen en los cinco, así que filtrar por pertenencia devolvería o todo
+ *  o nada, y el filtro no diría nada. */
+export function coloresConFoto(p: Producto): Color[] {
+  const ids = new Set(Object.values(p.fotoColores ?? {}));
+  return p.colores.filter((c) => ids.has(c.id));
+}
+
+/** Rótulo del color de una foto, listo para pintar. Trae ya la palabra
+ *  "Color" cuando lo hay, porque el marcador de ausencia no la lleva y
+ *  anteponerla fuera daría "Color COLOR PENDIENTE". */
+export function rotuloColorDeFoto(p: Producto, src: string): string {
+  const c = colorDeFoto(p, src);
+  return c ? `Color ${c.nombre}` : "COLOR PENDIENTE";
+}
+
+/** Las fotos de la pieza con las del color elegido delante.
+ *
+ *  REORDENA, NO FILTRA. La ficha enseña siempre todas las fotos que existen,
+ *  en cualquier acabado; elegir un color solo cambia el orden. Filtrar
+ *  escondería tomas que sí tenemos, y con un acabado sin fotografiar dejaría
+ *  la galería vacía — que es enseñar menos que nada.
+ *
+ *  La honestidad la sostienen la marca de agua de cada foto, que dice el
+ *  color que esa foto enseña, y el panel de referencia del selector, que
+ *  avisa cuando el acabado elegido no tiene ninguna toma. */
+export function galeriaOrdenada(p: Producto, colorId: string): string[] {
+  const delColor = p.fotos.filter((f) => p.fotoColores?.[f] === colorId);
+  const resto = p.fotos.filter((f) => p.fotoColores?.[f] !== colorId);
+  return [...delColor, ...resto];
+}
 
 /** Precio de la pieza (el más bajo si hubiera varias tallas). */
 export function precioDesde(p: Pick<Producto, "tamanos">): number {

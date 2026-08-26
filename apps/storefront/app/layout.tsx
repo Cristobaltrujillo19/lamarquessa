@@ -1,6 +1,13 @@
 import type { Metadata } from "next";
-import { Jost, Cormorant_Garamond, Pinyon_Script } from "next/font/google";
+import {
+  Jost,
+  Cormorant_Garamond,
+  Pinyon_Script,
+  Fraunces,
+  Archivo,
+} from "next/font/google";
 import "./globals.css";
+import "./globals-v2.css";
 import Header from "./Header";
 import Footer from "./Footer";
 import CartDrawer from "./CartDrawer";
@@ -8,6 +15,7 @@ import Chrome from "./Chrome";
 import Reveal from "@/components/marca/Reveal";
 import FabWhatsApp from "@/components/marca/FabWhatsApp";
 import Analitica from "@/components/Analitica";
+import FondoTopografico from "@/components/v2/FondoTopografico";
 import { CarritoProvider } from "@/lib/carrito";
 import {
   MARCA,
@@ -35,6 +43,25 @@ const pinyon = Pinyon_Script({
   subsets: ["latin"],
   variable: "--font-pinyon",
   weight: "400",
+});
+
+// Tipografías de la nueva interfaz (globals-v2.css). El mockup se diseñó y
+// midió con estas dos; usar las de la interfaz vieja cambiaría el ritmo de
+// lectura que ya se validó. Conviven con las de arriba sin coste: next/font
+// solo descarga la que una página realmente pinta.
+//
+// Fraunces cubre además los glifos que a Queen Serif FREE le faltan (acentos,
+// eñe, comillas tipográficas) por fallback por-glifo.
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-fraunces",
+  weight: ["400", "500"],
+  style: ["normal", "italic"],
+});
+const archivo = Archivo({
+  subsets: ["latin"],
+  variable: "--font-archivo",
+  weight: ["400", "500"],
 });
 
 export const metadata: Metadata = {
@@ -93,7 +120,7 @@ export default function RootLayout({
   return (
     <html
       lang="es-CO"
-      className={`${jost.variable} ${cormorant.variable} ${pinyon.variable} antialiased`}
+      className={`${jost.variable} ${cormorant.variable} ${pinyon.variable} ${fraunces.variable} ${archivo.variable} antialiased`}
     >
       <head>
         {/* Queen Serif es la tipografía del titular del hero y del logotipo:
@@ -119,6 +146,14 @@ export default function RootLayout({
           añaden atributos al <body> antes de que React hidrate, lo que dispara
           un aviso de hidratación que no viene de nuestro código. */}
       <body className="flex min-h-screen flex-col" suppressHydrationWarning>
+        <a href="#contenido" className="skip-link">
+          Saltar al contenido
+        </a>
+        {/* Textura de curvas de nivel en movimiento. Decorativa pura: fija,
+            sin eventos y fuera del arbol de accesibilidad. Va antes del
+            contenido y en z-index negativo, asi que no intercepta ningun
+            clic del embudo. */}
+        <FondoTopografico />
         <CarritoProvider>
           <Chrome
             header={<Header />}
@@ -126,7 +161,9 @@ export default function RootLayout({
             drawer={<CartDrawer />}
             fab={<FabWhatsApp mensaje={MENSAJES.general} />}
           >
-            <main className="flex-1">{children}</main>
+            <main id="contenido" className="flex-1">
+              {children}
+            </main>
           </Chrome>
         </CarritoProvider>
         <Reveal />

@@ -4,8 +4,8 @@
     {
       "name": "storefront",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["-C", "apps/storefront", "dev"],
-      "port": 3000
+      "runtimeArgs": ["-C", "apps/storefront", "dev", "--port", "3001"],
+      "port": 3001
     }
   ]
 }

@@ -14,6 +14,11 @@ export const DESCRIPCION_MARCA =
 
 // WhatsApp de la marca en formato internacional (Colombia: 57 + celular).
 export const WHATSAPP = "573332779109";
+/** El mismo número en el formato en que se le enseña a una persona. Los
+ *  correos transaccionales lo duplican como constante propia porque, con
+ *  "use node", Convex no puede importar de este módulo. Si cambia, hay que
+ *  tocarlo también en convex/correoCliente.ts y convex/correoEnvio.ts. */
+export const WHATSAPP_VISIBLE = "333 277 9109";
 export const INSTAGRAM_URL = "https://www.instagram.com/lamarquessa.co/";
 export const INSTAGRAM_HANDLE = "@lamarquessa.co";
 export const EMAIL = "info.lamarquessa@gmail.com";

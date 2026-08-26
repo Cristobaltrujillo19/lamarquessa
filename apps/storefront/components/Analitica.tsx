@@ -1,7 +1,7 @@
 "use client";
 
 import Script from "next/script";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef, Suspense } from "react";
 
 // Analítica: carga Google Tag Manager (marketing multi-destino), Google
@@ -41,7 +41,9 @@ export default function Analitica({ gtmId, ga4Id, metaPixelId }: Props) {
       {ga4Id && (
         <>
           <Ga4Scripts id={ga4Id} />
-          {/* useSearchParams necesita un Suspense boundary en Next 15+. */}
+          {/* El Suspense se conserva aunque ya no se use useSearchParams:
+              aísla estos componentes del árbol si alguna vez vuelven a
+              suspender, y no cuesta nada. */}
           <Suspense fallback={null}>
             <Ga4PageViews id={ga4Id} />
           </Suspense>
@@ -148,12 +150,16 @@ fbq('track', 'PageView');`,
 
 function MetaPixelPageViews() {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   // El init del snippet ya disparó la primera PageView; saltamos la primera
   // ejecución del efecto para no contarla dos veces. Toda navegación
   // SPA posterior sí manda un PageView explícito.
   const primero = useRef(true);
 
+  // Igual que en GA4: solo el pathname. Los searchParams como dependencia
+  // hacían que cada color tanteado en la ficha —que se escribe en ?color=
+  // con replaceState— mandara una PageView de más. En Meta eso es peor que
+  // un número inflado: distorsiona las audiencias construidas sobre
+  // frecuencia de visita.
   useEffect(() => {
     if (primero.current) {
       primero.current = false;
@@ -163,30 +169,41 @@ function MetaPixelPageViews() {
     const w = window as unknown as { fbq?: (...args: unknown[]) => void };
     if (typeof w.fbq !== "function") return;
     w.fbq("track", "PageView");
-    // pathname y searchParams entran como dependencia para que cualquier
-    // cambio de URL cliente-side (incluido el query string) genere una PV.
-  }, [pathname, searchParams]);
+  }, [pathname]);
 
   return null;
 }
 
 function Ga4PageViews({ id }: { id: string }) {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
 
+  // Solo el PATHNAME entra en las dependencias, nunca los searchParams.
+  //
+  // El configurador de la ficha escribe el color elegido en ?color= con
+  // history.replaceState, y eso hace que useSearchParams se actualice. Con
+  // los searchParams como dependencia, cada color que el visitante tanteaba
+  // mandaba un page_view: medido, dos toques de color daban dos páginas
+  // vistas falsas. Eso infla el conteo e inutiliza la tasa de rebote y el
+  // tiempo por página.
+  //
+  // En este sitio ninguna query string significa "otra página": son estado
+  // de interfaz (?color=) o retorno de la pasarela (?payment_id=), y ese
+  // último llega junto con un cambio de ruta, así que se registra igual.
+  //
+  // La URL completa sí viaja en page_location, que se lee en el momento del
+  // disparo, así que no se pierde información: solo se deja de contar dos
+  // veces lo mismo.
   useEffect(() => {
     if (typeof window === "undefined") return;
     const w = window as unknown as { gtag?: (...args: unknown[]) => void };
     if (!w.gtag) return;
-    const query = searchParams?.toString();
-    const path = query ? `${pathname}?${query}` : pathname;
     w.gtag("event", "page_view", {
-      page_path: path,
+      page_path: pathname,
       page_location: window.location.href,
       page_title: document.title,
       send_to: id,
     });
-  }, [pathname, searchParams, id]);
+  }, [pathname, id]);
 
   return null;
 }

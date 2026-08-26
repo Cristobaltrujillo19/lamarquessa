@@ -6,6 +6,8 @@ const colorV = v.object({
   nombre: v.string(),
   hex: v.string(),
   hex2: v.optional(v.string()),
+  descripcion: v.optional(v.string()),
+  fotoReferencia: v.optional(v.string()),
 });
 const tamanoV = v.object({ id: v.string(), nombre: v.string(), precioCop: v.number() });
 
@@ -14,6 +16,60 @@ function exigirSecreto(secret: string) {
   const esperado = process.env.ADMIN_API_SECRET;
   if (!esperado || secret !== esperado) throw new Error("No autorizado");
 }
+
+/** Los 5 acabados en que se fabrica cada pieza. Fuente de verdad única: la
+ *  usan tanto la semilla como la mutación de actualización, para que no
+ *  puedan divergir.
+ *
+ *  El orden es el del sistema de diseño (claro → oscuro → bicolor → azules)
+ *  y es el que ve el cliente en el configurador de la ficha.
+ *
+ *  ⚠️ Los hex son aproximaciones derivadas de una descripción verbal —
+ *  nadie ha medido una pieza física con luz neutra. Están tomados de
+ *  `globals.css` del mockup aprobado. Recalibrar contra tomas de estudio
+ *  antes de usarlos en material impreso.
+ *
+ *  ⚠️ Manglar y Marea no tienen ni una sola fotografía todavía. Se pueden
+ *  comprar; el configurador avisa de que la referencia está pendiente y la
+ *  galería enseña las fotos que existen con su color real estampado. */
+const ACABADOS_MARCA = [
+  {
+    id: "amanecer",
+    nombre: "Amanecer",
+    hex: "#D9C7A8",
+    descripcion: "Beige cálido. El tono de la arena antes de que llegue nadie.",
+    fotoReferencia: "/assets/colores/amanecer.jpg",
+  },
+  {
+    id: "manglar",
+    nombre: "Manglar",
+    hex: "#4B3122",
+    descripcion: "Chocolate cerrado. El color de la raíz que crece dentro del agua.",
+  },
+  {
+    // Bicolor: rojo arriba, negro abajo. La muestra se parte con un corte duro
+    // a 45°, no con un degradado — un degradado inventaría tonos intermedios
+    // que la pieza no tiene.
+    id: "horizonte",
+    nombre: "Horizonte",
+    hex: "#8F2B23",
+    hex2: "#171310",
+    descripcion: "Rojo sobre negro. La línea exacta donde el día se corta.",
+  },
+  {
+    id: "caribe",
+    nombre: "Caribe",
+    hex: "#2C8CA8",
+    descripcion: "Azul de agua clara, el que solo se ve a poca profundidad.",
+    fotoReferencia: "/assets/colores/caribe.jpg",
+  },
+  {
+    id: "marea",
+    nombre: "Marea",
+    hex: "#1E2C4A",
+    descripcion: "Azul marino. El mar cuando ya no se le alcanza el fondo.",
+  },
+];
 
 // === Público (lo lee la tienda) ===
 export const catalogo = query({
@@ -148,14 +204,14 @@ export const sembrarCatalogoReal = mutation({
   handler: async (ctx, { secret }) => {
     exigirSecreto(secret);
 
-    // Los 3 acabados disponibles, iguales para los cuatro bolsos.
-    const ACABADOS = [
-      { id: "amanecer", nombre: "Amanecer", hex: "#e8bca6" },
-      { id: "caribe", nombre: "Caribe", hex: "#bcc1d2" },
-      // Horizonte es un seda bicolor: negro y rojo. Los dos tonos son
-      // aproximaciones editables desde el panel.
-      { id: "horizonte", nombre: "Horizonte", hex: "#111111", hex2: "#b3121a" },
-    ];
+    // Los 5 acabados disponibles, iguales para los cuatro bolsos. El orden es
+    // el del sistema de diseño (ORDEN_COLORES): claro → oscuro → bicolor →
+    // azules. Los hex vienen de `globals.css` del mockup aprobado.
+    //
+    // ⚠️ Siguen siendo aproximaciones a una descripción verbal: nadie ha
+    // medido una pieza física con luz neutra. Calibrar antes de imprimir
+    // material impreso. Ver capítulo 9 del handoff.
+    const ACABADOS = ACABADOS_MARCA;
     const MATERIAL = "PLA de origen colombiano, impreso en 3D y terminado a mano";
 
     const data = [
@@ -288,6 +344,151 @@ export const juntarRendersDeEstudio = mutation({
     }
 
     return { reordenados };
+  },
+});
+
+// Lleva el catálogo vivo de 3 acabados a los 5 de la nueva interfaz, y les
+// añade la descripción de marca que el configurador de la ficha necesita.
+//
+// Cambia también los hex de los 3 que ya existían: los de producción venían
+// del documento de marca y los nuevos del sistema de diseño aprobado. El
+// salto más visible es Caribe, que pasa de un gris lavanda (#bcc1d2) a un
+// turquesa de agua clara (#2C8CA8).
+//
+// Igual patrón que actualizarSeoDeCatalogo: NO borra filas, solo reemplaza el
+// array `colores` de cada producto, y es idempotente.
+//
+// ⚠️ Los pedidos ya existentes NO se tocan. Guardan su `colorNombre` congelado
+// al momento de la venta, así que un pedido viejo de "Caribe" sigue diciendo
+// Caribe aunque el hex del catálogo haya cambiado. Es el comportamiento que
+// queremos: el histórico no se reescribe.
+export const actualizarColoresDeCatalogo = mutation({
+  args: { secret: v.string() },
+  handler: async (ctx, { secret }) => {
+    exigirSecreto(secret);
+
+    // Comparación campo a campo, no JSON.stringify: Convex no garantiza el
+    // orden de las claves al leer un documento, así que stringify daba falsos
+    // negativos y la mutación reescribía siempre.
+    // El tipo va explícito y laxo: `typeof ACABADOS_MARCA` infiere una unión
+    // estricta (una forma con hex2, otra sin él) que no encaja con lo que
+    // devuelve la base, donde hex2 y descripcion son simplemente opcionales.
+    type ColorGuardado = {
+      id: string;
+      nombre: string;
+      hex: string;
+      hex2?: string;
+      descripcion?: string;
+      fotoReferencia?: string;
+    };
+    const yaCoincide = (guardados: ColorGuardado[]) =>
+      guardados.length === ACABADOS_MARCA.length &&
+      ACABADOS_MARCA.every((esperado, i) => {
+        const actual = guardados[i];
+        return (
+          actual?.id === esperado.id &&
+          actual?.nombre === esperado.nombre &&
+          actual?.hex === esperado.hex &&
+          actual?.hex2 === esperado.hex2 &&
+          actual?.descripcion === esperado.descripcion &&
+          actual?.fotoReferencia === esperado.fotoReferencia
+        );
+      });
+
+    const productos = await ctx.db.query("productos").collect();
+    const actualizados: string[] = [];
+
+    for (const p of productos) {
+      if (yaCoincide(p.colores)) continue;
+      await ctx.db.patch(p._id, { colores: ACABADOS_MARCA });
+      actualizados.push(p.slug);
+    }
+
+    return { actualizados, totalAcabados: ACABADOS_MARCA.length };
+  },
+});
+
+// Declara qué color enseña cada foto del catálogo.
+//
+// De dónde sale cada valor, que es lo que hace el dato defendible:
+//
+//  - Las tomas de contexto de agosto venían nombradas por acabado en origen
+//    (bolso-kruta-caribe-en-uso, bolso-mallorca-horizonte-en-uso) antes de
+//    renombrarse al esquema por rol. No se adivina: se recupera el dato que
+//    traía el nombre.
+//
+//  - Los renders de estudio son inspección directa sobre fondo gris neutro,
+//    que es exactamente la condición que el capítulo 9 del handoff declara
+//    fiable para juzgar color. Los ocho son Amanecer.
+//
+//  - Las tomas de atardecer de julio se leen ROSA, no beige, y ese es
+//    justamente el caso que el capítulo 9 documenta: "el mismo bolso Amanecer
+//    mide #F4D2C6 en la foto de atardecer y #D6BB9E en el render de estudio
+//    con luz neutra". Son Amanecer bajo luz cálida, no otro acabado.
+//
+// Si mañana entra una foto cuyo acabado nadie registró, se deja fuera de este
+// mapa y se rotula como pendiente. Un rótulo inventado es peor que ninguno.
+//
+// Idempotente y no destructiva, como el resto de mutaciones de mantenimiento.
+export const actualizarColoresDeFotos = mutation({
+  args: { secret: v.string() },
+  handler: async (ctx, { secret }) => {
+    exigirSecreto(secret);
+
+    const mapaPorSlug: Record<string, Record<string, string>> = {
+      menorca: {
+        "/fotos/bolso-menorca-impresion-3d-frente.jpg": "amanecer",
+        "/fotos/bolso-menorca-impresion-3d-angulo.jpg": "amanecer",
+        "/fotos/bolso-menorca-en-uso.jpg": "amanecer",
+        "/fotos/bolso-menorca-ambiente.jpg": "amanecer",
+      },
+      mallorca: {
+        "/fotos/bolso-mallorca-impresion-3d-frente.jpg": "amanecer",
+        "/fotos/bolso-mallorca-impresion-3d-angulo.jpg": "amanecer",
+        "/fotos/bolso-mallorca-en-uso.jpg": "horizonte",
+        "/fotos/bolso-mallorca-ambiente.jpg": "amanecer",
+      },
+      kruta: {
+        "/fotos/bolso-kruta-impresion-3d-frente.jpg": "amanecer",
+        "/fotos/bolso-kruta-impresion-3d-angulo.jpg": "amanecer",
+        "/fotos/bolso-kruta-en-uso.jpg": "caribe",
+        "/fotos/bolso-kruta-en-uso-horizonte.jpg": "horizonte",
+        "/fotos/bolso-kruta-ambiente.jpg": "caribe",
+      },
+      montt: {
+        "/fotos/bolso-montt-impresion-3d-frente.jpg": "amanecer",
+        "/fotos/bolso-montt-impresion-3d-angulo.jpg": "amanecer",
+        "/fotos/bolso-montt-en-uso.jpg": "caribe",
+        "/fotos/bolso-montt-ambiente.jpg": "amanecer",
+      },
+    };
+
+    const productos = await ctx.db.query("productos").collect();
+    const actualizados: string[] = [];
+
+    for (const p of productos) {
+      const nuevo = mapaPorSlug[p.slug];
+      if (!nuevo) continue;
+
+      const actual = p.fotoColores ?? {};
+      const clavesNuevas = Object.keys(nuevo);
+      const igual =
+        Object.keys(actual).length === clavesNuevas.length &&
+        clavesNuevas.every((k) => actual[k] === nuevo[k]);
+      if (igual) continue;
+
+      await ctx.db.patch(p._id, { fotoColores: nuevo });
+      actualizados.push(p.slug);
+    }
+
+    return {
+      actualizados,
+      // Cuántas fotos quedan sin color declarado, para tenerlo a la vista.
+      sinColor: productos.reduce(
+        (n, p) => n + p.fotos.filter((f) => !(mapaPorSlug[p.slug] ?? {})[f]).length,
+        0,
+      ),
+    };
   },
 });
 

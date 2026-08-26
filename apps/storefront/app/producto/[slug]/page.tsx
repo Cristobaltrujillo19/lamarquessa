@@ -3,11 +3,12 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { fetchQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
-import ProductCard from "@/components/ProductCard";
-import Galeria from "./Galeria";
-import ComprarPanel from "./ComprarPanel";
+import TarjetaProducto from "@/components/v2/TarjetaProducto";
+import Aparece from "@/components/v2/Aparece";
+import ConfiguradorPieza from "./ConfiguradorPieza";
 import ViewItemTracker from "./ViewItemTracker";
 import { formatCm } from "@/lib/productos";
+import styles from "./producto.module.css";
 import {
   ENVIO_DIAS,
   MARCA,
@@ -163,8 +164,9 @@ export default async function ProductoPage({
     ],
   };
 
+
   return (
-    <div className="mx-auto max-w-[1280px] px-5 py-10 md:px-8">
+    <div>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaProducto) }}
@@ -175,112 +177,108 @@ export default async function ProductoPage({
       />
       <ViewItemTracker producto={producto} />
 
-      <nav aria-label="Ruta de navegación" className="text-sm text-cacao-suave">
-        <Link href="/" className="transition-colors hover:text-cobre-texto">
-          Inicio
-        </Link>
-        <span className="px-2">/</span>
-        <Link href="/tienda" className="transition-colors hover:text-cobre-texto">
-          Colección
-        </Link>
-        <span className="px-2">/</span>
-        <span className="text-cacao">{producto.nombre}</span>
-      </nav>
-
-      <div className="mt-6 grid gap-8 md:grid-cols-2 md:gap-14">
-        <Galeria fotos={producto.fotos} nombre={producto.nombre} />
-
-        <div>
-          <h1 className="font-titulo text-4xl md:text-5xl">
-            Bolso {producto.nombre}
-          </h1>
-          {producto.subtitulo && (
-            // H2 con la frase larga (palabras clave de moda insertadas de
-            // forma natural). Sirve al SEO y a la comprensión rápida: en un
-            // vistazo el visitante sabe QUÉ es este bolso.
-            <h2 className="mt-2 font-titulo text-xl text-cacao-suave md:text-2xl">
-              {producto.subtitulo}
-            </h2>
-          )}
-
-          <div className="mt-4 space-y-4 leading-relaxed text-cacao-suave">
-            {producto.descripcion.split("\n\n").map((parrafo, i) => (
-              <p key={i}>{parrafo}</p>
-            ))}
-          </div>
-
-          <ComprarPanel producto={producto} />
-
-          <p className="mt-4 text-sm text-cacao-suave">
-            Se fabrica a pedido: tu bolso estará listo en{" "}
-            <strong className="text-cacao">{PRODUCCION_SEMANAS} semanas</strong>.
-          </p>
-
-          <div className="mt-8 border-t border-cacao/10">
-            {medidas && (
-              <details className="border-b border-cacao/10 py-3" open>
-                <summary className="flex cursor-pointer list-none items-center justify-between font-titulo text-lg">
-                  Medidas
-                  <span className="text-cobre-texto">+</span>
-                </summary>
-                <ul className="mt-2 space-y-1 text-sm text-cacao-suave">
-                  <li>Alto: {formatCm(medidas.alto)}</li>
-                  <li>Ancho: {formatCm(medidas.ancho)}</li>
-                  <li>Profundidad: {formatCm(medidas.prof)}</li>
-                </ul>
-              </details>
-            )}
-            <details className="border-b border-cacao/10 py-3">
-              <summary className="flex cursor-pointer list-none items-center justify-between font-titulo text-lg">
-                Materiales y cuidado
-                <span className="text-cobre-texto">+</span>
-              </summary>
-              <p className="mt-2 text-sm leading-relaxed text-cacao-suave">
-                {producto.material ??
-                  "Diseñada e impresa en 3D, terminada a mano con materiales colombianos."}{" "}
-                Limpia con un paño suave y seco; evita la exposición prolongada al
-                sol.{" "}
-                <Link
-                  href="/preguntas-frecuentes#cuidado"
-                  className="text-cobre-texto underline-offset-4 hover:underline"
-                >
-                  Cómo cuidarlo →
-                </Link>
-              </p>
-            </details>
-            <details className="border-b border-cacao/10 py-3">
-              <summary className="flex cursor-pointer list-none items-center justify-between font-titulo text-lg">
-                Envíos y devoluciones
-                <span className="text-cobre-texto">+</span>
-              </summary>
-              <p className="mt-2 text-sm leading-relaxed text-cacao-suave">
-                Cada pieza se fabrica a pedido en {PRODUCCION_SEMANAS} semanas y
-                la transportadora tarda {ENVIO_DIAS} días hábiles más. Envíos a
-                todo Colombia. Si el bolso sale con un defecto de fabricación, la
-                devolución es gratis.{" "}
-                {/* ⚠️ [PENDIENTE: política propia de cambios, revisada por un
-                    abogado. Lo que se afirma aquí es el piso legal (Ley 1480). */}
-                <Link
-                  href="/preguntas-frecuentes#devoluciones"
-                  className="text-cobre-texto underline-offset-4 hover:underline"
-                >
-                  Ver condiciones →
-                </Link>
-              </p>
-            </details>
-          </div>
+      {/* ---------- La pieza: galería + configurador + compra ---------- */}
+      <section className="seccion-base" aria-labelledby="titular-pieza">
+        <div className="contenedor">
+          <ConfiguradorPieza producto={producto} />
         </div>
-      </div>
+      </section>
 
+      {/* ---------- Medidas y cuidado ----------
+          Superficie elevada para separarla de la ficha sin recurrir a un
+          color nuevo. */}
+      <section className="seccion-respiro seccion-elevada" aria-labelledby="titular-ficha">
+        <div className="contenedor">
+          <Aparece>
+            <h2 id="titular-ficha" className="h2">
+              Medidas y cuidado
+            </h2>
+          </Aparece>
+
+          <dl className={styles.ficha}>
+            {medidas && (
+              <>
+                <div className={styles.fila}>
+                  <dt className={styles.filaClave}>Alto</dt>
+                  <dd className={styles.filaValor}>{formatCm(medidas.alto)}</dd>
+                </div>
+                <div className={styles.fila}>
+                  <dt className={styles.filaClave}>Ancho</dt>
+                  <dd className={styles.filaValor}>{formatCm(medidas.ancho)}</dd>
+                </div>
+                <div className={styles.fila}>
+                  <dt className={styles.filaClave}>Fondo</dt>
+                  <dd className={styles.filaValor}>{formatCm(medidas.prof)}</dd>
+                </div>
+              </>
+            )}
+            {producto.material && (
+              <div className={styles.fila}>
+                <dt className={styles.filaClave}>Material</dt>
+                <dd className={styles.filaValor}>{producto.material}</dd>
+              </div>
+            )}
+            <div className={styles.fila}>
+              <dt className={styles.filaClave}>Fabricación</dt>
+              <dd className={styles.filaValor}>
+                A pedido, {PRODUCCION_SEMANAS} semanas
+              </dd>
+            </div>
+            <div className={styles.fila}>
+              <dt className={styles.filaClave}>Cuidado</dt>
+              <dd className={styles.filaValor}>
+                Limpia con un paño suave y seco; evita la exposición prolongada
+                al sol.
+              </dd>
+            </div>
+          </dl>
+
+          <p className="texto-suave aire-arriba">
+            <Link href="/envios" className="link-terciario">
+              Envíos y devoluciones
+            </Link>
+            {" · "}
+            <Link href="/preguntas-frecuentes" className="link-terciario">
+              Preguntas frecuentes
+            </Link>
+          </p>
+        </div>
+      </section>
+
+      {/* ---------- La descripción larga ---------- */}
+      <section className="seccion-respiro" aria-labelledby="titular-relato">
+        <div className="contenedor">
+          <Aparece className="ancho-texto">
+            <h2 id="titular-relato" className="h2">
+              Sobre {producto.nombre}
+            </h2>
+            <div className="aire-arriba">
+              {producto.descripcion.split("\n\n").map((parrafo, i) => (
+                <p key={i} className="cuerpo aire-arriba">
+                  {parrafo}
+                </p>
+              ))}
+            </div>
+          </Aparece>
+        </div>
+      </section>
+
+      {/* ---------- Piezas relacionadas ---------- */}
       {relacionados.length > 0 && (
-        <section className="mt-20 md:mt-28">
-          <h2 className="text-center font-titulo text-3xl">
-            También te puede gustar
-          </h2>
-          <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
-            {relacionados.map((p) => (
-              <ProductCard key={p.slug} producto={p} listName="Relacionados" />
-            ))}
+        <section className="seccion-base" aria-labelledby="titular-relacionadas">
+          <div className="contenedor">
+            <Aparece>
+              <h2 id="titular-relacionadas" className="h2 centrado">
+                También te puede gustar
+              </h2>
+            </Aparece>
+            <div className={styles.relacionadas}>
+              {relacionados.map((p, i) => (
+                <Aparece key={p.slug} paso={i}>
+                  <TarjetaProducto producto={p} listName="Relacionados" />
+                </Aparece>
+              ))}
+            </div>
           </div>
         </section>
       )}

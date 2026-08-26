@@ -1,0 +1,44 @@
+/* Cortina de entrada — solo en la home, una vez por sesión.
+   Es una capa POR ENCIMA del contenido: el HTML de la home se renderiza
+   normal y no se retrasa nada para buscadores ni para el hero. */
+
+.cortina {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: var(--tinta);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 700ms var(--curva), transform 700ms var(--curva);
+}
+
+.saliendo {
+  opacity: 0;
+  transform: translateY(-8px);
+  pointer-events: none;
+}
+
+.logo {
+  /* 380px en escritorio, 240px en móvil (~62% de 375). El logo pequeño
+     se leía como cargador; a este tamaño lee como identidad. */
+  width: min(380px, 66vw);
+  height: auto;
+  opacity: 0;
+  transform: scale(0.97);
+  transition: opacity 900ms var(--curva), transform 900ms var(--curva);
+}
+@media (max-width: 480px) {
+  .logo { width: 240px; }
+}
+
+.logoDentro {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cortina { display: none; }
+}

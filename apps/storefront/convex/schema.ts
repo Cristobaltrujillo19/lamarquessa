@@ -13,10 +13,20 @@ export const colorV = v.object({
   id: v.string(),
   nombre: v.string(),
   hex: v.string(),
-  // Segundo color, solo para acabados bicolor (Horizonte es negro y rojo). Si
+  // Segundo color, solo para acabados bicolor (Horizonte es rojo y negro). Si
   // está, la muestra del selector se parte en dos en vez de mentir con un
   // color plano. Opcional: los acabados de un solo color no lo llevan.
   hex2: v.optional(v.string()),
+  // Frase de una línea que describe el color con el lenguaje de la marca
+  // ("Beige cálido. El tono de la arena antes de que llegue nadie."). La
+  // muestra el configurador de la ficha. Opcional: los productos sembrados
+  // antes de agosto de 2026 no la tienen y renderizan sin ella.
+  descripcion: v.optional(v.string()),
+  // Foto de referencia del acabado: la familia entera en ese color, sobre
+  // fondo neutro. Es lo que abre el panel del selector al pasar el cursor.
+  // Ausente = todavía no se ha fotografiado ese acabado, y el panel lo dice
+  // en vez de prometer algo que no hay.
+  fotoReferencia: v.optional(v.string()),
 });
 
 export const tamanoV = v.object({
@@ -83,6 +93,32 @@ export default defineSchema({
     insignia: v.optional(v.string()),
     activo: v.boolean(),
     orden: v.number(),
+    // Número de serie de la pieza — el "elemento firma" de la interfaz nueva
+    // ("Nº 042 · única en el mundo"). Todavía NO se pinta en ninguna parte:
+    // falta que el dueño de la marca decida desde qué número arranca el
+    // contador. El campo existe para poder sembrarlo sin migración el día
+    // que esa decisión se tome. Ver ESTADO.md, "escasez honesta".
+    serie: v.optional(v.number()),
+
+    // Qué color enseña cada foto, indexado por su ruta. NO es el color que el
+    // visitante tenga seleccionado: si la marca de agua siguiera al selector,
+    // elegir Marea estamparía "Marea" sobre un bolso beige.
+    //
+    // Sirve a tres sitios: la marca de agua de la ficha, el rótulo de la
+    // tarjeta de colección, y el filtro por color —que filtra por colores de
+    // los que EXISTE foto, no por colores que la pieza "sea": las cuatro se
+    // fabrican en los cinco, así que filtrar por pertenencia devolvía o todo
+    // o nada.
+    //
+    // Una ruta ausente del mapa significa "color no identificado", y se
+    // rotula como pendiente antes que atribuirle un nombre que no le toca.
+    //
+    // ⚠️ Riesgo de deriva: el formulario del panel edita `fotos` pero no este
+    // mapa. Si se añade una foto desde el panel, entra sin color. Es
+    // deliberado —prefiero una foto sin rótulo que un rótulo inventado—,
+    // pero conviene resolverlo cuando el panel se rehaga.
+    fotoColores: v.optional(v.record(v.string(), v.string())),
+
     // Ficha técnica: responde objeciones reales de compra ("¿cabe mi celular?")
     // y alimenta el schema Product. Opcionales: los productos viejos no los tienen.
     altoCm: v.optional(v.number()),

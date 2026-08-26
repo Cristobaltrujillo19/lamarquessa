@@ -1,10 +1,23 @@
 import type { Metadata } from "next";
 import { fetchQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
-import ProductCard from "@/components/ProductCard";
+import FiltroColeccion from "@/components/v2/FiltroColeccion";
+import Aparece from "@/components/v2/Aparece";
 import { precioDesde } from "@/lib/productos";
 import { PRODUCCION_SEMANAS, SITE_URL, urlAbsoluta } from "@/lib/site";
 import ViewItemListTracker from "./ViewItemListTracker";
+import styles from "./coleccion.module.css";
+
+// La colección con la interfaz nueva.
+//
+// LA RUTA NO CAMBIA. El mockup la llama /coleccion; aquí sigue siendo /tienda,
+// que lleva meses indexada, está en el sitemap y es el canonical. Renombrarla
+// habría costado posiciones a cambio de nada que el visitante note: lo que ve
+// es el rótulo, y ese ya dice "Colección" en el nav.
+//
+// La metadata se conserva tal cual: fue escrita para el SERP y medida bajo los
+// 160 caracteres. El titular del mockup ("Cuatro piezas.") sí entra, porque es
+// el H1 y ahí manda el diseño aprobado.
 
 export const metadata: Metadata = {
   title: "Bolsos artesanales hechos a mano en Colombia | La Marquessa",
@@ -26,46 +39,46 @@ export default async function TiendaPage() {
   const items = await fetchQuery(api.productos.catalogo, {});
 
   return (
-    <div className="mx-auto max-w-[1280px] px-5 py-14 md:px-8 md:py-20">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaMigas) }}
-      />
-      <ViewItemListTracker
-        listName="Colección"
-        items={items.map((p) => ({
-          slug: p.slug,
-          nombre: p.nombre,
-          precioDesde: precioDesde(p),
-        }))}
-      />
+    <div>
+      <section className="seccion-base" aria-labelledby="titular-coleccion">
+        <div className="contenedor">
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaMigas) }}
+          />
+          <ViewItemListTracker
+            listName="Colección"
+            items={items.map((p) => ({
+              slug: p.slug,
+              nombre: p.nombre,
+              precioDesde: precioDesde(p),
+            }))}
+          />
 
-      <div className="text-center">
-        <p className="kicker">La colección</p>
-        <h1 className="mt-2 font-titulo text-4xl md:text-5xl">
-          Todos los <span className="script">bolsos</span>
-        </h1>
-        {/* Respuesta directa a "¿qué es esto?" en las dos primeras frases:
-            es lo que extraen los buscadores con IA para citar. */}
-        <p className="mx-auto mt-4 max-w-[62ch] text-cacao-suave">
-          Cada bolso de La Marquessa se fabrica uno por uno, combinando impresión
-          3D con acabado artesanal a mano. Por eso el relieve nunca cae igual y no
-          existen dos piezas idénticas. Se hacen a pedido y están listas en{" "}
-          {PRODUCCION_SEMANAS} semanas.
-        </p>
-      </div>
+          <Aparece className={styles.encabezado}>
+            <p className="eyebrow eyebrow-seccion">Serie abierta · 2026</p>
+            <h1 id="titular-coleccion" className="h1 aire-arriba">
+              {items.length === 4 ? "Cuatro piezas." : `${items.length} piezas.`}
+            </h1>
+            <p className="cuerpo aire-arriba">
+              Cada una se imprime en Medellín y se pule a mano cuando ya tiene
+              dueña. El relieve Nácar no se repite: cada pieza sale del molde con
+              su propio patrón.
+            </p>
+          </Aparece>
 
-      {items.length === 0 ? (
-        <p className="mt-16 text-center text-cacao-suave">
-          Muy pronto verás aquí nuestras piezas.
-        </p>
-      ) : (
-        <div className="mt-12 grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6 lg:grid-cols-4">
-          {items.map((p) => (
-            <ProductCard key={p.slug} producto={p} />
-          ))}
+          {items.length === 0 ? (
+            <p className="cuerpo">Muy pronto verás aquí nuestras piezas.</p>
+          ) : (
+            <FiltroColeccion piezas={items} />
+          )}
+
+          <p className="texto-suave aire-arriba-lg">
+            Todas se fabrican a pedido y están listas en {PRODUCCION_SEMANAS}{" "}
+            semanas.
+          </p>
         </div>
-      )}
+      </section>
     </div>
   );
 }

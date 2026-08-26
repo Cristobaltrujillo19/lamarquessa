@@ -42,26 +42,21 @@
 
 /* Mismos tokens con los nombres que usa el CSS portado del landing, para que
    los componentes migrados funcionen sin reescribir sus estilos. */
+/* Tokens que SOBREVIVEN de la interfaz anterior.
+   --crema, --cobre, --cobre-texto, --radio, --ancho y las fuentes ya NO se
+   declaran aqui: colisionaban por nombre con el sistema nuevo y su fuente
+   unica es ahora globals-v2.css, que se importa despues de este archivo.
+   Lo que queda lo usan el panel y los componentes de marca sin portar. */
 :root {
-  --crema: #f4e8d7;
   --arena-clara: #e8decd;
   --arena: #c1ab99;
-  --cobre: #b38561;
   --cobre-hondo: #946545;
-  --cobre-texto: #805337;
   --cielo: #c2c9d3;
   --cacao: #4a3a2c;
   --cacao-suave: #6f5a48;
   --blanco: #fbf7f1;
   --wa-verde: #25d366;
 
-  --fuente-cuerpo: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
-  --fuente-titulo: "Queen Serif", var(--font-cormorant), "Times New Roman", serif;
-  --fuente-script: "Beauty Angelique", var(--font-pinyon), cursive;
-  --fuente-cita: var(--font-cormorant), "Times New Roman", serif;
-
-  --ancho: 1520px;
-  --radio: 4px; /* esquinas casi rectas: estética editorial/lujo */
   --sombra: 0 18px 50px rgba(74, 58, 44, 0.12);
 }
 
@@ -69,52 +64,28 @@ html {
   scroll-behavior: smooth;
 }
 
-body {
-  background: var(--crema);
-  color: var(--cacao);
-  font-family: var(--fuente-cuerpo);
-  font-weight: 300;
-  -webkit-font-smoothing: antialiased;
-}
-
-h1,
-h2,
-h3 {
-  font-family: var(--fuente-titulo);
-  font-weight: 400; /* Queen Serif es de un solo peso: evitamos falso negrita */
-  font-synthesis: none;
-  line-height: 1.1;
-  text-wrap: balance;
-}
+/* body, los titulares y el anillo de foco los define globals-v2.css, que se
+   importa despues. Declararlos aqui repintaba el sitio entero con la paleta y
+   la tipografia anteriores. */
 
 /* Palabra clave en script cobre (como en la landing) */
 .script {
-  font-family: var(--fuente-script);
-  color: var(--cobre-texto);
+  font-family: "Beauty Angelique", var(--font-pinyon), cursive;
+  color: #805337;
   font-weight: 400;
 }
 
 /* Etiqueta superior versalita, muy editorial */
 .kicker {
-  font-family: var(--fuente-cuerpo);
+  font-family: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
   font-weight: 400;
   text-transform: uppercase;
   letter-spacing: 0.3em;
   font-size: 12.5px;
-  color: var(--cobre-texto);
+  color: #805337;
 }
 
 /* ---- Utilidades portadas del landing ---- */
-.contenedor {
-  max-width: var(--ancho);
-  margin-inline: auto;
-  padding-inline: clamp(22px, 6vw, 40px);
-}
-
-.seccion {
-  padding-block: clamp(70px, 11vw, 130px);
-}
-
 .titulo-seccion {
   font-size: clamp(30px, 5.4vw, 54px);
 }
@@ -129,7 +100,7 @@ h3 {
   align-items: center;
   justify-content: center;
   gap: 0.6em;
-  font-family: var(--fuente-cuerpo);
+  font-family: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
   font-weight: 400;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -137,7 +108,7 @@ h3 {
   text-decoration: none;
   cursor: pointer;
   padding: 1em 2em;
-  border-radius: var(--radio);
+  border-radius: 4px;
   border: 1px solid transparent;
   transition:
     transform 0.25s ease,
@@ -148,7 +119,7 @@ h3 {
 }
 
 .boton-primario {
-  background: var(--cobre-texto);
+  background: #805337;
   color: var(--blanco);
 }
 
@@ -165,8 +136,8 @@ h3 {
 }
 
 .boton-fantasma:hover {
-  border-color: var(--cobre-texto);
-  color: var(--cobre-texto);
+  border-color: #805337;
+  color: #805337;
 }
 
 /* Aparición suave al hacer scroll (la activa Reveal.tsx) */
@@ -210,11 +181,6 @@ h3 {
 
 .logo-cabecera-oculto .logo-cabecera {
   pointer-events: none;
-}
-
-:focus-visible {
-  outline: 2px solid var(--cobre-texto);
-  outline-offset: 3px;
 }
 
 @media (prefers-reduced-motion: reduce) {

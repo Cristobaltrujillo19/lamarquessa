@@ -1,7 +1,12 @@
 # ESTADO — La Marquessa · Handoff para la próxima sesión
 
-Última actualización: **10 de agosto de 2026**
-Rama: `main` · Último commit: `f2e4ccf` (middleware) · Árbol local: limpio · Todo pusheado.
+Última actualización: **26 de agosto de 2026**
+Rama activa: **`feat/nueva-interfaz`** — porting de la interfaz nueva, terminado
+y pendiente de revisión. `main` sigue en `b150351` sirviendo producción.
+
+> ⚠️ **Antes de tocar nada, lee `docs/HANDOFF-INVENTARIO-ANALITICA.md`.** Es el
+> contrato de los 17 eventos de analítica que no se pueden romper, y trae la
+> verificación de paridad del porting.
 
 ---
 
@@ -27,13 +32,15 @@ Mar, olas, Caribe. Titular del hero **en inglés** (decisión de marca): *"Colom
 | **Kruta** | 230.000 | 20,5 × 12,8 × 12,8 cm | 190 g | Vertical, lisa, un pliegue |
 | **Montt** | 195.000 | 17,5 × 18,2 × 12,3 cm | 290 g | Ancha y baja, pliegue diagonal |
 
-**Acabados (3):** Amanecer `#e8bca6` (rosa nude) · Caribe `#bcc1d2` (azul con destellos) · **Horizonte** (bicolor negro `#111111` + rojo `#b3121a`, seda; se pinta partido en diagonal con `muestraColor()`).
+**Acabados (5)**, con los hex del sistema de diseño aprobado: Amanecer `#D9C7A8` · Manglar `#4B3122` · **Horizonte** (bicolor rojo `#8F2B23` + negro `#171310`, se pinta partido en diagonal con `muestraColor()`) · Caribe `#2C8CA8` · Marea `#1E2C4A`.
+
+⚠️ Son aproximaciones a una descripción verbal: nadie ha medido una pieza física con luz neutra. **Manglar y Marea no tienen ni una sola foto.**
 
 **Material:** PLA de proveedor colombiano. **El proveedor NO se menciona en la web.**
 
 ### Personalización
 
-Dos formas: color específico o iniciales en la parte inferior. Se cotiza al momento por WhatsApp. Las piezas personalizadas no aceptan cambio ni retracto.
+Dos formas, ya **self-service con precio fijo** en la ficha: iniciales grabadas (+$30.000, hasta 3 letras, dos fuentes) y color a disposición (+$60.000, texto libre que se confirma por WhatsApp antes de fabricar). Combinables. Las piezas personalizadas no aceptan cambio ni retracto.
 
 ---
 
@@ -103,7 +110,7 @@ npx convex deploy -y               # desde apps/storefront, para desplegar a PRO
 
 ### ✅ Configuración
 - **Vars en Convex prod**: `ADMIN_API_SECRET`, `MP_ACCESS_TOKEN`, `SITE_URL`, `GMAIL_USER`, `GMAIL_APP_PASSWORD`. Todas puestas y verificadas.
-- **Google Tag Manager** `GTM-P76W5D68` cargado (falta cablear GA4 dentro de GTM).
+- **Analítica**: GTM `GTM-56LQL4LL` + GA4 `G-Q5PW0TY6SX` (gtag.js directo) + Meta Pixel `1046242051600058`. 17 eventos cableados — ver `docs/HANDOFF-INVENTARIO-ANALITICA.md`.
 - **Cuenta MP**: `id=515941663`, nombre visible **"Amor y Brillitos"** (paraguas para SER + La Marquessa).
 
 ---
@@ -222,3 +229,96 @@ f2e4ccf  Middleware: 301 desde subdominios de Vercel al dominio propio
 c9f5b02  Ficha de producto: CTA fijo en móvil + selectores de color a 44px táctil
 ceff9b0  Titulos partidos: espacio antes del <br /> para no pegar palabras
 ```
+
+---
+
+## 12. Porting de la interfaz nueva (rama `feat/nueva-interfaz`)
+
+Implementación del mockup aprobado (`../LM_MOCKUP`) sobre la tienda viva,
+siguiendo `HANDOFF-IMPLEMENTACION.md` de ese repositorio.
+
+### Qué está portado
+
+**El sitio público entero.** Ya no quedan páginas con la interfaz anterior:
+home, `/tienda`, `/producto/[slug]`, `/nosotros`, `/envios`, `/contacto`,
+`/carrito`, `/checkout`, `/gracias`, `/pago-fallido`,
+`/preguntas-frecuentes` y `/privacidad`, más la cabecera, el pie y el cajón
+del carrito.
+
+Los tokens **ya están promovidos a `:root`** en `app/globals-v2.css`. Los
+viejos que colisionaban por nombre (`--crema`, `--cobre`, `--cobre-texto`,
+`--radio`, `--ancho`, las fuentes) se borraron de `globals.css`, y los
+envoltorios `.ui-v2` desaparecieron de las doce rutas.
+
+El panel (`/panel`) NO se tocó: usa las utilidades de color de Tailwind, que
+salen del bloque `@theme` de `globals.css` y siguen con los hex anteriores a
+propósito.
+
+Un efecto secundario que arregló un fallo real: la media query de espaciado
+móvil estaba escrita como `.ui-v2 :root`, que **nunca casaba** (`:root` es
+`<html>`, no puede ser descendiente de nada). Con los tokens en `:root` vuelve
+a funcionar — medido: `--pad-base` pasa de 128px a 72px por debajo de 768px.
+
+### Portado en la ronda del 26 de agosto
+
+- **`FondoTopografico`** (+ `topografia-shader.ts` y `topografia.svg`): la
+  textura de curvas de nivel en movimiento que el mockup monta en el layout y
+  que faltaba en todo el sitio. Verificada en modo `webgl`.
+- **`Lightbox`** en la ficha: el marco de la foto pasa a ser botón. Verificado
+  abrir, flechas, `Escape`, bloqueo del scroll de fondo y retorno del foco.
+- **`PruebaSocial`** y **`MuroInstagram`** en la home. Los dos se auto-ocultan
+  sin datos reales: en producción devuelven `null` hoy. Ver §12.1.
+- **Enlace «Saltar al contenido»** y `id="contenido"` en el `<main>`.
+
+### Decisiones que siguen esperando al dueño de la marca
+
+| Qué | Consecuencia hoy |
+|---|---|
+| **Desde qué número arranca la numeración de piezas** | El "elemento firma" (`Nº 042 · única en el mundo`) no se pinta. El campo `serie` ya está en el schema para activarlo sin migración |
+| **Licenciar la tipografía Queens para web** | La display es Queen Serif FREE con Fraunces cubriendo acentos y eñes por fallback por-glifo |
+| **Fotos de Manglar y Marea** | Los dos acabados se pueden comprar pero no aparecen en el filtro de la colección, y su panel de referencia dice "Referencia pendiente" |
+| **Horario de atención** | Único marcador PENDIENTE visible del sitio, en `/contacto` |
+| **El vídeo del hero lleva "La Marquessa" incrustado** | Compite con el H1. Anotado desde el mockup, sin resolver |
+| **Nav y pie usan logos distintos sobre el mismo fondo** | `logo-cobre` arriba, `logo-claro` abajo, ambos sobre `--tinta` |
+| **Testimonios, destinos entregados y publicaciones de Instagram** | `PruebaSocial` y `MuroInstagram` ya están portados, pero **invisibles en producción** hasta que haya material. Ver §12.1 |
+
+### Colores del catálogo
+
+Pasó de 3 a 5 acabados, con los hex del sistema de diseño aprobado. **Siguen
+siendo aproximaciones a una descripción verbal: nadie ha medido una pieza
+física con luz neutra.** Recalibrar antes de usarlos en material impreso.
+
+El salto más visible respecto a lo que había: Caribe pasó de un gris lavanda
+`#bcc1d2` a un turquesa `#2C8CA8`.
+
+### 12.1 Cómo encender la prueba social y el muro de Instagram
+
+Las dos secciones están cableadas y estilizadas, y **no hay que tocar la
+home** para activarlas. Hoy no se ven en producción porque no hay dato real:
+
+| Sección | Qué la enciende | Dónde |
+|---|---|---|
+| Testimonios | Al menos una entrada, **aprobada por escrito por quien la dijo** | `lib/testimonios.ts` → `TESTIMONIOS` |
+| Contador de piezas | Un número de piezas **entregadas** (no pedidas) | `lib/marca.ts` → `PIEZAS_ENTREGADAS` |
+| Muro de Instagram | Publicaciones con la miniatura **descargada a `/public`** | `lib/instagram.ts` → `POSTS` |
+
+⚠️ **Las URL del CDN de Instagram caducan.** Guardar el enlace que devuelve
+la API produce fotos rotas en pocos días: hay que descargar la imagen.
+
+⚠️ **No se publican los ejemplos.** Los arreglos traen andamiaje marcado como
+PENDIENTE que **solo se ve en `dev`**; en producción las secciones devuelven
+`null`. Publicar esos ejemplos serían reseñas inventadas, y tampoco se emite
+`Review` ni `AggregateRating` en el JSON-LD.
+
+El muro dispara `instagram_click` con `link_location: "muro_home"` (y
+`"muro_home_pie"` en el enlace de la cuenta). Es un parámetro nuevo, no un
+evento nuevo: el contrato de los 17 eventos no cambia.
+
+### Antes de fusionar a `main`
+
+1. Revisar la rama en un despliegue de vista previa de Vercel.
+2. **Prueba de compra real con cupón**, que sigue siendo el bloqueador de
+   siempre: el Convex de desarrollo no tiene `MP_ACCESS_TOKEN`, así que el
+   `purchase` de una compra verdadera nunca se ha visto de principio a fin.
+3. Confirmar en el DebugView de GA4 y en el Meta Pixel Helper que los 17
+   eventos siguen llegando desde el despliegue de vista previa.
