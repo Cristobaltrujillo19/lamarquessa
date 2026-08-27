@@ -163,6 +163,47 @@
   .hamburguesa {
     display: flex;
   }
+
+  /* Logo al centro, con un botón de 44px a cada lado: hamburguesa a la
+     izquierda, carrito a la derecha. Es lo que hace que el logo caiga de
+     verdad en el medio — con los dos botones juntos a la derecha, el lado
+     izquierdo quedaba vacío y no había forma de equilibrarlo.
+
+     minmax(0, 1fr) y NO 1fr en las columnas laterales: `1fr` es en realidad
+     `minmax(auto, 1fr)`, así que una columna no baja del ancho de su
+     contenido. Con el carrito y la hamburguesa juntos a la derecha eso daba
+     columnas de 34px y 115px — medido— y el logo se iba 228px a la
+     izquierda del centro. El mínimo en 0 las obliga a repartirse igual. */
+  .fila {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+  }
+
+  /* `display: contents` disuelve el contenedor para que sus dos botones sean
+     celdas del grid por separado y puedan irse a lados opuestos. */
+  .acciones {
+    display: contents;
+  }
+
+  .hamburguesa {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: start;
+  }
+
+  .logo {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: center;
+  }
+
+  /* El del carrito es el otro botón de .acciones. */
+  .acciones > button:not(.hamburguesa) {
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: end;
+  }
   /* [hidden] gana a este display gracias a la regla de más abajo. */
   .panel {
     display: block;
