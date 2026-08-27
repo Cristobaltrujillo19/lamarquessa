@@ -75,8 +75,13 @@
   color: var(--tinta-70);
 }
 
+/* Tres columnas y no cuatro. El reparto tiene que DIVIDIR al numero de
+   publicaciones, o la ultima fila queda coja y el muro deja de leerse como un
+   bloque. Con las 6 del plan gratuito, cuatro columnas daban 4+2 y un hueco a
+   la derecha; tres dan dos filas llenas.
+   Tres divide tambien a 12, asi que esto sigue valiendo si el feed crece. */
 @media (max-width: 1024px) {
-  .muro { grid-template-columns: repeat(4, 1fr); }
+  .muro { grid-template-columns: repeat(3, 1fr); }
 }
 
 @media (max-width: 768px) {
