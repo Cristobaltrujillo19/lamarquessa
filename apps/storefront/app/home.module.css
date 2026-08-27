@@ -108,10 +108,17 @@
   margin-bottom: var(--s-6);
 }
 
+/* Las cuatro piezas en una sola fila. El reparto divide al catalogo en cada
+   parada: 4 y 2 dividen a 4, asi que nunca queda una fila coja. La separacion
+   baja con el numero de columnas porque las tarjetas son mas estrechas. */
 .grilla {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--s-6);
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--s-4);
+}
+
+@media (max-width: 1024px) {
+  .grilla { grid-template-columns: repeat(2, 1fr); gap: var(--s-5); }
 }
 
 @media (max-width: 768px) {
