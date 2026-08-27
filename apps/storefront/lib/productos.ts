@@ -45,8 +45,9 @@ export type Producto = {
   /** Qué color enseña cada foto, por ruta. Una ruta ausente significa color
    *  no identificado — se rotula pendiente, nunca se adivina. */
   fotoColores?: Record<string, string>;
-  /** Vista de rayos X: la pieza en translucido con lo que cabe dentro.
-   *  Ausente = la seccion del deslizador no se renderiza. */
+  /** Par de renders del deslizador de rayos X: cara opaca y cara
+   *  translucida, de la MISMA camara. Sin las dos, no hay seccion. */
+  fotoRayosXBase?: string;
   fotoRayosX?: string;
   /** Frase corta bajo el H1 (H2 en la ficha). Opcional: productos que aún no
    *  tienen subtitulo renderizan solo el nombre. */

@@ -192,7 +192,7 @@ export default async function ProductoPage({
           Sin render no hay seccion. Es lo que permite tener el mecanismo en
           produccion mientras las imagenes todavia no existen, en vez de
           dejar un hueco o un marcador. */}
-      {producto.fotoRayosX && producto.fotos[0] && (
+      {producto.fotoRayosX && producto.fotoRayosXBase && (
         <section className="seccion-respiro" aria-labelledby="titular-rayos-x">
           <div className="contenedor">
             <Aparece>
@@ -207,7 +207,7 @@ export default async function ProductoPage({
 
             <div className="aire-arriba-lg">
               <DeslizadorRayosX
-                normal={producto.fotos[0]}
+                normal={producto.fotoRayosXBase}
                 rayosX={producto.fotoRayosX}
                 nombre={producto.nombre}
               />

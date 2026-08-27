@@ -119,13 +119,17 @@ export default defineSchema({
     // pero conviene resolverlo cuando el panel se rehaga.
     fotoColores: v.optional(v.record(v.string(), v.string())),
 
-    // Vista de rayos X: la pieza en translucido con lo que cabe dentro. Se
-    // pinta en un deslizador de barrido contra fotos[0], asi que las dos
-    // imagenes tienen que salir de la MISMA camara y al mismo tamano, o el
-    // barrido delata el desajuste.
+    // Las DOS caras del deslizador de rayos X. Son un par: sin las dos, la
+    // seccion no se renderiza.
     //
-    // Ausente = la seccion entera no se renderiza. Es lo que permite tener el
-    // mecanismo desplegado mientras los renders todavia no existen.
+    // ⚠️ TIENEN QUE SALIR DE LA MISMA CAMARA, en la misma escena y al mismo
+    // tamano. Por eso la cara opaca es un RENDER propio y no fotos[0]: la
+    // fotografia de estudio tiene otro encuadre, otra luz y otro fondo, y el
+    // barrido delataria el salto en el primer pixel. Lo unico que cambia
+    // entre las dos es el material de la pieza y lo que lleva dentro.
+    /** Render opaco, en su color. Es la cara que se ve al empezar. */
+    fotoRayosXBase: v.optional(v.string()),
+    /** Render translucido, con el contenido a la vista. */
     fotoRayosX: v.optional(v.string()),
 
     // Ficha técnica: responde objeciones reales de compra ("¿cabe mi celular?")

@@ -671,23 +671,29 @@ export const actualizarRayosX = mutation({
   handler: async (ctx, { secret }) => {
     exigirSecreto(secret);
 
-    // Rellenar segun vayan llegando los renders. Una pieza que falte aqui
-    // conserva lo que tuviera; para borrar una vista hay que poner "".
-    const porSlug: Record<string, string> = {
-      // menorca:  "/fotos/rayos-x-menorca.jpg",
-      // mallorca: "/fotos/rayos-x-mallorca.jpg",
-      // kruta:    "/fotos/rayos-x-kruta.jpg",
-      // montt:    "/fotos/rayos-x-montt.jpg",
+    // Rellenar segun vayan llegando los renders. Las dos rutas de cada pieza
+    // deben salir de la MISMA camara: `base` es la cara opaca y `vista` la
+    // translucida. Una pieza que falte aqui conserva lo que tuviera.
+    const porSlug: Record<string, { base: string; vista: string }> = {
+      // menorca:  { base: "/fotos/rayos-x-menorca-base.jpg",  vista: "/fotos/rayos-x-menorca.jpg" },
+      // mallorca: { base: "/fotos/rayos-x-mallorca-base.jpg", vista: "/fotos/rayos-x-mallorca.jpg" },
+      // kruta:    { base: "/fotos/rayos-x-kruta-base.jpg",    vista: "/fotos/rayos-x-kruta.jpg" },
+      // montt:    { base: "/fotos/rayos-x-montt-base.jpg",    vista: "/fotos/rayos-x-montt.jpg" },
     };
 
     const productos = await ctx.db.query("productos").collect();
     const actualizados: string[] = [];
     for (const p of productos) {
-      const ruta = porSlug[p.slug];
-      if (ruta === undefined) continue;
-      const nuevo = ruta === "" ? undefined : ruta;
-      if (nuevo === p.fotoRayosX) continue;
-      await ctx.db.patch(p._id, { fotoRayosX: nuevo });
+      const par = porSlug[p.slug];
+      if (!par) continue;
+      // Campo a campo, nunca con JSON.stringify: Convex no garantiza el orden
+      // de las claves al leer y eso da falsos negativos que reescriben en
+      // cada corrida.
+      if (par.base === p.fotoRayosXBase && par.vista === p.fotoRayosX) continue;
+      await ctx.db.patch(p._id, {
+        fotoRayosXBase: par.base,
+        fotoRayosX: par.vista,
+      });
       actualizados.push(p.slug);
     }
     return { actualizados };
