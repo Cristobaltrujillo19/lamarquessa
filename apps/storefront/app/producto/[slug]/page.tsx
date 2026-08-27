@@ -6,6 +6,7 @@ import { api } from "@/convex/_generated/api";
 import TarjetaProducto from "@/components/v2/TarjetaProducto";
 import Aparece from "@/components/v2/Aparece";
 import ConfiguradorPieza from "./ConfiguradorPieza";
+import DeslizadorRayosX from "@/components/v2/DeslizadorRayosX";
 import ViewItemTracker from "./ViewItemTracker";
 import { formatCm } from "@/lib/productos";
 import styles from "./producto.module.css";
@@ -183,6 +184,37 @@ export default async function ProductoPage({
           <ConfiguradorPieza producto={producto} />
         </div>
       </section>
+
+      {/* ---------- Rayos X ----------
+          Va ANTES de las medidas a proposito: primero se ve lo que cabe, y
+          luego se leen los numeros que lo explican.
+
+          Sin render no hay seccion. Es lo que permite tener el mecanismo en
+          produccion mientras las imagenes todavia no existen, en vez de
+          dejar un hueco o un marcador. */}
+      {producto.fotoRayosX && producto.fotos[0] && (
+        <section className="seccion-respiro" aria-labelledby="titular-rayos-x">
+          <div className="contenedor">
+            <Aparece>
+              <p className="eyebrow eyebrow-seccion">Rayos X</p>
+              <h2 id="titular-rayos-x" className="h2 aire-arriba">
+                Lo que cabe dentro.
+              </h2>
+              <p className="cuerpo aire-arriba">
+                Arrastra para ver el interior de la pieza.
+              </p>
+            </Aparece>
+
+            <div className="aire-arriba-lg">
+              <DeslizadorRayosX
+                normal={producto.fotos[0]}
+                rayosX={producto.fotoRayosX}
+                nombre={producto.nombre}
+              />
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ---------- Medidas y cuidado ----------
           Superficie elevada para separarla de la ficha sin recurrir a un

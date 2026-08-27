@@ -119,6 +119,15 @@ export default defineSchema({
     // pero conviene resolverlo cuando el panel se rehaga.
     fotoColores: v.optional(v.record(v.string(), v.string())),
 
+    // Vista de rayos X: la pieza en translucido con lo que cabe dentro. Se
+    // pinta en un deslizador de barrido contra fotos[0], asi que las dos
+    // imagenes tienen que salir de la MISMA camara y al mismo tamano, o el
+    // barrido delata el desajuste.
+    //
+    // Ausente = la seccion entera no se renderiza. Es lo que permite tener el
+    // mecanismo desplegado mientras los renders todavia no existen.
+    fotoRayosX: v.optional(v.string()),
+
     // Ficha técnica: responde objeciones reales de compra ("¿cabe mi celular?")
     // y alimenta el schema Product. Opcionales: los productos viejos no los tienen.
     altoCm: v.optional(v.number()),

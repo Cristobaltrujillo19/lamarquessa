@@ -657,3 +657,39 @@ export const corregirColorHorizonte = mutation({
     return { actualizados };
   },
 });
+
+/**
+ * Asigna la vista de rayos X de cada pieza. Idempotente: solo escribe donde
+ * el valor cambia, y comparando campo a campo (no con JSON.stringify, que da
+ * falsos negativos porque Convex no garantiza el orden de las claves al leer).
+ *
+ * Las rutas apuntan a /public. Una pieza sin entrada aqui simplemente no
+ * ensena la seccion: ausencia mejor que un hueco.
+ */
+export const actualizarRayosX = mutation({
+  args: { secret: v.string() },
+  handler: async (ctx, { secret }) => {
+    exigirSecreto(secret);
+
+    // Rellenar segun vayan llegando los renders. Una pieza que falte aqui
+    // conserva lo que tuviera; para borrar una vista hay que poner "".
+    const porSlug: Record<string, string> = {
+      // menorca:  "/fotos/rayos-x-menorca.jpg",
+      // mallorca: "/fotos/rayos-x-mallorca.jpg",
+      // kruta:    "/fotos/rayos-x-kruta.jpg",
+      // montt:    "/fotos/rayos-x-montt.jpg",
+    };
+
+    const productos = await ctx.db.query("productos").collect();
+    const actualizados: string[] = [];
+    for (const p of productos) {
+      const ruta = porSlug[p.slug];
+      if (ruta === undefined) continue;
+      const nuevo = ruta === "" ? undefined : ruta;
+      if (nuevo === p.fotoRayosX) continue;
+      await ctx.db.patch(p._id, { fotoRayosX: nuevo });
+      actualizados.push(p.slug);
+    }
+    return { actualizados };
+  },
+});

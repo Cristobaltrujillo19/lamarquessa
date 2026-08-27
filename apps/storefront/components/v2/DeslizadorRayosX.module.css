@@ -1,0 +1,133 @@
+/* Deslizador de barrido: descubre la vista de rayos X sobre la foto normal.
+
+   Va en seccion propia y NO dentro del carrusel de la ficha. El carrusel usa
+   desplazamiento horizontal con anclaje, y un tirador que se arrastra en
+   horizontal peleria con ese gesto: en tactil el dedo no podria decir si
+   quiere mover el tirador o cambiar de foto. */
+
+.marco {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: var(--tinta-06);
+  /* El cursor anuncia que esto se arrastra antes de tocarlo. */
+  cursor: ew-resize;
+  touch-action: pan-y;
+}
+
+/* Las dos capas ocupan el marco entero y quedan superpuestas. <Foto> emite
+   un <picture>, asi que hay que posicionar los dos elementos. */
+.capa,
+.capa :global(picture),
+.capa :global(img) {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.capa :global(img) {
+  object-fit: cover;
+}
+
+/* La capa de rayos X se recorta por la izquierda segun el valor del rango.
+   clip-path y no width: recortar por ancho encogeria la imagen y las dos
+   dejarian de coincidir, que es justo lo que hace creible el barrido. */
+.capaRayos {
+  clip-path: inset(0 0 0 var(--corte));
+}
+
+/* Linea de corte con el tirador. Decorativa: quien manda es el <input>. */
+.linea {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--corte);
+  width: 2px;
+  background: var(--espuma);
+  transform: translateX(-1px);
+  pointer-events: none;
+}
+
+.tirador {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--espuma);
+  color: var(--tinta);
+  display: grid;
+  place-items: center;
+  box-shadow: 0 2px 12px rgba(47, 32, 22, 0.35);
+}
+
+.flechas {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 13px;
+  line-height: 1;
+}
+
+/* El control real. Invisible pero encima de todo: da arrastre, teclado y
+   lectura de pantalla sin reimplementar nada.
+   Un <input type="range"> ya expone rol, valor y teclas de flecha; escribir
+   la logica de arrastre a mano habria costado todo eso. */
+.rango {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: ew-resize;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+}
+
+/* El pulgar ocupa todo el alto para que el arrastre funcione desde
+   cualquier punto del marco, no solo desde la linea. */
+.rango::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 44px;
+  height: 100vh;
+  cursor: ew-resize;
+}
+.rango::-moz-range-thumb {
+  width: 44px;
+  height: 100vh;
+  border: 0;
+  cursor: ew-resize;
+}
+
+/* El foco se pinta sobre el tirador, que es lo que se ve. */
+.rango:focus-visible ~ .linea .tirador {
+  outline: 3px solid var(--profundo);
+  outline-offset: 3px;
+}
+
+/* Rotulos de las dos vistas. No son adorno: sin ellos, quien llega a la
+   imagen a media posicion no sabe cual mitad es cual. */
+.rotulo {
+  position: absolute;
+  bottom: var(--s-2);
+  padding: 6px 12px;
+  background: rgba(47, 32, 22, 0.72);
+  color: var(--espuma);
+  font-family: var(--font-text);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+.rotuloIzq { left: var(--s-2); }
+.rotuloDer { right: var(--s-2); }
+
+@media (max-width: 768px) {
+  .rotulo { font-size: 10px; padding: 5px 9px; }
+}
