@@ -153,6 +153,9 @@
   min-inline-size: 0;
 }
 
+/* El radio va suelto y no en var(--radio). Ese token es 2px y rige el resto
+   del sitio — botones, islas, campos—; subirlo aquí redondearía todo de
+   golpe. Estos son la excepción pedida, no un cambio de sistema. */
 .opcion {
   display: flex;
   align-items: center;
@@ -161,7 +164,7 @@
   min-height: 44px;
   padding: var(--s-1);
   border: 1px solid var(--tinta-12);
-  border-radius: var(--radio);
+  border-radius: 8px;
   font-size: 14px;
   background: transparent;
   color: var(--tinta);
