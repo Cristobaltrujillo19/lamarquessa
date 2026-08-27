@@ -14,16 +14,17 @@ import styles from "./home.module.css";
 
 // Home con la interfaz nueva.
 //
-// PRUEBA SOCIAL Y MURO DE INSTAGRAM: ya portados, y ambos se auto-ocultan
-// mientras no haya datos reales. Hoy no los hay — no existen testimonios
-// aprobados por escrito ni publicaciones descargadas —, así que en
-// PRODUCCIÓN las dos secciones devuelven null y la home se pinta igual que
-// antes de portarlos, sin hueco visible.
+// PRUEBA SOCIAL: se auto-oculta mientras no haya testimonios reales, y hoy no
+// los hay. En PRODUCCIÓN devuelve null; en desarrollo se ve con andamiaje
+// marcado PENDIENTE. Se enciende llenando lib/testimonios.ts, sin tocar esta
+// página. Lo que NO se hace es publicar los ejemplos: serían reseñas
+// inventadas.
 //
-// En DESARROLLO sí se ven, con andamiaje marcado como PENDIENTE, para poder
-// revisar la maqueta. Para encenderlas de verdad basta llenar los arreglos
-// de lib/testimonios.ts y lib/instagram.ts; no hay que tocar esta página.
-// Lo que NO se hace es publicar los ejemplos: serían reseñas inventadas.
+// MURO DE INSTAGRAM: se llena solo desde Instagram, vía Behold, con nuestro
+// propio marcado — sin marca de agua ajena y con `instagram_click` completo.
+// El feed se pide EN EL SERVIDOR y cacheado una hora; eso no es un detalle de
+// rendimiento, es lo que mantiene el consumo dentro del plan gratuito. El
+// cálculo está en lib/instagram.ts. Si el feed falla, la sección se oculta.
 //
 // El vídeo del hero SÍ se porta, pero con una salvedad que el capítulo 8 del
 // handoff ya anota como decisión abierta: lleva "La Marquessa" incrustado y

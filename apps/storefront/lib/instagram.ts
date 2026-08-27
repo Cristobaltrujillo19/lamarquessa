@@ -1,118 +1,126 @@
 /**
- * Ultimas publicaciones de Instagram.
+ * Publicaciones de Instagram, servidas por Behold.
  *
- * NO se conectan solas. Instagram no permite leer un feed publico sin
- * credenciales, y las dos vias posibles tienen implicaciones que el dueno
- * tiene que decidir:
+ * POR QUE UN INTERMEDIARIO Y NO LA API DE META DIRECTA: hablar con Instagram
+ * exige una app de Meta, y la marca no puede crear una por un problema con
+ * Facebook sin resolver. Behold aporta EXACTAMENTE esa pieza —su app, su
+ * token, y la descarga de las imagenes a su CDN— y nada mas. El marcado, el
+ * diseno y la analitica siguen siendo nuestros, asi que no hay marca de agua
+ * de nadie ni estilos ajenos en la pagina.
  *
- *   1. API Graph de Instagram (Meta). Exige cuenta Business o Creator
- *      vinculada a una pagina de Facebook, una app de Meta y un token de
- *      larga duracion que caduca cada 60 dias y hay que renovar. La lectura
- *      se hace EN BUILD, nunca desde el navegador: un token en el cliente
- *      queda expuesto a cualquiera que abra el inspector.
+ * ⚠️ LA REGLA QUE NO SE PUEDE ROMPER: este feed se pide DESDE EL SERVIDOR y
+ * cacheado. Behold cuenta una vista por cada peticion que llega a sus
+ * servidores, no por visitante:
  *
- *   2. Un servicio de terceros (Behold, EmbedSocial, LightWidget...). Se
- *      resuelve en minutos, pero mete un script ajeno en el sitio y suele
- *      ser de pago.
+ *   · Con su widget    → 1 vista por cada persona que carga la home.
+ *   · Con este JSON    → 1 vista por hora, la haga quien la haga.
  *
- * OJO CON LAS IMAGENES: las URL del CDN de Instagram CADUCAN. Guardar aqui
- * el enlace que devuelve la API produce fotos rotas en pocos dias. Hay que
- * descargarlas a /public/instagram y referenciarlas en local, que es lo
- * que espera el campo `imagen`.
+ * El plan gratuito son 1.200 vistas al mes. Refrescando cada hora gastamos
+ * 24 x 30 = 720, y ese numero NO sube aunque el trafico se multiplique,
+ * porque depende del reloj. Las peticiones de imagenes no cuentan.
  *
- * Mientras tanto, mismo criterio que testimonios y destinos: sin datos
- * reales la seccion entera no se renderiza en produccion.
+ * Si alguien baja REVALIDAR_SEGUNDOS por debajo de ~1800, o mueve esta
+ * llamada al navegador, el consumo pasa a depender del trafico y la seccion
+ * se apaga sola a mitad de mes. Es el mismo fallo que nos hizo descartar el
+ * widget de Elfsight, cuyo plan gratuito son 200 vistas mensuales.
  */
 
-export type PostInstagram = {
-  /** Enlace permanente a la publicacion. */
-  url: string;
-  /** Ruta LOCAL de la miniatura, ya descargada. Nunca una URL del CDN. */
-  imagen: string;
-  /** Descripcion para lector de pantalla: que se ve, no el pie del post. */
-  alt: string;
-  /** Fecha de publicacion en ISO (YYYY-MM-DD). Ordena el muro: la mas
-   *  reciente primero. La API de Meta la devuelve como `timestamp`. */
-  fecha: string;
-};
+/** Feed de @lamarquessa.co en Behold. No es un secreto: es de solo lectura y
+ *  publico. Para cambiar de feed se cambia esta linea. */
+const FEED = "https://feeds.behold.so/xiyojrSWUaXCpWgQpyB2";
 
-/* ---------------------------------------------------------------------
-   PUBLICACIONES QUE EL DUENO YA ELIGIO (2026-08-26), A LA ESPERA DE IMAGEN
+/** Una hora. Ver el calculo de arriba antes de tocarlo. */
+const REVALIDAR_SEGUNDOS = 3600;
 
-   Estas siete son las que van al muro. NO se pueden activar todavia porque
-   falta la miniatura de cada una en /public/instagram.
-
-   Por que no se descargaron solas: Instagram no sirve el contenido de una
-   publicacion sin sesion iniciada. Comprobado el 2026-08-26 contra la pagina
-   del post y contra /embed/captioned/ — las dos devuelven un cascaron de
-   ~614 KB de CSS y JS, con CERO URLs de imagen de contenido. Es control de
-   acceso de Instagram, no un fallo nuestro, y no se rodea.
-
-   Las dos marcadas CARRUSEL llevaban ?img_index=2 en el enlace que paso el
-   dueno: de esas hay que tomar la SEGUNDA imagen del carrusel, no la primera.
-
-     1. https://www.instagram.com/p/DceieuXT8QQ/
-     2. https://www.instagram.com/p/Dcb0Oq-zoyQ/
-     3. https://www.instagram.com/p/DcRjhMQTjRd/
-     4. https://www.instagram.com/p/DcOUnAJuTrr/
-     5. https://www.instagram.com/p/Db6yEZrDGH-/?img_index=2   CARRUSEL, imagen 2
-     6. https://www.instagram.com/p/Db4EobPDAi_/?img_index=2   CARRUSEL, imagen 2
-     7. https://www.instagram.com/p/DbE-MpUspAX/
-
-   PARA ACTIVARLAS hacen falta dos cosas del dueno:
-     a) Las siete imagenes en /public/instagram (el original que subio a
-        Instagram vale mas que lo que Instagram devolveria: llega sin la
-        recompresion de la plataforma).
-     b) La fecha de cada publicacion, porque `recientesPrimero()` ordena por
-        `fecha` y una fecha inventada cambiaria el orden del muro. Si no las
-        hay, sirve confirmar que el orden de arriba ES el orden de exhibicion.
-
-   El `alt` se escribe MIRANDO cada foto, no adivinando: un alt que describe
-   algo que no esta en la imagen es peor que no tener alt, porque quien usa
-   lector de pantalla no puede detectar el error.
-   --------------------------------------------------------------------- */
-
-/** Publicaciones reales. Vacio = la seccion no existe en produccion. */
-export const POSTS: PostInstagram[] = [];
-
-/** Cuantas muestra el muro como maximo. */
+/** Cuantas publicaciones pinta el muro como maximo. */
 export const MAX_POSTS = 12;
 
-/* Andamiaje solo para desarrollo. Usa fotos del propio proyecto porque el
-   proyecto no admite stock ni imagenes generadas, y el alt las marca como
-   pendientes para que nadie las confunda con publicaciones reales. */
-const ANDAMIAJE_DEV: PostInstagram[] = [
-  "/fotos/bolso-menorca-ambiente.jpg",
-  "/fotos/bolso-mallorca-ambiente.jpg",
-  "/fotos/bolso-kruta-ambiente.jpg",
-  "/fotos/bolso-montt-ambiente.jpg",
-  "/fotos/bolso-menorca-en-uso.jpg",
-  "/fotos/bolso-mallorca-en-uso.jpg",
-  "/fotos/bolso-kruta-en-uso.jpg",
-  "/fotos/bolso-montt-en-uso.jpg",
-  "/fotos/bolso-menorca-impresion-3d-frente.jpg",
-  "/fotos/bolso-mallorca-impresion-3d-frente.jpg",
-  "/fotos/bolso-kruta-impresion-3d-frente.jpg",
-  "/fotos/bolso-montt-impresion-3d-frente.jpg",
-].map((imagen, i) => ({
-  url: "https://www.instagram.com/lamarquessa.co/",
-  imagen,
-  alt: `PUBLICACIÓN PENDIENTE ${i + 1}: aquí irá una foto real de Instagram`,
-  // Fechas descendentes para que se note el orden en la maqueta.
-  fecha: new Date(Date.now() - i * 6 * 864e5).toISOString().slice(0, 10),
-}));
+/** Una imagen ya optimizada por Behold (webp) en su CDN. A diferencia de las
+ *  URL del CDN de Instagram, estas NO caducan. */
+type Tamano = { width: number; height: number; mediaUrl: string };
 
-/** Mas reciente primero. El orden se impone aqui y no se confia al orden del
- *  arreglo: quien anada una publicacion a mano no tiene por que saber donde
- *  insertarla. */
-function recientesPrimero(lista: PostInstagram[]): PostInstagram[] {
-  return [...lista]
-    .sort((a, b) => b.fecha.localeCompare(a.fecha))
-    .slice(0, MAX_POSTS);
+/** Lo que devuelve Behold, recortado a lo que el muro usa. */
+type PostBehold = {
+  id: string;
+  permalink: string;
+  timestamp: string;
+  mediaType: "IMAGE" | "VIDEO" | "CAROUSEL_ALBUM";
+  /** URL del CDN de Instagram. CADUCA — no usar para pintar. */
+  mediaUrl?: string;
+  caption?: string;
+  /** Texto alternativo puesto por quien publico, en Instagram. Suele venir
+   *  vacio porque casi nadie lo rellena. */
+  altText?: string | null;
+  sizes?: Record<string, Tamano>;
+  colorPalette?: { dominant?: string };
+};
+
+/** Lo que el muro necesita, ya resuelto. */
+export type PostInstagram = {
+  id: string;
+  url: string;
+  /** Del CDN de Behold, permanente. */
+  imagen: string;
+  /** Vacio = imagen decorativa; el nombre accesible lo pone el enlace. */
+  alt: string;
+  /** Texto del pie, para dar nombre accesible al enlace. */
+  pie: string;
+  /** "r,g,b" — color de fondo mientras carga, para que no haya un hueco gris. */
+  fondo?: string;
+};
+
+/** El pie recortado a algo que se pueda leer en voz alta sin cansar. */
+function resumirPie(pie: string | undefined): string {
+  if (!pie) return "";
+  const limpio = pie.replace(/\s+/g, " ").trim();
+  return limpio.length > 120 ? `${limpio.slice(0, 117)}...` : limpio;
 }
 
-export function getPosts(): PostInstagram[] {
-  if (POSTS.length > 0) return recientesPrimero(POSTS);
-  if (process.env.NODE_ENV === "development") return recientesPrimero(ANDAMIAJE_DEV);
-  return [];
+/**
+ * Publicaciones listas para pintar. Devuelve [] ante cualquier problema:
+ * la home NUNCA puede caerse porque Behold o Instagram tengan un mal dia.
+ * Sin publicaciones, el muro no se renderiza — ausencia mejor que hueco roto.
+ */
+export async function getPosts(): Promise<PostInstagram[]> {
+  let datos: { posts?: PostBehold[] };
+
+  try {
+    const res = await fetch(FEED, {
+      next: { revalidate: REVALIDAR_SEGUNDOS },
+    });
+    if (!res.ok) return [];
+    datos = await res.json();
+  } catch {
+    return [];
+  }
+
+  const posts = datos?.posts;
+  if (!Array.isArray(posts)) return [];
+
+  return posts
+    .map((p): PostInstagram | null => {
+      // Solo el CDN de Behold. `mediaUrl` es de Instagram y caduca en dias:
+      // usarlo daria un muro que se ve bien hoy y sale roto la semana que
+      // viene, sin ningun error que lo delate.
+      const imagen =
+        p.sizes?.medium?.mediaUrl ??
+        p.sizes?.small?.mediaUrl ??
+        p.sizes?.large?.mediaUrl;
+      if (!imagen || !p.permalink) return null;
+
+      return {
+        id: p.id,
+        url: p.permalink,
+        imagen,
+        // El alt SOLO sale de Instagram. Si esta vacio se queda vacio y el
+        // nombre accesible lo da el pie a traves del enlace: describir una
+        // foto que nadie ha mirado seria inventarsela, y quien usa lector de
+        // pantalla no puede detectar el error.
+        alt: p.altText?.trim() || "",
+        pie: resumirPie(p.caption),
+        fondo: p.colorPalette?.dominant,
+      };
+    })
+    .filter((p): p is PostInstagram => p !== null)
+    .slice(0, MAX_POSTS);
 }
