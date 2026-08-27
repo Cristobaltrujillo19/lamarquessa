@@ -35,9 +35,12 @@
   min-inline-size: 0;
 }
 
+/* Cuadrado y no 4/5: la toma vertical obligaba a desplazar para llegar al
+   precio y al CTA. Sigue recortando al marco (cover), asi que la pieza se ve
+   igual de grande; lo que baja es lo que ocupa la foto en vertical. */
 .marcoFoto {
   position: relative;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 1 / 1;
   overflow: hidden;
   background: var(--tinta-06);
 }
