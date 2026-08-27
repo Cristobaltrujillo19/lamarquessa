@@ -47,7 +47,7 @@ function variantEtiqueta(
     partes.push(`Iniciales ${personalizacion.iniciales.texto}`);
   }
   if (personalizacion?.colorPersonalizado) {
-    partes.push("Color a disposición");
+    partes.push("Color personalizado");
   }
   return partes.join(" · ");
 }

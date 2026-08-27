@@ -198,7 +198,7 @@ export const createCheckout = action({
               }
               if (l.personalizacion?.colorPersonalizado) {
                 lineasMp.push({
-                  title: `Color a disposición — ${l.nombre}`,
+                  title: `Color personalizado — ${l.nombre}`,
                   quantity: l.cantidad,
                   unit_price: PERSONALIZACION_COLOR_COP,
                   currency_id: "COP",

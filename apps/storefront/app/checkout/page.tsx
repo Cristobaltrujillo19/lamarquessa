@@ -151,7 +151,7 @@ export default function CheckoutPage() {
           if (l.personalizacion?.iniciales)
             extra.push(`Iniciales ${l.personalizacion.iniciales.texto}`);
           if (l.personalizacion?.colorPersonalizado)
-            extra.push("Color a disposición");
+            extra.push("Color personalizado");
           return {
             item_id: `${l.slug}|${l.colorId}|${l.tamanoId}`,
             item_name: `Bolso ${l.nombre}`,
@@ -326,7 +326,8 @@ export default function CheckoutPage() {
                     )}
                     {l.personalizacion?.colorPersonalizado && (
                       <span className="block text-xs text-[var(--cobre-texto)]">
-                        Color: {l.personalizacion.colorPersonalizado.descripcion}
+                        Color personalizado:{" "}
+                        {l.personalizacion.colorPersonalizado.descripcion}
                       </span>
                     )}
                   </span>

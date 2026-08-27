@@ -335,7 +335,7 @@ export default function ConfiguradorPieza({ producto }: { producto: Producto }) 
                 if (e.target.checked) avisarPersonalizacion();
               }}
             />
-            <span>Color a disposición</span>
+            <span>Color personalizado</span>
             <span className={styles.personalizacionPrecio}>
               + {formatCop(PERSONALIZACION_COLOR_COP)}
             </span>
@@ -348,7 +348,7 @@ export default function ConfiguradorPieza({ producto }: { producto: Producto }) 
                 onChange={(e) => setColorTexto(e.target.value.slice(0, 60))}
                 placeholder="Describe el color (p. ej. verde esmeralda con destellos dorados)"
                 rows={2}
-                aria-label="Descripción del color a disposición"
+                aria-label="Descripción del color personalizado"
                 className={styles.campo}
               />
               <p className={styles.pistaColor}>
@@ -389,7 +389,7 @@ export default function ConfiguradorPieza({ producto }: { producto: Producto }) 
             )}
             {colOk && (
               <div className={styles.fila}>
-                <dt className={styles.filaClave}>Color a disposición</dt>
+                <dt className={styles.filaClave}>Color personalizado</dt>
                 <dd className={styles.filaValor}>
                   {formatCop(PERSONALIZACION_COLOR_COP)}
                 </dd>

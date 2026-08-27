@@ -102,7 +102,7 @@ export default function CarritoPage() {
                       )}
                       {l.personalizacion?.colorPersonalizado && (
                         <p className={styles.personalizacion}>
-                          Color a disposición ·{" "}
+                          Color personalizado ·{" "}
                           {l.personalizacion.colorPersonalizado.descripcion}
                         </p>
                       )}

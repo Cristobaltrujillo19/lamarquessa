@@ -6,7 +6,7 @@
 
 /** Costo de grabar hasta 3 iniciales en un bolso. */
 export const PERSONALIZACION_INICIALES_COP = 30_000;
-/** Costo de un color "a disposición" (fuera de los 3 acabados estándar). */
+/** Costo de un color personalizado (fuera de los acabados de catalogo). */
 export const PERSONALIZACION_COLOR_COP = 60_000;
 
 /** Fuentes válidas para las iniciales. Ambas son serifs con trazos gruesos

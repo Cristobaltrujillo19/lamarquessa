@@ -74,7 +74,8 @@ export default function CartDrawer() {
                   )}
                   {l.personalizacion?.colorPersonalizado && (
                     <p className="text-[11px] text-[var(--cobre-texto)]">
-                      Color: {l.personalizacion.colorPersonalizado.descripcion}
+                      Color personalizado:{" "}
+                      {l.personalizacion.colorPersonalizado.descripcion}
                     </p>
                   )}
                   <div className="mt-2 flex items-center justify-between">

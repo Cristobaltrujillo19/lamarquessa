@@ -82,7 +82,7 @@ function bloqueItem(i: ItemConfirmacion): string {
     );
   }
   if (i.personalizacion?.colorPersonalizado) {
-    detalles.push(`Color a disposición · ${i.personalizacion.colorPersonalizado.descripcion}`);
+    detalles.push(`Color personalizado · ${i.personalizacion.colorPersonalizado.descripcion}`);
   }
   const detalleHtml = detalles
     .map((t) => `<div style="font-family:${FONT_SANS};font-size:12px;color:${COLOR.cacaoSuave};line-height:1.6">${t}</div>`)
