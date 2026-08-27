@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { fetchQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
-import FiltroColeccion from "@/components/v2/FiltroColeccion";
+import TarjetaProducto from "@/components/v2/TarjetaProducto";
 import Aparece from "@/components/v2/Aparece";
 import { precioDesde } from "@/lib/productos";
 import { PRODUCCION_SEMANAS, SITE_URL, urlAbsoluta } from "@/lib/site";
@@ -70,7 +70,17 @@ export default async function TiendaPage() {
           {items.length === 0 ? (
             <p className="cuerpo">Muy pronto verás aquí nuestras piezas.</p>
           ) : (
-            <FiltroColeccion piezas={items} />
+            /* Sin filtro por color: con solo cuatro piezas, un filtro cuyas
+               únicas opciones eran Amanecer, Horizonte y Caribe añadía un paso
+               antes de ver el catálogo entero, que cabe de una vez en pantalla.
+               La rejilla se pinta ahora en el servidor. */
+            <div className={styles.grilla}>
+              {items.map((p, i) => (
+                <Aparece key={p.slug} paso={i}>
+                  <TarjetaProducto producto={p} prioridad={i < 2} />
+                </Aparece>
+              ))}
+            </div>
           )}
 
           <p className="texto-suave aire-arriba-lg">

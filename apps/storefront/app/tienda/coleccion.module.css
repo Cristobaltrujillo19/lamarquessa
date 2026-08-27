@@ -11,3 +11,18 @@
     margin-bottom: var(--s-5);
   }
 }
+
+/* Rejilla de la coleccion. Venia de FiltroColeccion.module.css, que
+   desaparecio con el filtro de color: la seccion ya no filtra, solo lista. */
+.grilla {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--s-6);
+}
+
+@media (max-width: 768px) {
+  .grilla {
+    grid-template-columns: 1fr;
+    gap: var(--s-5);
+  }
+}
