@@ -1,6 +1,6 @@
 # ESTADO — La Marquessa · Handoff para la próxima sesión
 
-Última actualización: **26 de agosto de 2026**
+Última actualización: **31 de agosto de 2026**
 Rama activa: **`feat/nueva-interfaz`** — porting de la interfaz nueva, terminado
 y pendiente de revisión. `main` sigue en `b150351` sirviendo producción.
 
@@ -313,6 +313,52 @@ PENDIENTE que **solo se ve en `dev`**; en producción las secciones devuelven
 El muro dispara `instagram_click` con `link_location: "muro_home"` (y
 `"muro_home_pie"` en el enlace de la cuenta). Es un parámetro nuevo, no un
 evento nuevo: el contrato de los 17 eventos no cambia.
+
+### Lista de cambios del dueño (31 de agosto de 2026)
+
+Once puntos pedidos. **Nueve cerrados y en producción**, dos abiertos.
+
+| # | Qué | Estado |
+|---|---|---|
+| 1-2 | Imágenes de rayos X y su deslizador | ✅ en producción |
+| 3 | Mockups de colores con fondo de palmerita | ⏸ esperando fotos del dueño |
+| 4 | Recortar foto de la ficha | ✅ galería de 4/5 a cuadrada |
+| 5 | Reducir las fotos del home | ✅ de 2 a 4 por fila |
+| 6 | "Color a disposición" → "Color personalizado" | ✅ en 8 sitios |
+| 7 | Vista previa de las iniciales sobre la pieza | ⏸ falta decidir el enfoque |
+| 8 | Esquinas de los botones de color | ✅ 2px → 8px |
+| 9 | Logo centrado en móvil | ✅ desviación 0px |
+| 10 | Favicon con la concha | ✅ |
+| 11 | Quitar el filtro de color de la colección | ✅ componente borrado |
+
+### Rayos X — cómo está montado
+
+Deslizador de barrido en la sección **Medidas** de cada ficha, con las cuatro
+piezas encendidas. La cara opaca y la translucida son un PAR de renders de la
+MISMA cámara (`fotoRayosXBase` y `fotoRayosX` en el catálogo); sin las dos, la
+sección no se renderiza.
+
+**El contenido de cada bolso es cierto**, que era la condición para que la
+función mereciera existir: en Menorca el celular ASOMA por la abertura — no
+entra, igual que dice la FAQ. En las otras tres cabe.
+
+Para añadir o cambiar un render: dejar el PNG en `public/fotos` como
+`rayos-x-{slug}-base.png` y `rayos-x-{slug}.png`, convertir a AVIF+JPEG,
+descomentar la pieza en `productos:actualizarRayosX` y correrla con
+`--prod` **después** de `npx convex deploy`.
+
+### Deuda pendiente de esta ronda
+
+- **Fondos de los renders**: vienen horneados y distintos por pieza
+  (`#EEEAE2`, `#EADCD5`, `#FCFBF7`) sobre un sitio que es `#EAE8DF`. Se nota al
+  pasar de una ficha a otra. Arreglo real = re-renderizar con transparencia;
+  no se puede recolorear por fuera porque en los translúcidos el fondo se ve
+  A TRAVÉS del bolso.
+- **9 PNG sin trackear** en `public/fotos` (6,7 MB). No se despliegan —Vercel
+  construye desde git— pero uno sobra: `rallos-x-menorca-base.png`, duplicado
+  con el nombre mal escrito.
+- **Peso de las piezas**: no existe campo en el schema. Los datos solo viven
+  en la FAQ (290/350/190/290 g).
 
 ### Antes de fusionar a `main`
 
