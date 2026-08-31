@@ -197,9 +197,12 @@ export default function ConfiguradorPieza({ producto }: { producto: Producto }) 
 
   return (
     <div className={styles.pieza}>
-      <GaleriaPieza producto={producto} fotos={fotos} colorId={color.id} />
-
-      <div className={styles.datos}>
+      {/* Titular en fila propia, a lo ancho de las dos columnas. Sale de la
+          columna de datos por dos motivos: en escritorio libera altura arriba
+          del selector, y en movil es lo que pone el NOMBRE antes de las fotos
+          sin recurrir a `order`, que reordena lo que se ve pero no lo que lee
+          un lector de pantalla ni el orden de tabulacion. */}
+      <header className={styles.encabezado}>
         <p className={`eyebrow eyebrow-dato ${styles.migas}`}>
           <Link href="/tienda" className="link-terciario">
             Colección
@@ -209,7 +212,11 @@ export default function ConfiguradorPieza({ producto }: { producto: Producto }) 
         <h1 id="titular-pieza" className={`h2 ${styles.nombre}`}>
           {producto.nombre}
         </h1>
+      </header>
 
+      <GaleriaPieza producto={producto} fotos={fotos} colorId={color.id} />
+
+      <div className={styles.datos}>
         <p className={`precio ${styles.precio}`}>{formatCop(precioTotal)}</p>
 
         {producto.subtitulo && <p className={styles.frase}>{producto.subtitulo}</p>}

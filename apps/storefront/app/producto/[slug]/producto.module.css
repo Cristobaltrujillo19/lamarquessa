@@ -4,8 +4,18 @@
 .pieza {
   display: grid;
   grid-template-columns: 1.15fr 1fr;
-  gap: var(--s-6);
+  /* Separacion distinta por eje, a proposito. La horizontal separa dos
+     COLUMNAS y necesita ser generosa; la vertical solo separa el titular de
+     su propia foto, que son la misma cosa. Con `gap` unico, el titular
+     quedaba a 96px de la pieza que nombra. */
+  column-gap: var(--s-6);
+  row-gap: var(--s-4);
   align-items: start;
+}
+
+/* Titular a lo ancho, en su propia fila sobre las dos columnas. */
+.encabezado {
+  grid-column: 1 / -1;
 }
 
 /* Columna de datos, pegajosa en desktop */
@@ -23,8 +33,10 @@
   margin: 0;
 }
 
+/* Sin margen: ahora es lo primero de la columna de datos, y el aire lo pone
+   la separacion del grid. */
 .precio {
-  margin-top: var(--s-3);
+  margin-top: 0;
 }
 
 .serie {
@@ -79,11 +91,15 @@
 @media (max-width: 960px) {
   .pieza {
     grid-template-columns: 1fr;
-    gap: var(--s-5);
+    column-gap: var(--s-5);
+    row-gap: var(--s-4);
   }
+  /* Sin `order`. Antes la columna de datos se adelantaba a la galeria, asi
+     que en movil TODO el texto —nombre, precio, colores, personalizacion y
+     el boton— iba antes de ver una sola foto. Ahora el orden lo da el DOM:
+     nombre, fotos, personalizacion, compra. */
   .datos {
     position: static;
-    order: -1;
   }
   .galeria {
     gap: var(--s-1);
