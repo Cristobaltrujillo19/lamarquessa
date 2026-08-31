@@ -17,11 +17,13 @@ import styles from "./Cintilla.module.css";
  *   la ciudad aparece también como lugar de llegada, y sin el verbo las dos
  *   apariciones se confundían. Así una dice origen y la otra destino.
  */
+// "Cada pieza lleva su numero" se retiro: prometia una numeracion que el
+// visitante no ve en ninguna parte del sitio. El sello de serie sigue sin
+// pintarse porque falta decidir desde que numero arranca el contador.
 const FRASES_MARCA = [
   "Piezas únicas",
   "No hay dos iguales",
   "Acabado a mano",
-  "Cada pieza lleva su número",
   "Se empieza cuando ya es tuya",
   "Hecho en Medellín",
   "Inspirada en el mar Caribe",

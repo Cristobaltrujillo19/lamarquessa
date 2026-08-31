@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Aparece from "@/components/v2/Aparece";
-import FotoPendiente from "@/components/v2/FotoPendiente";
 import Foto from "@/components/Foto";
 import { urlAbsoluta } from "@/lib/site";
 import styles from "./nosotros.module.css";
@@ -20,6 +19,8 @@ import styles from "./nosotros.module.css";
 // esbozado, y es mejor que lo que había.
 
 const FOTO_EDITORIAL = "/fotos/editorial-menorca-mallorca.jpg";
+/** Provisional, hasta que exista el retrato de estudio. Ver el bloque. */
+const FOTO_RETRATO = "/fotos/editorial-amanecer-torso.jpg";
 
 export const metadata: Metadata = {
   title: "Nuestra historia | La Marquessa",
@@ -65,16 +66,20 @@ export default function Nosotros() {
             </Aparece>
 
             <Aparece paso={1}>
+              {/* Este hueco esperaba un retrato de quien está detrás de la
+                  marca, y esa foto sigue sin existir. Mientras tanto va una
+                  editorial propia —no un marcador—, y el rótulo "Quién está
+                  detrás" se retira con ella: sobre esta imagen diría que las
+                  personas de la foto son la marca, y no lo son.
+                  Cuando llegue el retrato de estudio, vuelven los dos. */}
               <div className={styles.retrato}>
-                <FotoPendiente
-                  descripcion="retrato en el estudio, junto a la impresora"
-                  proporcion="3 / 4"
+                <Foto
+                  src={FOTO_RETRATO}
+                  alt="Dos bolsos Amanecer de La Marquessa junto a la piscina, con gafas de sol y una cámara"
+                  ancho={1086}
+                  alto={1448}
                 />
               </div>
-              <p className="eyebrow eyebrow-dato aire-arriba">
-                Quién está detrás
-              </p>
-              <p className="pendiente-inline">Foto pendiente</p>
             </Aparece>
           </div>
 
