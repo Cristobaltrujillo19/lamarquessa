@@ -95,9 +95,17 @@
    junto al componente. Aquí solo queda la caja contenedora y el texto. */
 
 .colores {
-  margin-top: var(--s-5);
-  padding-top: var(--s-4);
+  margin-top: var(--s-4);
+  padding-top: var(--s-3);
   border-top: var(--hairline);
+}
+
+/* Dos bloques seguidos son un GRUPO, no dos secciones. Grabar iniciales y
+   Color personalizado son la misma decision —personalizar o no—, asi que el
+   segundo no necesita la separacion completa del primero. Medido: cada bloque
+   gastaba 104px de aire para 28px de contenido real. */
+.colores + .colores {
+  margin-top: var(--s-3);
 }
 
 .notaColor {
@@ -197,7 +205,11 @@
   align-items: center;
   gap: var(--s-2);
   cursor: pointer;
-  padding-block: var(--s-2);
+  padding-block: var(--s-1);
+  /* Piso tactil explicito. El relleno solo ya no llega a 44px, y este es un
+     control que se pulsa: sin el minimo, cualquier cambio de tipografia lo
+     dejaria por debajo del umbral sin que nadie lo note. */
+  min-height: 44px;
 }
 
 .personalizacionCabecera input {
