@@ -78,16 +78,6 @@
   letter-spacing: 0.005em;
 }
 
-/* Serie asignada — cuerpo normal, sin adornos. La forma "Tu pieza será
-   la Nº 043" hace la promesa; la alternativa "…recibe su número al entrar
-   a producción" evita cifras inventadas cuando el dueño no lo ha resuelto. */
-.serieAsignada {
-  margin: 0;
-  font-size: 15px;
-  line-height: 1.5;
-  color: var(--tinta);
-}
-
 @media (max-width: 960px) {
   .pieza {
     grid-template-columns: 1fr;

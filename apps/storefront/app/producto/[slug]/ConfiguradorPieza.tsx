@@ -20,7 +20,6 @@ import {
   type FuenteInicialesId,
   type Personalizacion,
 } from "@/lib/personalizacion";
-import { MENSAJES, enlaceWhatsApp } from "@/lib/site";
 import styles from "./producto.module.css";
 import cfg from "./ConfiguradorPieza.module.css";
 
@@ -43,10 +42,10 @@ const CLASE_FUENTE: Record<FuenteInicialesId, string> = {
  *    carrito es una cáscara que lee la URL. Aquí llama al carrito de verdad,
  *    porque es donde vive add_to_cart / AddToCart.
  *
- * 2. El mockup pinta el número de serie de la pieza y anuncia cuál te tocará.
- *    Producción no tiene ese dato —los números del mockup son de maqueta— así
- *    que se usa su propia frase alternativa, que es cierta sin cifra
- *    inventada: "Tu pieza recibe su número al entrar a producción".
+ * 2. El mockup pinta el numero de serie de la pieza y anuncia cual te tocara.
+ *    Produccion no tiene ese dato, y la frase alternativa que lo sustituia
+ *    ("Tu pieza recibe su numero al entrar a produccion") tambien se retiro:
+ *    anunciaba una numeracion que el visitante nunca llega a ver.
  */
 export default function ConfiguradorPieza({ producto }: { producto: Producto }) {
   const { agregar } = useCarrito();
@@ -228,9 +227,8 @@ export default function ConfiguradorPieza({ producto }: { producto: Producto }) 
             onElegir={elegirColor}
           />
 
-          {/* Esta línea describe SOLO el color. El relieve Nácar es el
-              acabado, es común a las cinco variantes y no cambia al mover el
-              selector: su nombre vive una sola vez, en el resumen bajo el CTA. */}
+          {/* Esta linea describe SOLO el color, que es el unico eje que el
+              selector cambia. */}
           <p className={`cuerpo ${styles.notaColor}`} aria-live="polite">
             <strong className={styles.notaColorFuerte}>
               Color {color.nombre}
@@ -419,27 +417,10 @@ export default function ConfiguradorPieza({ producto }: { producto: Producto }) 
             Añadir al carrito — {formatCop(precioTotal)}
           </button>
 
-          {/* Eco escrito de la decisión, en vivo. Nácar aparece aquí y solo
-              aquí en la ficha, para respetar la regla de una vez por pantalla. */}
+          {/* Eco escrito de la decision, en vivo. */}
           <p className={styles.resumen} aria-live="polite">
-            {producto.nombre} · color {color.nombre} · relieve Nácar
+            {producto.nombre} · color {color.nombre}
           </p>
-
-          {/* El mockup anuncia aquí qué número de serie te tocará. Producción
-              no tiene ese dato, así que se usa la frase alternativa del propio
-              mockup: cierta y sin cifra inventada. */}
-          <p className={styles.serieAsignada}>
-            Tu pieza recibe su número al entrar a producción.
-          </p>
-
-          <a
-            href={enlaceWhatsApp(MENSAJES.producto)}
-            className="btn btn-secundario"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            ¿Dudas con la medida? Escríbenos
-          </a>
         </div>
       </div>
 
