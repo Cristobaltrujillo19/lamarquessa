@@ -675,10 +675,10 @@ export const actualizarRayosX = mutation({
     // deben salir de la MISMA camara: `base` es la cara opaca y `vista` la
     // translucida. Una pieza que falte aqui conserva lo que tuviera.
     const porSlug: Record<string, { base: string; vista: string }> = {
-      // menorca:  { base: "/fotos/rayos-x-menorca-base.jpg",  vista: "/fotos/rayos-x-menorca.jpg" },
-      // mallorca: { base: "/fotos/rayos-x-mallorca-base.jpg", vista: "/fotos/rayos-x-mallorca.jpg" },
-      // kruta:    { base: "/fotos/rayos-x-kruta-base.jpg",    vista: "/fotos/rayos-x-kruta.jpg" },
-      // montt:    { base: "/fotos/rayos-x-montt-base.jpg",    vista: "/fotos/rayos-x-montt.jpg" },
+      menorca:  { base: "/fotos/rayos-x-menorca-base.jpg",  vista: "/fotos/rayos-x-menorca.jpg" },
+      mallorca: { base: "/fotos/rayos-x-mallorca-base.jpg", vista: "/fotos/rayos-x-mallorca.jpg" },
+      kruta:    { base: "/fotos/rayos-x-kruta-base.jpg",    vista: "/fotos/rayos-x-kruta.jpg" },
+      montt:    { base: "/fotos/rayos-x-montt-base.jpg",    vista: "/fotos/rayos-x-montt.jpg" },
     };
 
     const productos = await ctx.db.query("productos").collect();
