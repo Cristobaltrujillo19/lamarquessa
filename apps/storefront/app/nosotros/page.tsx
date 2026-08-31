@@ -32,7 +32,7 @@ export const metadata: Metadata = {
 export default function Nosotros() {
   return (
     <div>
-      <section className="seccion-base" aria-labelledby="titular-historia">
+      <section className="seccion-respiro" aria-labelledby="titular-historia">
         <div className="contenedor">
           <Aparece className={styles.encabezado}>
             <p className="eyebrow eyebrow-seccion">Nuestra historia</p>
@@ -97,7 +97,7 @@ export default function Nosotros() {
       {/* Peso énfasis sin cambio de superficie: la variación tonal la lleva
           el hairline superior. Un fondo aquí competiría con la ancla marina
           del bloque de arriba (retrato + foto ancha). */}
-      <section className="seccion-enfasis hairline" aria-labelledby="titular-tension">
+      <section className="seccion-respiro hairline" aria-labelledby="titular-tension">
         <div className="contenedor">
           <Aparece>
             <h2 id="titular-tension" className="h2">
@@ -119,7 +119,7 @@ export default function Nosotros() {
         </div>
       </section>
 
-      <section className="seccion-momento" aria-labelledby="titular-cierre-historia">
+      <section className="seccion-respiro" aria-labelledby="titular-cierre-historia">
         <div className="contenedor centrado">
           <Aparece>
             <h2 id="titular-cierre-historia" className="h2">
