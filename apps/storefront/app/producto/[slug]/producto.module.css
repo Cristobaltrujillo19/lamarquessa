@@ -171,6 +171,41 @@
 
 /* ---------------- Ficha técnica ---------------- */
 
+/* Medidas: el deslizador y las cifras, lado a lado. Van juntos porque
+   responden la MISMA pregunta —cuanto cabe— una en imagen y otra en numeros.
+   De paso arregla la altura: a ancho completo el deslizador es cuadrado, y la
+   seccion medía 1476px, mas que la propia ficha de compra. */
+.medidas {
+  margin-top: var(--s-5);
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: var(--s-6);
+  align-items: center;
+}
+
+/* Junto al deslizador las cifras son pocas y estrechas: una sola columna,
+   y sin el margen superior que necesitaban cuando abrian la seccion solas. */
+.fichaMedidas {
+  grid-template-columns: 1fr;
+  margin-top: 0;
+  max-width: none;
+}
+
+.pistaRayos {
+  margin-top: var(--s-2);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--tinta-70);
+}
+
+@media (max-width: 900px) {
+  .medidas {
+    grid-template-columns: 1fr;
+    gap: var(--s-4);
+  }
+}
+
 .ficha {
   margin-top: var(--s-6);
   display: grid;

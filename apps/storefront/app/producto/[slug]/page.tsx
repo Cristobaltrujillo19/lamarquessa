@@ -96,6 +96,8 @@ export default async function ProductoPage({
     producto.altoCm && producto.anchoCm && producto.profundidadCm
       ? { alto: producto.altoCm, ancho: producto.anchoCm, prof: producto.profundidadCm }
       : null;
+  /** El deslizador necesita las DOS caras: sin el par no se pinta. */
+  const hayRayosX = Boolean(producto.fotoRayosX && producto.fotoRayosXBase);
 
   // Datos estructurados del producto. El precio y la disponibilidad son reales;
   // el plazo de fabricación (se hace a pedido) va como handlingTime.
@@ -185,65 +187,70 @@ export default async function ProductoPage({
         </div>
       </section>
 
-      {/* ---------- Rayos X ----------
-          Va ANTES de las medidas a proposito: primero se ve lo que cabe, y
-          luego se leen los numeros que lo explican.
+      {/* ---------- Medidas ----------
+          El deslizador de rayos X vive DENTRO de esta seccion, no en una
+          propia: ensena lo que cabe, y las cifras de al lado son la respuesta
+          numerica a la misma pregunta. Separarlos obligaba a leer dos veces lo
+          mismo, y ademas dejaba la seccion de rayos X en 1476px de alto, mas
+          que la propia ficha de compra.
 
-          Sin render no hay seccion. Es lo que permite tener el mecanismo en
-          produccion mientras las imagenes todavia no existen, en vez de
-          dejar un hueco o un marcador. */}
-      {producto.fotoRayosX && producto.fotoRayosXBase && (
-        <section className="seccion-respiro" aria-labelledby="titular-rayos-x">
-          <div className="contenedor">
-            <Aparece>
-              <p className="eyebrow eyebrow-seccion">Rayos X</p>
-              <h2 id="titular-rayos-x" className="h2 aire-arriba">
-                Lo que cabe dentro.
-              </h2>
-              <p className="cuerpo aire-arriba">
-                Arrastra para ver el interior de la pieza.
-              </p>
-            </Aparece>
-
-            <div className="aire-arriba-lg">
-              <DeslizadorRayosX
-                normal={producto.fotoRayosXBase}
-                rayosX={producto.fotoRayosX}
-                nombre={producto.nombre}
-              />
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* ---------- Medidas y cuidado ----------
-          Superficie elevada para separarla de la ficha sin recurrir a un
-          color nuevo. */}
-      <section className="seccion-respiro seccion-elevada" aria-labelledby="titular-ficha">
+          Sin renders no hay deslizador, y las medidas se quedan solas. */}
+      <section className="seccion-respiro seccion-elevada" aria-labelledby="titular-medidas">
         <div className="contenedor">
           <Aparece>
-            <h2 id="titular-ficha" className="h2">
-              Medidas y cuidado
+            <h2 id="titular-medidas" className="h2">
+              Medidas
+            </h2>
+          </Aparece>
+
+          <div className={hayRayosX ? styles.medidas : undefined}>
+            {hayRayosX && (
+              <div>
+                <DeslizadorRayosX
+                  normal={producto.fotoRayosXBase!}
+                  rayosX={producto.fotoRayosX!}
+                  nombre={producto.nombre}
+                />
+                <p className={styles.pistaRayos}>
+                  Arrastra para ver lo que cabe dentro.
+                </p>
+              </div>
+            )}
+
+            <dl className={`${styles.ficha} ${hayRayosX ? styles.fichaMedidas : ""}`}>
+              {medidas && (
+                <>
+                  <div className={styles.fila}>
+                    <dt className={styles.filaClave}>Alto</dt>
+                    <dd className={styles.filaValor}>{formatCm(medidas.alto)}</dd>
+                  </div>
+                  <div className={styles.fila}>
+                    <dt className={styles.filaClave}>Ancho</dt>
+                    <dd className={styles.filaValor}>{formatCm(medidas.ancho)}</dd>
+                  </div>
+                  <div className={styles.fila}>
+                    <dt className={styles.filaClave}>Fondo</dt>
+                    <dd className={styles.filaValor}>{formatCm(medidas.prof)}</dd>
+                  </div>
+                </>
+              )}
+            </dl>
+          </div>
+        </div>
+      </section>
+
+      {/* ---------- Material y cuidado ----------
+          Lo que no es una medida. Va aparte porque responde otra pregunta:
+          no "que tamano tiene" sino "de que esta hecho y como se mantiene". */}
+      <section className="seccion-respiro" aria-labelledby="titular-cuidado">
+        <div className="contenedor">
+          <Aparece>
+            <h2 id="titular-cuidado" className="h2">
+              Material y cuidado
             </h2>
           </Aparece>
 
           <dl className={styles.ficha}>
-            {medidas && (
-              <>
-                <div className={styles.fila}>
-                  <dt className={styles.filaClave}>Alto</dt>
-                  <dd className={styles.filaValor}>{formatCm(medidas.alto)}</dd>
-                </div>
-                <div className={styles.fila}>
-                  <dt className={styles.filaClave}>Ancho</dt>
-                  <dd className={styles.filaValor}>{formatCm(medidas.ancho)}</dd>
-                </div>
-                <div className={styles.fila}>
-                  <dt className={styles.filaClave}>Fondo</dt>
-                  <dd className={styles.filaValor}>{formatCm(medidas.prof)}</dd>
-                </div>
-              </>
-            )}
             {producto.material && (
               <div className={styles.fila}>
                 <dt className={styles.filaClave}>Material</dt>
