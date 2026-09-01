@@ -1,7 +1,7 @@
 import { v } from "convex/values";
 import { mutation, internalMutation } from "./_generated/server";
 import { addOnsPorUnidad } from "../lib/personalizacion";
-import { TEXTO_CONSENTIMIENTO } from "../lib/consentimiento";
+import { TEXTO_AVISO_DATOS } from "../lib/consentimiento";
 
 /**
  * Registro de carritos, incluidos los que nunca llegan a pedido.
@@ -135,9 +135,11 @@ export const registrar = mutation({
       return null;
     }
 
-    // ⚠️ El contacto SOLO entra con consentimiento expreso. Sin la casilla
-    // marcada se descarta aunque venga en la peticion: es la unica linea que
-    // separa esta tabla de una recogida de datos sin autorizacion.
+    // La autorizacion es por conducta: escribir los datos en el formulario,
+    // teniendo el aviso a la vista. Se archiva el TEXTO exacto del aviso que
+    // esa persona vio y CUANDO, porque el Decreto 1377 pide que la
+    // autorizacion pueda consultarse despues y un `true` no dice que se
+    // autorizo.
     const consiente = args.consentimiento?.otorgado === true;
     const contacto = consiente && args.contacto
       ? {
@@ -169,7 +171,7 @@ export const registrar = mutation({
             consentimiento: {
               otorgado: true,
               en: ahora,
-              texto: TEXTO_CONSENTIMIENTO,
+              texto: TEXTO_AVISO_DATOS,
             },
           }
         : {}),

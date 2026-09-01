@@ -70,6 +70,16 @@ export default function PrivacidadPage() {
             datos directamente.
           </li>
           <li>
+            <strong>Datos del carrito y del proceso de compra:</strong> las
+            piezas que añades al carrito, con su color, talla y
+            personalización, y los datos de contacto y envío que escribes en
+            el formulario de compra. Estos datos se guardan{" "}
+            <strong>aunque no llegues a completar el pedido</strong>, para
+            poder ayudarte a terminarlo y para entender en qué punto se
+            interrumpen las compras. Se conservan 90 días y luego se eliminan
+            automáticamente.
+          </li>
+          <li>
             <strong>Datos de navegación:</strong> páginas vistas y
             comportamiento agregado, mediante cookies y tecnologías similares
             (ver sección 8).
@@ -101,10 +111,27 @@ export default function PrivacidadPage() {
         <h2>4. Autorización</h2>
         <p>
           Al entregarnos tus datos para realizar un pedido o contactarnos,
-          autorizas su tratamiento conforme a esta política. La autorización
-          para envíos comerciales se solicita de forma separada y puedes
-          revocarla en cualquier momento, sin que ello afecte la gestión de tus
-          compras.
+          autorizas su tratamiento conforme a esta política.
+        </p>
+        <p>
+          <strong>
+            Al escribir tu nombre, correo, teléfono o dirección en el
+            formulario de compra autorizas que los guardemos y los tratemos
+            conforme a esta política, aunque no llegues a completar el pedido.
+          </strong>{" "}
+          Lo hacemos con un fin concreto: poder escribirte para ayudarte a
+          terminar una compra que quedó a medias. Ese aviso aparece también
+          junto al formulario, antes de que escribas nada.
+        </p>
+        <p>
+          Puedes pedirnos en cualquier momento que eliminemos esos datos, y lo
+          haremos sin condiciones (ver secciones 5 y 6). Si no nos dices nada,
+          se eliminan solos a los 90 días.
+        </p>
+        <p>
+          La autorización para envíos comerciales se solicita de forma separada
+          y puedes revocarla en cualquier momento, sin que ello afecte la
+          gestión de tus compras.
         </p>
 
         <h2>5. Tus derechos como titular</h2>

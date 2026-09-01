@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { registrarCarrito } from "@/app/acciones/carrito";
 import { idDeSesion } from "@/lib/sesionCarrito";
-import { TEXTO_CONSENTIMIENTO } from "@/lib/consentimiento";
+import { TEXTO_AVISO_DATOS } from "@/lib/consentimiento";
 import { useCarrito } from "@/lib/carrito";
 import { formatCop } from "@/lib/productos";
 import {
@@ -60,11 +60,10 @@ export default function CheckoutPage() {
      Aqui se cubre el tramo que antes era invisible: quien abre el checkout,
      escribe sus datos y se va sin enviar. El pedido solo nace al enviar.
 
-     LA CASILLA NO ES DECORATIVA. Sin ella marcada, `contacto` no se envia y
-     el servidor lo descartaria igualmente. La Ley 1581 pide autorizacion
-     previa, expresa e informada, asi que guardar lo que alguien escribio y
-     decidio NO enviar, sin haberlo autorizado, no es una opcion. */
-  const [autoriza, setAutoriza] = useState(false);
+     LA AUTORIZACION ES POR CONDUCTA, no por casilla: escribir los datos
+     teniendo el aviso a la vista. Por eso el aviso va ARRIBA del formulario y
+     no al final — "informada" exige que se lea antes de escribir, no despues.
+     Se archiva el texto exacto que se mostro y cuando. */
   const datosForm = useRef<HTMLFormElement | null>(null);
 
   const registrar = useCallback(
@@ -78,6 +77,16 @@ export default function CheckoutPage() {
         return typeof v === "string" && v.trim() ? v.trim() : undefined;
       };
 
+      const contacto = {
+        nombre: leer("nombre"),
+        email: leer("email"),
+        whatsapp: leer("whatsapp"),
+      };
+      // Sin un solo dato escrito no hay conducta que autorice nada: archivar
+      // un consentimiento vacio seria registrar una autorizacion que nadie
+      // dio. Al desenfocar un campo en blanco, esto no manda contacto.
+      const hayAlgo = Boolean(contacto.nombre || contacto.email || contacto.whatsapp);
+
       registrarCarrito({
         sesionId,
         items: lineas.map((l) => ({
@@ -88,15 +97,8 @@ export default function CheckoutPage() {
           ...(l.personalizacion ? { personalizacion: l.personalizacion } : {}),
         })),
         paso: "checkout",
-        ...(conContacto
-          ? {
-              contacto: {
-                nombre: leer("nombre"),
-                email: leer("email"),
-                whatsapp: leer("whatsapp"),
-              },
-              consentimiento: { otorgado: true },
-            }
+        ...(conContacto && hayAlgo
+          ? { contacto, consentimiento: { otorgado: true } }
           : {}),
       });
     },
@@ -259,6 +261,19 @@ export default function CheckoutPage() {
               Los campos marcados con <span className={styles.obligatorio}>*</span>{" "}
               son obligatorios.
             </p>
+
+            {/* Aviso de tratamiento de datos. Va ARRIBA de los campos y no al
+                pie del formulario a proposito: la autorizacion aqui es por
+                conducta —escribir los datos—, y para que esa conducta valga
+                hay que haber podido leer el aviso ANTES de escribir. Debajo
+                del boton de pagar llegaria tarde. */}
+            <p className={styles.avisoDatos}>
+              {TEXTO_AVISO_DATOS}{" "}
+              <Link href="/privacidad" className="link-terciario">
+                Ver la política de privacidad
+              </Link>
+              .
+            </p>
             <div className={styles.rejilla}>
               <label className={styles.anchoCompleto}>
                 <span className={etiqueta}>
@@ -268,7 +283,7 @@ export default function CheckoutPage() {
                   name="nombre"
                   required
                   autoComplete="name"
-                  onBlur={() => autoriza && registrar(true)}
+                  onBlur={() => registrar(true)}
                   className={campo}
                 />
               </label>
@@ -281,7 +296,7 @@ export default function CheckoutPage() {
                   type="email"
                   required
                   autoComplete="email"
-                  onBlur={() => autoriza && registrar(true)}
+                  onBlur={() => registrar(true)}
                   className={campo}
                 />
               </label>
@@ -301,27 +316,11 @@ export default function CheckoutPage() {
                   inputMode="tel"
                   pattern="[0-9+\-\s]{7,}"
                   placeholder="300 000 0000"
-                  onBlur={() => autoriza && registrar(true)}
+                  onBlur={() => registrar(true)}
                   className={campo}
                 />
               </label>
 
-              {/* La casilla va aqui, junto a los datos que autoriza, y no
-                  enterrada al final: la autorizacion tiene que ser informada,
-                  y eso empieza por verla al lado de lo que se esta pidiendo.
-                  Sin marcar, el contacto no se guarda — ni lo manda el
-                  navegador ni lo aceptaria el servidor. */}
-              <label className={`${styles.anchoCompleto} ${styles.consentimiento}`}>
-                <input
-                  type="checkbox"
-                  checked={autoriza}
-                  onChange={(e) => {
-                    setAutoriza(e.target.checked);
-                    if (e.target.checked) registrar(true);
-                  }}
-                />
-                <span>{TEXTO_CONSENTIMIENTO}</span>
-              </label>
             </div>
             <p className={styles.notaPie}>
               Te escribimos por aquí para coordinar la entrega. Al comprar

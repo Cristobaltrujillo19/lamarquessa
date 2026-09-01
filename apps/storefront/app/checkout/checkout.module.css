@@ -191,22 +191,16 @@
   }
 }
 
-/* Casilla de autorizacion. Alineada arriba porque el texto ocupa dos lineas
-   y un `center` dejaria la casilla flotando a media altura del parrafo. */
-.consentimiento {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--s-2);
-  cursor: pointer;
+/* Aviso de tratamiento de datos. Discreto pero legible: --tinta-70 es el piso
+   de texto del sistema (5.29:1 sobre crema) y sigue pasando AA a 14px. No se
+   baja mas: un aviso que no se lee no informa, y aqui la autorizacion depende
+   de que se haya podido leer. */
+.avisoDatos {
+  margin-top: var(--s-2);
+  padding-left: var(--s-2);
+  border-left: 2px solid var(--tinta-12);
   font-size: 14px;
   line-height: 1.5;
   color: var(--tinta-70);
-}
-
-.consentimiento input {
-  width: 18px;
-  height: 18px;
-  margin: 2px 0 0;
-  accent-color: var(--cobre);
-  flex-shrink: 0;
+  max-width: var(--max-ancho-texto);
 }
