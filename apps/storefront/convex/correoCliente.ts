@@ -81,7 +81,7 @@ export const enviarConfirmacionCliente = internalAction({
       await transporter.sendMail({
         from: process.env.GMAIL_FROM ?? `La Marquessa <${user}>`,
         to: cliente.email,
-        subject: "Recibimos tu pedido — La Marquessa",
+        subject: "Recibimos tu pedido · La Marquessa",
         html,
       });
     } catch (e) {

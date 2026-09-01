@@ -113,7 +113,7 @@ export default async function GraciasPage({
             <Aparece>
               <p className={styles.aviso}>
                 Te mandamos la confirmación al correo con el detalle del
-                pedido. Si necesitas cambiar algún detalle, respóndenos ahí —
+                pedido. Si necesitas cambiar algún detalle, respóndenos ahí:
                 hasta el momento en que empiece la impresión, se puede.
               </p>
             </Aparece>

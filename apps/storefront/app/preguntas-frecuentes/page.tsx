@@ -18,7 +18,7 @@ import Pregunta from "./Pregunta";
 import css from "./preguntas.module.css";
 
 export const metadata: Metadata = {
-  title: "Preguntas frecuentes — bolsos impresos en 3D | La Marquessa",
+  title: "Preguntas frecuentes sobre bolsos impresos en 3D | La Marquessa",
   description:
     "Bolsos impresos en 3D La Marquessa: material, medidas, 2 semanas de fabricación, envíos a Colombia y al mundo, cambios y cuidados. Todo antes de comprar.",
   alternates: { canonical: urlAbsoluta("/preguntas-frecuentes") },
@@ -95,7 +95,7 @@ export default async function PreguntasFrecuentesPage() {
           id: "unicos",
           pregunta: "¿Es cierto que no existen dos bolsos iguales?",
           respuesta: [
-            "Sí. El diseño es el mismo —una Menorca es siempre una Menorca—, pero cada pieza se imprime y se termina de manera individual. El relieve, el pliegue y el acabado nunca caen exactamente igual.",
+            "Sí. El diseño es el mismo, una Menorca es siempre una Menorca, pero cada pieza se imprime y se termina de manera individual. El relieve, el pliegue y el acabado nunca caen exactamente igual.",
             "No fabricamos por lotes ni conservamos una bodega llena de bolsos idénticos a la espera de un comprador. Su bolso empieza a existir el día en que usted lo pide.",
           ],
         },
@@ -129,8 +129,8 @@ export default async function PreguntasFrecuentesPage() {
           // se dice claro: que llegue y no quepa el teléfono es justo el tipo
           // de sorpresa que termina en devolución.
           respuesta: [
-            "En Mallorca, Kruta y Montt, sí: cabe un celular de pantalla grande junto con lo esencial del día — llaves, tarjetas, labial y audífonos.",
-            "En Menorca no. Alcanza para lo justo —tarjetas, llaves, labial—, pero el celular no entra. Si le gusta esa silueta y necesita llevar el teléfono, Mallorca es su talla grande: mismo diseño, más cuerpo.",
+            "En Mallorca, Kruta y Montt, sí: cabe un celular de pantalla grande junto con lo esencial del día: llaves, tarjetas, labial y audífonos.",
+            "En Menorca no. Alcanza para lo justo (tarjetas, llaves, labial), pero el celular no entra. Si le gusta esa silueta y necesita llevar el teléfono, Mallorca es su talla grande: mismo diseño, más cuerpo.",
             "Ninguna de las piezas está pensada para computador ni cuaderno: son bolsos de mano, y esa es precisamente la intención. Estas son las medidas exteriores de cada uno.",
           ],
           extra: conMedidas.length > 0 && (

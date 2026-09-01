@@ -26,7 +26,7 @@ const fechaFmt = new Intl.DateTimeFormat("es-CO", {
 });
 
 export function formatFecha(ms: number | undefined): string {
-  if (!ms) return "—";
+  if (!ms) return "Sin fecha";
   return fechaFmt.format(new Date(ms));
 }
 

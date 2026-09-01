@@ -72,7 +72,7 @@ export default async function PedidoDetalle({
       {pedido.items.some((i) => i.personalizacion?.colorPersonalizado) && (
         <div className="mt-4 rounded-lg border-l-4 border-[#c07a2f] bg-[#fff4e0] px-4 py-3 text-sm text-[#5a3d10]">
           <strong>Requiere coordinar color.</strong> Este pedido tiene un color a
-          disposición — contactar al cliente por WhatsApp antes de fabricar.
+          disposición: contactar al cliente por WhatsApp antes de fabricar.
         </div>
       )}
 

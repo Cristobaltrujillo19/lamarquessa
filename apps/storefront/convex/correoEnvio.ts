@@ -60,7 +60,7 @@ export const enviarVaEnCamino = internalAction({
           Este correo es <strong>solo informativo</strong>, por favor no respondas a este mensaje.
         </p>
         <p style="margin-top:16px;color:#8a7a68;font-style:italic">Life comes in waves.</p>
-        <p style="margin-top:4px">— La Marquessa · Colombia</p>
+        <p style="margin-top:4px">La Marquessa · Colombia</p>
       </div>`;
 
     const transporter = nodemailer.createTransport({

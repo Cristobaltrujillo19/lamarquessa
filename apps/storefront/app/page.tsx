@@ -33,7 +33,7 @@ import styles from "./home.module.css";
 export const metadata: Metadata = {
   title: "La Marquessa",
   description:
-    "Bolsos impresos en 3D y hechos a mano en Colombia. Cada pieza es única — no existen dos iguales. Fabricados a pedido, listos en 2 semanas. Envíos globales.",
+    "Bolsos impresos en 3D y hechos a mano en Colombia. Cada pieza es única: no existen dos iguales. Fabricados a pedido, listos en 2 semanas. Envíos globales.",
   alternates: { canonical: urlAbsoluta("/") },
 };
 

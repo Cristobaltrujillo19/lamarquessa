@@ -49,7 +49,7 @@ export default function Nosotros() {
               </p>
               <p className={`cuerpo ${styles.anchoTexto}`}>
                 Las mujeres que lo visitaban se volvían parte de él, como musas
-                que danzaban entre la arena y las olas —eternas y en paz—
+                que danzaban entre la arena y las olas, eternas y en paz,
                 viviendo esa sensación de libertad sin fin que solo el mar puede
                 ofrecer.
               </p>

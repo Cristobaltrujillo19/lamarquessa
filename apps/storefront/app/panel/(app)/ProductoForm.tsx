@@ -54,7 +54,7 @@ export default function ProductoForm({
           <input name="nombre" defaultValue={producto?.nombre} required className={input} />
         </label>
         <label className="block text-sm">
-          Slug (URL){esNuevo ? "" : " — no editable"}
+          Slug (URL){esNuevo ? "" : " (no editable)"}
           <input
             name="slug"
             defaultValue={producto?.slug}

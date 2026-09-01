@@ -699,3 +699,56 @@ export const actualizarRayosX = mutation({
     return { actualizados };
   },
 });
+
+/**
+ * Quita la raya larga de las descripciones del catalogo.
+ *
+ * No es un reemplazo ciego: cada raya se sustituye por el signo que pide su
+ * frase. Un `replace` global de raya por coma habria dejado enumeraciones de
+ * cuatro comas seguidas y dos puntos donde tocaba coma.
+ *
+ * Idempotente: si el texto ya esta corregido, no escribe.
+ */
+export const quitarRayaLarga = mutation({
+  args: { secret: v.string() },
+  handler: async (ctx, { secret }) => {
+    exigirSecreto(secret);
+
+    // De incisos con raya a comas, y de raya separadora a dos puntos.
+    const REEMPLAZOS: [string, string][] = [
+      [
+        "una curva continua —sin costuras, sin interrupciones— como una ola",
+        "una curva continua, sin costuras ni interrupciones, como una ola",
+      ],
+      [
+        "hecho a mano en Colombia — accesorio de moda",
+        "hecho a mano en Colombia: accesorio de moda",
+      ],
+      [
+        "el bolso de los días largos —los que empiezan en una mesa",
+        "el bolso de los días largos, los que empiezan en una mesa",
+      ],
+      [
+        "corre un solo pliegue —el trazo de una corriente",
+        "corre un solo pliegue: el trazo de una corriente",
+      ],
+    ];
+
+    const productos = await ctx.db.query("productos").collect();
+    const actualizados: string[] = [];
+    for (const p of productos) {
+      let texto = p.descripcion;
+      for (const [de, a] of REEMPLAZOS) texto = texto.split(de).join(a);
+      if (texto === p.descripcion) continue;
+      await ctx.db.patch(p._id, { descripcion: texto });
+      actualizados.push(p.slug);
+    }
+
+    // Aviso si queda alguna raya suelta que no cubrian los reemplazos.
+    const restantes = (await ctx.db.query("productos").collect())
+      .filter((p) => p.descripcion.includes("—"))
+      .map((p) => p.slug);
+
+    return { actualizados, conRayaTodavia: restantes };
+  },
+});

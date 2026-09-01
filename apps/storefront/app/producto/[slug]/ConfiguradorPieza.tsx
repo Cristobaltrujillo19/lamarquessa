@@ -233,7 +233,7 @@ export default function ConfiguradorPieza({ producto }: { producto: Producto }) 
             <strong className={styles.notaColorFuerte}>
               Color {color.nombre}
             </strong>
-            {color.descripcion ? ` — ${color.descripcion}` : ""}
+            {color.descripcion ? `. ${color.descripcion}` : ""}
           </p>
 
           {/* Sin esta pista, la vista previa es un secreto: nadie pasa el
@@ -414,7 +414,7 @@ export default function ConfiguradorPieza({ producto }: { producto: Producto }) 
             onClick={agregarAlCarrito}
             className="btn btn-primario"
           >
-            Añadir al carrito — {formatCop(precioTotal)}
+            Añadir al carrito · {formatCop(precioTotal)}
           </button>
 
           {/* Eco escrito de la decision, en vivo. */}

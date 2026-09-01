@@ -58,7 +58,7 @@ export async function generateMetadata({
   // 3D, hecho a mano en Colombia"); si el producto todavía no lo tiene, cae al
   // texto genérico que se usó siempre.
   const cola = producto.subtitulo ?? "impreso en 3D y hecho a mano";
-  const titulo = `Bolso ${producto.nombre} — ${cola} | ${MARCA}`;
+  const titulo = `Bolso ${producto.nombre}: ${cola} | ${MARCA}`;
   const descripcion =
     META_DESCRIPCION_POR_SLUG[producto.slug] ?? resumen(producto.descripcion);
 
@@ -181,7 +181,7 @@ export default async function ProductoPage({
       <ViewItemTracker producto={producto} />
 
       {/* ---------- La pieza: galería + configurador + compra ---------- */}
-      <section className="seccion-base" aria-labelledby="titular-pieza">
+      <section className="seccion-respiro" aria-labelledby="titular-pieza">
         <div className="contenedor">
           <ConfiguradorPieza producto={producto} />
         </div>
@@ -304,7 +304,7 @@ export default async function ProductoPage({
 
       {/* ---------- Piezas relacionadas ---------- */}
       {relacionados.length > 0 && (
-        <section className="seccion-base" aria-labelledby="titular-relacionadas">
+        <section className="seccion-respiro" aria-labelledby="titular-relacionadas">
           <div className="contenedor">
             <Aparece>
               <h2 id="titular-relacionadas" className="h2 centrado">
