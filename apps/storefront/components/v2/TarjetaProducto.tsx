@@ -33,6 +33,7 @@ export default function TarjetaProducto({
   prioridad = false,
   mostrarPrecio = true,
   listName = "Colección",
+  nivel = 3,
 }: {
   producto: Producto;
   prioridad?: boolean;
@@ -41,7 +42,17 @@ export default function TarjetaProducto({
    *  de "no tocar" del handoff. */
   mostrarPrecio?: boolean;
   listName?: string;
+  /** Nivel del encabezado del nombre. Tiene que colgar del titular que la
+   *  seccion ya puso encima: en la coleccion ese titular es el H1 de la
+   *  pagina, asi que las piezas son H2; en la home y en "Tambien te puede
+   *  gustar" hay un H2 de seccion, y entonces son H3.
+   *
+   *  El tamano visual NO cambia con el nivel: lo fija la clase `h3` del
+   *  sistema. Saltarse un nivel para conseguir el tamano correcto es lo que
+   *  produjo el hueco que esto arregla. */
+  nivel?: 2 | 3;
 }) {
+  const Titular = (`h${nivel}`) as "h2" | "h3";
   const portada = producto.fotos[0];
   // La segunda foto hace el cross-fade. Si la pieza solo tiene una, se
   // reutiliza la portada y el efecto simplemente no se nota.
@@ -86,7 +97,7 @@ export default function TarjetaProducto({
       </div>
 
       <div className={styles.datos}>
-        <h3 className={`h3 ${styles.nombre}`}>{producto.nombre}</h3>
+        <Titular className={`h3 ${styles.nombre}`}>{producto.nombre}</Titular>
         <p className={`eyebrow eyebrow-dato ${styles.color}`}>
           {rotuloColorDeFoto(producto, portada)}
         </p>

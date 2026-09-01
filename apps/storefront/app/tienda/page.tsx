@@ -77,7 +77,8 @@ export default async function TiendaPage() {
             <div className={styles.grilla}>
               {items.map((p, i) => (
                 <Aparece key={p.slug} paso={i}>
-                  <TarjetaProducto producto={p} prioridad={i < 2} />
+                  {/* nivel 2: aqui el titular de arriba es el H1 de la pagina. */}
+                  <TarjetaProducto producto={p} prioridad={i < 2} nivel={2} />
                 </Aparece>
               ))}
             </div>
