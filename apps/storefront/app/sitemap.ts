@@ -19,6 +19,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.7,
     },
+    // Envios y contacto faltaban aqui, y son indexables: tienen canonical, no
+    // llevan noindex y responden 200. Sin entrada en el sitemap, Google solo
+    // llegaba a ellas siguiendo enlaces internos.
+    { url: urlAbsoluta("/envios"), lastModified: ahora, changeFrequency: "monthly", priority: 0.6 },
+    { url: urlAbsoluta("/contacto"), lastModified: ahora, changeFrequency: "monthly", priority: 0.6 },
     { url: urlAbsoluta("/privacidad"), lastModified: ahora, changeFrequency: "yearly", priority: 0.2 },
   ];
 
