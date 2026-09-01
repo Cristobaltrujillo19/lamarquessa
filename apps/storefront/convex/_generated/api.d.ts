@@ -9,8 +9,10 @@
  */
 
 import type * as admin from "../admin.js";
+import type * as carritos from "../carritos.js";
 import type * as correoCliente from "../correoCliente.js";
 import type * as correoEnvio from "../correoEnvio.js";
+import type * as crons from "../crons.js";
 import type * as cuentas from "../cuentas.js";
 import type * as cupones from "../cupones.js";
 import type * as http from "../http.js";
@@ -25,8 +27,10 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   admin: typeof admin;
+  carritos: typeof carritos;
   correoCliente: typeof correoCliente;
   correoEnvio: typeof correoEnvio;
+  crons: typeof crons;
   cuentas: typeof cuentas;
   cupones: typeof cupones;
   http: typeof http;

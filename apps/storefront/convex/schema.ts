@@ -206,6 +206,61 @@ export default defineSchema({
 
   // Inventario por variante en la bodega central (sin ferias). Una fila por
   // (slug, colorId, tamanoId). Total de un bolso = suma de sus variantes.
+  /**
+   * Carritos, incluidos los que nunca llegan a pedido.
+   *
+   * El pedido se crea al ENVIAR el checkout, asi que todo lo anterior
+   * —anadir al carrito, abrirlo, empezar a llenar el formulario— no dejaba
+   * ningun rastro. Esta tabla cubre ese tramo.
+   *
+   * ⚠️ DOS ZONAS CON REGLAS DISTINTAS, y no se pueden mezclar:
+   *
+   *   Lo anonimo (sesionId, items, paso) NO es dato personal: `sesionId` es
+   *   un aleatorio del navegador, no identifica a nadie y no se cruza con
+   *   nada. No necesita autorizacion.
+   *
+   *   `contacto` SI es dato personal, y por eso solo puede escribirse cuando
+   *   `consentimiento.otorgado` es true. La Ley 1581 pide autorizacion
+   *   previa, expresa e informada, y el Decreto 1377 que quede registrada
+   *   para poder consultarla despues: por eso se guarda el TEXTO exacto que
+   *   la persona acepto y CUANDO. Sin eso, tener el dato no sirve de nada
+   *   aunque este en la base.
+   *
+   * Se purgan a los 90 dias (convex/crons.ts). El plazo no es estetico: la
+   * ley exige que la conservacion tenga un limite justificado.
+   */
+  carritos: defineTable({
+    /** Aleatorio generado en el navegador. No identifica a una persona. */
+    sesionId: v.string(),
+    items: v.array(lineaPedidoV),
+    subtotalCop: v.number(),
+    /** Hasta donde llego. Es lo que convierte la tabla en un embudo. */
+    paso: v.union(
+      v.literal("carrito"),
+      v.literal("checkout"),
+      v.literal("enviado"),
+    ),
+    /** Solo con consentimiento otorgado. Ver el aviso de arriba. */
+    contacto: v.optional(
+      v.object({
+        nombre: v.optional(v.string()),
+        email: v.optional(v.string()),
+        whatsapp: v.optional(v.string()),
+      }),
+    ),
+    consentimiento: v.optional(
+      v.object({
+        otorgado: v.boolean(),
+        en: v.number(),
+        /** El texto literal que se le enseno. Es la prueba. */
+        texto: v.string(),
+      }),
+    ),
+    actualizadoEn: v.number(),
+  })
+    .index("by_sesion", ["sesionId"])
+    .index("by_actualizado", ["actualizadoEn"]),
+
   inventario: defineTable({
     slug: v.string(),
     colorId: v.string(),

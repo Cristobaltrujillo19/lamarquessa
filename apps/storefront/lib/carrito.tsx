@@ -8,11 +8,13 @@ import {
   useMemo,
   useState,
 } from "react";
+import { registrarCarrito } from "@/app/acciones/carrito";
 import {
   addOnsPorUnidad,
   hashPersonalizacion,
   type Personalizacion,
 } from "./personalizacion";
+import { idDeSesion } from "./sesionCarrito";
 
 export type LineaCarrito = {
   /** slug|colorId|tamanoId|hash(personalización) — dos bolsos con iniciales
@@ -124,6 +126,50 @@ export function CarritoProvider({ children }: { children: React.ReactNode }) {
       ),
     [lineas],
   );
+
+  /* ---------------- Registro del carrito ----------------
+     El pedido solo nace al ENVIAR el checkout, asi que todo lo anterior era
+     invisible: no habia forma ni de contar cuantos carritos se abandonan.
+     Esto lo cubre.
+
+     TRES DECISIONES QUE IMPORTAN:
+
+     1. Se envia con retardo (debounce). Sin el, subir la cantidad de 1 a 5
+        dispararia cinco escrituras; con el, una.
+
+     2. Falla en silencio y NUNCA bloquea. Este registro es para nosotros,
+        no para quien compra: si Convex no responde, el carrito tiene que
+        seguir funcionando igual. Por eso el .catch() vacio.
+
+     3. NO manda contacto. Aqui solo viaja lo anonimo. El nombre, el correo
+        y el WhatsApp los envia el checkout, y solo si la casilla de
+        autorizacion esta marcada. */
+  useEffect(() => {
+    if (!hidratado) return;
+    const sesionId = idDeSesion();
+    if (!sesionId) return;
+
+    const t = setTimeout(() => {
+      registrarCarrito({
+        sesionId,
+        // Solo variante y cantidad: los precios los pone el catalogo, en el
+        // servidor. Si viajaran desde aqui, el dato de cuanto dinero se
+        // abandona seria manipulable desde la consola del navegador.
+        items: lineas.map((l) => ({
+          slug: l.slug,
+          colorId: l.colorId,
+          tamanoId: l.tamanoId,
+          cantidad: l.cantidad,
+          personalizacion: l.personalizacion,
+        })),
+        paso: "carrito",
+      }).catch(() => {
+        /* el carrito del visitante manda: esto no puede romperlo */
+      });
+    }, 1200);
+
+    return () => clearTimeout(t);
+  }, [lineas, hidratado]);
 
   const value: Ctx = {
     lineas,

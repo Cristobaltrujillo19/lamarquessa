@@ -190,3 +190,23 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Casilla de autorizacion. Alineada arriba porque el texto ocupa dos lineas
+   y un `center` dejaria la casilla flotando a media altura del parrafo. */
+.consentimiento {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-2);
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--tinta-70);
+}
+
+.consentimiento input {
+  width: 18px;
+  height: 18px;
+  margin: 2px 0 0;
+  accent-color: var(--cobre);
+  flex-shrink: 0;
+}

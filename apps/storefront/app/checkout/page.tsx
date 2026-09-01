@@ -1,7 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+import { registrarCarrito } from "@/app/acciones/carrito";
+import { idDeSesion } from "@/lib/sesionCarrito";
+import { TEXTO_CONSENTIMIENTO } from "@/lib/consentimiento";
 import { useCarrito } from "@/lib/carrito";
 import { formatCop } from "@/lib/productos";
 import {
@@ -52,6 +55,59 @@ export default function CheckoutPage() {
   const [cupon, setCupon] = useState<Cupon | null>(null);
   const [avisoCupon, setAvisoCupon] = useState<string | null>(null);
   const [validandoCupon, setValidandoCupon] = useState(false);
+
+  /* ---------------- Registro del carrito en el checkout ----------------
+     Aqui se cubre el tramo que antes era invisible: quien abre el checkout,
+     escribe sus datos y se va sin enviar. El pedido solo nace al enviar.
+
+     LA CASILLA NO ES DECORATIVA. Sin ella marcada, `contacto` no se envia y
+     el servidor lo descartaria igualmente. La Ley 1581 pide autorizacion
+     previa, expresa e informada, asi que guardar lo que alguien escribio y
+     decidio NO enviar, sin haberlo autorizado, no es una opcion. */
+  const [autoriza, setAutoriza] = useState(false);
+  const datosForm = useRef<HTMLFormElement | null>(null);
+
+  const registrar = useCallback(
+    (conContacto: boolean) => {
+      const sesionId = idDeSesion();
+      if (!sesionId || lineas.length === 0) return;
+
+      const f = datosForm.current ? new FormData(datosForm.current) : null;
+      const leer = (k: string) => {
+        const v = f?.get(k);
+        return typeof v === "string" && v.trim() ? v.trim() : undefined;
+      };
+
+      registrarCarrito({
+        sesionId,
+        items: lineas.map((l) => ({
+          slug: l.slug,
+          colorId: l.colorId,
+          tamanoId: l.tamanoId,
+          cantidad: l.cantidad,
+          ...(l.personalizacion ? { personalizacion: l.personalizacion } : {}),
+        })),
+        paso: "checkout",
+        ...(conContacto
+          ? {
+              contacto: {
+                nombre: leer("nombre"),
+                email: leer("email"),
+                whatsapp: leer("whatsapp"),
+              },
+              consentimiento: { otorgado: true },
+            }
+          : {}),
+      });
+    },
+    [lineas],
+  );
+
+  // Al abrir el checkout: registro anonimo, sin contacto. Solo dice que
+  // alguien llego hasta aqui.
+  useEffect(() => {
+    registrar(false);
+  }, [registrar]);
 
   // begin_checkout / InitiateCheckout se dispara una sola vez al llegar al
   // checkout con carrito lleno. El submit disparará AddPaymentInfo (más
@@ -195,7 +251,7 @@ export default function CheckoutPage() {
         y te cotizamos el envío antes de la compra.
       </p>
 
-      <form onSubmit={alEnviar} className={styles.disposicion}>
+      <form ref={datosForm} onSubmit={alEnviar} className={styles.disposicion}>
         <div className={styles.grupo}>
           <section>
             <h2 className="h3">Tus datos</h2>
@@ -208,7 +264,13 @@ export default function CheckoutPage() {
                 <span className={etiqueta}>
                   Nombre completo<Obligatorio />
                 </span>
-                <input name="nombre" required autoComplete="name" className={campo} />
+                <input
+                  name="nombre"
+                  required
+                  autoComplete="name"
+                  onBlur={() => autoriza && registrar(true)}
+                  className={campo}
+                />
               </label>
               <label>
                 <span className={etiqueta}>
@@ -219,6 +281,7 @@ export default function CheckoutPage() {
                   type="email"
                   required
                   autoComplete="email"
+                  onBlur={() => autoriza && registrar(true)}
                   className={campo}
                 />
               </label>
@@ -238,8 +301,26 @@ export default function CheckoutPage() {
                   inputMode="tel"
                   pattern="[0-9+\-\s]{7,}"
                   placeholder="300 000 0000"
+                  onBlur={() => autoriza && registrar(true)}
                   className={campo}
                 />
+              </label>
+
+              {/* La casilla va aqui, junto a los datos que autoriza, y no
+                  enterrada al final: la autorizacion tiene que ser informada,
+                  y eso empieza por verla al lado de lo que se esta pidiendo.
+                  Sin marcar, el contacto no se guarda — ni lo manda el
+                  navegador ni lo aceptaria el servidor. */}
+              <label className={`${styles.anchoCompleto} ${styles.consentimiento}`}>
+                <input
+                  type="checkbox"
+                  checked={autoriza}
+                  onChange={(e) => {
+                    setAutoriza(e.target.checked);
+                    if (e.target.checked) registrar(true);
+                  }}
+                />
+                <span>{TEXTO_CONSENTIMIENTO}</span>
               </label>
             </div>
             <p className={styles.notaPie}>
