@@ -316,6 +316,19 @@ export default async function PreguntasFrecuentesPage() {
             "Las piezas personalizadas quedan por fuera de esta política: se fabrican exclusivamente para usted, por lo que no se aceptan cambios una vez aprobado el diseño.",
           ],
         },
+        {
+          id: "datos",
+          pregunta: "¿Qué hacen con mis datos?",
+          // El aviso corto del checkout remite aqui. Los dos textos tienen que
+          // decir lo mismo: si se separan, el visitante autoriza una cosa y la
+          // pagina explica otra.
+          respuesta: [
+            "Guardamos lo que usted escribe en el formulario de compra —nombre, correo, teléfono y dirección— junto con las piezas que puso en el carrito. Al escribirlos, usted autoriza que los guardemos y los tratemos conforme a nuestra política de privacidad.",
+            "Esto ocurre aunque no llegue a completar el pedido, y tiene un solo fin: poder escribirle para ayudarle a terminar una compra que quedó a medias, o resolver lo que se lo haya impedido.",
+            "No compartimos esos datos con terceros para publicidad, no los vendemos y no los usamos para enviarle promociones —para eso pedimos permiso aparte—. Los datos de su tarjeta no pasan por nosotros en ningún momento: los recibe directamente la pasarela de pago.",
+            "Se eliminan solos a los 90 días. Y si prefiere que los borremos antes, basta con escribirnos y lo hacemos sin condiciones ni preguntas.",
+          ],
+        },
       ],
     },
   ];

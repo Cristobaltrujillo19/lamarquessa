@@ -262,15 +262,23 @@ export default function CheckoutPage() {
               son obligatorios.
             </p>
 
-            {/* Aviso de tratamiento de datos. Va ARRIBA de los campos y no al
-                pie del formulario a proposito: la autorizacion aqui es por
-                conducta —escribir los datos—, y para que esa conducta valga
-                hay que haber podido leer el aviso ANTES de escribir. Debajo
-                del boton de pagar llegaria tarde. */}
+            {/* Aviso de tratamiento de datos. Dos decisiones:
+
+                VA ARRIBA de los campos, no al pie. La autorizacion aqui es por
+                conducta —escribir los datos—, y para que valga hay que haber
+                podido leer el aviso ANTES de escribir. Debajo del boton de
+                pagar llegaria tarde.
+
+                ES CORTO, y el detalle vive en la FAQ. Un parrafo largo en
+                mitad del formulario no se lee, y un aviso que no se lee no
+                informa. */}
             <p className={styles.avisoDatos}>
               {TEXTO_AVISO_DATOS}{" "}
-              <Link href="/privacidad" className="link-terciario">
-                Ver la política de privacidad
+              <Link
+                href="/preguntas-frecuentes#datos"
+                className="link-terciario"
+              >
+                Qué hacemos con tus datos
               </Link>
               .
             </p>
