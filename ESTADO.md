@@ -642,6 +642,43 @@ dimensionar las imágenes. No romperlo.
 6. 🟡 **bf-cache desactivado** por `cache-control: no-store`: el botón "atrás"
    recarga la página entera en vez de restaurarla.
 
+### Segunda medición, tras tocar el vídeo del hero (2 sept, misma tarde)
+
+**El vídeo NO era la causa del LCP, y conviene no repetir ese error.** Se
+corrigió su carga (ver el commit del hero) y el LCP no se movió: sigue en
+~4,5 s. La medición dice por qué sin ambigüedad:
+
+- El póster está **descargado a los 771 ms**, con `fetchpriority=high` y
+  precarga confirmada por `lcp-discovery-insight`.
+- El LCP ocurre a los **4.500 ms**.
+- Entre los dos no hay red: hay **3,7 s de hilo principal bloqueado**.
+
+```
+Evaluación de scripts   2.667 ms
+Other                   1.472 ms
+Style & Layout            735 ms
+```
+
+Dos paquetes de JS propios se llevan **1.737 ms y 1.617 ms** de CPU. Meta
+Pixel suma ~436 ms y GTM ~310 ms. **El LCP está limitado por JavaScript, no
+por descargas.** Cualquier trabajo futuro sobre el LCP que no reduzca tiempo
+de CPU no va a mover la aguja.
+
+Lo que el cambio del vídeo sí consiguió, medido:
+
+| | Antes | Después |
+|---|---|---|
+| TBT | 1.010 ms | **560-730 ms** |
+| Vídeo servido a un móvil | 5,3 MB | **1,2 MB** |
+| Prioridad del vídeo | compitiendo al montar | **Low, a los 1.366 ms** |
+| Póster | 91 KB, sin precarga | **58 KB, listo a 771 ms** |
+
+⚠️ **La variabilidad de Lighthouse en este sitio es enorme:** cuatro corridas
+seguidas de la MISMA página dieron rendimiento 47, 60, 61 y 63, con LCP entre
+4,5 y 12,8 s. **Una corrida suelta no prueba nada**; hay que repetir y mirar
+lo que se mantiene. El CLS de 0,024 que apareció en una corrida era ruido: en
+las otras tres volvió a 0.
+
 ### El único fallo de accesibilidad (es el #3)
 
 En las dos páginas: el cajón del carrito
