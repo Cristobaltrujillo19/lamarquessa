@@ -22,6 +22,31 @@ export default function CartDrawer() {
     estabaAbierto.current = abierto;
   }, [abierto, lineas, subtotal]);
 
+  // Teclado. Un panel que se abre sobre la página tiene que poder cerrarse
+  // sin ratón, y el foco tiene que ir con él: si no, quien navega con teclado
+  // abre el carrito y sigue tabulando por la página de debajo sin enterarse.
+  const panel = useRef<HTMLElement | null>(null);
+  const focoPrevio = useRef<HTMLElement | null>(null);
+  useEffect(() => {
+    if (!abierto) return;
+
+    // Se guarda quién tenía el foco para devolvérselo al cerrar. Sin esto el
+    // foco vuelve al principio del documento y hay que recorrerlo entero.
+    focoPrevio.current = document.activeElement as HTMLElement | null;
+    // El primer enfocable del panel es el botón de cerrar, que es justo donde
+    // conviene aterrizar.
+    panel.current?.querySelector<HTMLElement>("button")?.focus();
+
+    const alPulsar = (e: KeyboardEvent) => {
+      if (e.key === "Escape") cerrar();
+    };
+    document.addEventListener("keydown", alPulsar);
+    return () => {
+      document.removeEventListener("keydown", alPulsar);
+      focoPrevio.current?.focus?.();
+    };
+  }, [abierto, cerrar]);
+
   function quitarLinea(key: string) {
     const linea = lineas.find((x) => x.key === key);
     if (linea) trackRemoveFromCart(linea);
@@ -39,8 +64,16 @@ export default function CartDrawer() {
       />
 
       <aside
+        ref={panel}
         aria-label="Carrito"
         aria-hidden={!abierto}
+        // `aria-hidden` por sí solo lo esconde del lector de pantalla pero
+        // DEJA SUS BOTONES ENFOCABLES: cerrado, se podía tabular hacia dentro
+        // de un panel invisible. Lo detectó Lighthouse el 2 de septiembre
+        // (§15 del ESTADO) y era el único fallo de accesibilidad del sitio.
+        // `inert` es lo que hace las tres cosas a la vez: fuera del foco,
+        // fuera del clic y fuera del árbol de accesibilidad.
+        inert={!abierto}
         className={`fixed right-0 top-0 z-70 flex h-full w-[min(420px,92vw)] flex-col bg-[var(--espuma)] shadow-2xl transition-transform duration-300 ${
           abierto ? "translate-x-0" : "translate-x-full"
         }`}
