@@ -679,6 +679,56 @@ seguidas de la MISMA página dieron rendimiento 47, 60, 61 y 63, con LCP entre
 lo que se mantiene. El CLS de 0,024 que apareció en una corrida era ruido: en
 las otras tres volvió a 0.
 
+### Tercera medición: DÓNDE está de verdad el LCP (2 sept, cierre)
+
+Se persiguió el LCP por tres caminos y **ninguno lo movió**: sigue en ~4,4 s.
+La causa apareció al leer las fases, y no estaba en ninguno de los tres.
+
+**Lighthouse simula 1.474 kbps (~184 KB/s), RTT 150 ms y CPU ×4.** Ojo con
+esto al leer sus informes: la tabla de red muestra los tiempos OBSERVADOS
+(conexión real, rápida) pero las métricas se calculan sobre la red SIMULADA.
+Ver "poster descargado a los 981 ms" y "LCP a los 4.400 ms" no es una
+contradicción; son dos relojes distintos.
+
+Bajo esa simulación, la cola de peticiones es el problema:
+
+```
+642 ms   8 fuentes ......... 266 KB   prioridad High
+652 ms   gtag (js) ......... 171 KB   prioridad High
+652 ms   hero-poster.jpg ...  58 KB   prioridad High   <- el recurso del LCP
+```
+
+El póster se pide **a la vez** que 437 KB de fuentes y analítica, con la misma
+prioridad. A 184 KB/s son ~2,4 s de cola. **Eso es el "Load Delay" de 1.850 ms,
+el 42% del LCP.**
+
+**El siguiente trabajo sobre el LCP tiene que ser aquí, y en ningún otro sitio:**
+
+1. **Ocho ficheros de fuente, 266 KB, todos en prioridad High.** Es el mayor
+   competidor del LCP. Hay que ver cuántos hacen falta de verdad sobre el
+   pliegue, precargar solo esos y dejar que el resto lleguen después.
+2. **`queen-serif.otf` va en OTF, no en woff2.** Es el único que no está en el
+   formato comprimido.
+3. **gtag son 171 KB en prioridad High** compitiendo con el póster. Cargarlo
+   más tarde no le quita ni un dato a la analítica.
+
+### Lo que sí se consiguió hoy, y lo que no
+
+| | Antes | Después |
+|---|---|---|
+| Accesibilidad (home y ficha) | 96 | **100, cero fallos** |
+| TBT | 1.010 ms | **~800 ms** |
+| Vídeo servido a un móvil | 5,3 MB | **1,2 MB** |
+| React, coste de CPU | 1.759 ms | **405 ms** |
+| **LCP** | **4.400 ms** | **~4.400 ms (sin cambio)** |
+| Rendimiento | 59 | 60-63 |
+
+⚠️ **Tres intentos sobre el LCP no lo movieron.** Queda escrito para que nadie
+los repita: aplazar el vídeo del hero, aplazar el arranque de WebGL, y
+precargar el póster. El primero mejoró el TBT y los datos móviles, el segundo
+liberó CPU, el tercero hizo falta para que el elemento LCP dejara de ser el
+vídeo. Ninguno tocó la causa.
+
 ### Accesibilidad: corregida el 2 de septiembre, ambas páginas a 100
 
 Los dos fallos que encontró la medición están arreglados y verificados contra
