@@ -2,8 +2,16 @@
   max-width: 34em;
 }
 
+/* La foto acompana al texto, asi que TERMINA donde termina el texto. Con
+   `aspect-ratio` fija sobresalia 152px por debajo de la columna de al lado
+   —medido— y las dos columnas no cerraban a la misma linea.
+
+   La proporcion pasa a ser un MINIMO, no una imposicion: si el texto es corto
+   manda el 3/4 y la foto no se aplasta; si es largo, la foto crece con el. */
 .retrato {
   position: relative;
+  height: 100%;
+  min-height: 0;
   aspect-ratio: 3 / 4;
   overflow: hidden;
   background: var(--tinta-06);
@@ -27,8 +35,18 @@
   grid-template-columns: 1fr 1fr;
   column-gap: var(--s-6);
   row-gap: var(--s-4);
-  align-items: start;
+  /* `stretch` y no `start`: es lo que hace que la foto llegue hasta donde
+     llega el texto y las dos columnas cierren juntas. */
+  align-items: stretch;
   margin-top: var(--s-5);
+}
+
+/* Columna en flex para poder anclar la cita al fondo. Con `stretch` la caja
+   ya llegaba hasta abajo, pero el TEXTO segui­a acabando 152px antes —medido—
+   y a la vista las dos columnas seguian sin cerrar juntas. */
+.texto {
+  display: flex;
+  flex-direction: column;
 }
 
 .texto > * + * {
@@ -39,8 +57,13 @@
   max-width: var(--max-ancho-texto);
 }
 
+/* `margin-top: auto` empuja la cita al fondo de la columna, de modo que su
+   borde inferior coincide con el de la foto de al lado. El --s-6 se queda
+   como separacion MINIMA para cuando el texto sea largo y no sobre hueco. */
 .cita {
   margin: var(--s-6) 0 0;
+  margin-top: auto;
+  padding-top: var(--s-6);
   padding-left: var(--s-3);
   border-left: 1px solid var(--cobre);
   max-width: 24em;
@@ -70,6 +93,10 @@
 
 @media (max-width: 860px) {
   .bloque { grid-template-columns: 1fr; gap: var(--s-4); margin-top: var(--s-4); }
+  /* Apiladas ya no hay nada con que alinearse: vuelve a mandar el 3/4,
+     y la cita deja de empujarse al fondo. */
+  .retrato { height: auto; }
+  .cita { margin-top: var(--s-4); padding-top: 0; }
   .fotoAncha { margin-top: var(--s-4); aspect-ratio: 4 / 5; }
   .cita { margin-top: var(--s-4); }
 }
