@@ -41,13 +41,13 @@ vano.
 | # | Pendiente | Nota |
 |---|---|---|
 | ~~1~~ | ~~Los 9 PNG sin trackear~~ | ✅ Cerrado arriba |
-| **2** | `srcset` responsive (400/800/1200/1600) | Fase 4. Esperar al #6: puede no valer la pena |
-| **3** | Navegación por teclado con foco visible | Fase 5 |
+| **2** | `srcset` responsive (400/800/1200/1600) | Fase 4. **Medido y confirmado (§15): 882 KB desperdiciados.** En la ficha el LCP es un AVIF de 1600x2000 servido tal cual a un movil |
+| **3** | Navegación por teclado con foco visible | Fase 5. **Bug localizado (§15):** el cajón del carrito deja sus botones enfocables con `aria-hidden="true"` |
 | **4** | Probar en 320 / 390 / 768 / 1440 px | Fase 5 |
 | **5** | Validar JSON-LD con Rich Results Test | Fase 6 |
-| **6** | Medir Core Web Vitals | Nunca se han medido |
-| **7** | Lighthouse móvil (≥95 SEO/A11y, ≥90 Rendimiento) | Fase 6 |
-| **8** | Banner de consentimiento de cookies (Consent Mode) | |
+| ~~6~~ | ~~Medir Core Web Vitals~~ | ✅ Cerrado, línea base en §15. Falta el dato de CAMPO, que depende del #17 |
+| ~~7~~ | ~~Lighthouse móvil~~ | ✅ Cerrado, §15. **SEO 100 y A11y 96 cumplen; Rendimiento 59-62 NO** |
+| **8** | Banner de consentimiento de cookies (Consent Mode) | Es lo que sube Buenas prácticas de 79: los dos fallos son cookies de tercero (§15) |
 | **9** | `CAMBIOS.md` | |
 
 ### Bloque B — hace falta una decisión antes de empezar
@@ -585,3 +585,67 @@ ASOMA por la abertura — no entra, igual que dice la FAQ. Es el valor entero de
 la función.
 
 ---
+
+---
+
+## 15. Rendimiento — línea base medida (2 de septiembre de 2026)
+
+Primera medición del sitio. Antes de esto nunca se había medido nada, así que
+cualquier optimización futura se compara contra estos números.
+
+**Cómo se midió:** Lighthouse 12.8.2 por CLI contra producción, móvil, con
+estrangulamiento simulado. La API de PageSpeed sin llave está con la cuota
+agotada — si hace falta repetirlo, `npx lighthouse@12 <url> --output=json
+--chrome-flags="--headless=new"`. Tira un `EPERM` al final al borrar su
+temporal en Windows: es solo la limpieza, **el informe sí se escribe**.
+
+| | Home | `/producto/menorca` | Objetivo |
+|---|---|---|---|
+| SEO | **100** | **100** | ≥95 ✅ |
+| Accesibilidad | **96** | **96** | ≥95 ✅ |
+| Rendimiento | **59** | **62** | ≥90 ❌ |
+| Buenas prácticas | 79 | 79 | — |
+| LCP | 4,4 s | 4,3 s | <2,5 s |
+| CLS | **0** | **0** | <0,1 ✅ |
+| TBT | 1.010 ms | 990 ms | <200 ms |
+| Peso total | 3.592 KB | 1.958 KB | |
+
+⚠️ **Son datos de LABORATORIO.** Los de campo (CrUX), que son los que Google
+usa para posicionar, no se pudieron obtener y probablemente el sitio aún no
+tiene muestra suficiente. Medir los reales depende del #17: sin GA4 publicado
+no hay dónde mandarlos.
+
+**CLS en 0 en las dos páginas.** No es casualidad: es el trabajo previo de
+dimensionar las imágenes. No romperlo.
+
+### Qué lo está frenando, en orden de daño
+
+1. 🔴 **`public/assets/video/hero.mp4` pesa 5,4 MB** y es el elemento LCP de la
+   home. Un solo archivo explica casi todo el LCP de 4,4 s.
+2. 🔴 **882 KB desperdiciados en imágenes sin versión responsive.** Esto
+   **confirma el #2**: en la ficha el LCP es un AVIF de **1600×2000 servido
+   tal cual a un móvil**. Ya no es una suposición, está medido.
+3. 🟠 **`marca/logo-cobre.png` y `marca/logo-claro.png`: ~103 KB cada uno**, en
+   PNG y sin dimensionar. ~165 KB tirados entre los dos. Es la corrección más
+   barata del lote.
+4. 🟠 **Meta Pixel bloquea el hilo principal 349 ms** y GTM otros 146 ms: la
+   mitad del TBT es de terceros.
+5. 🟡 **El muro de Instagram (Behold) trae 412 KB** de imágenes de tercero en
+   la home.
+6. 🟡 **bf-cache desactivado** por `cache-control: no-store`: el botón "atrás"
+   recarga la página entera en vez de restaurarla.
+
+### El único fallo de accesibilidad (es el #3)
+
+En las dos páginas: el cajón del carrito
+(`<aside aria-label="Carrito" aria-hidden="true">`) **deja sus botones
+enfocables cuando está cerrado**. Con teclado se tabula hacia adentro de un
+panel invisible. Es un bug real, no una advertencia de la herramienta.
+
+En la ficha aparece además `label-content-name-mismatch`: un control cuyo
+nombre accesible no contiene el texto que se ve. Sin diagnosticar todavía.
+
+### Buenas prácticas 79
+
+Los dos fallos son cookies de tercero (Meta Pixel y GTM). Se arregla de raíz
+con el **#8** (Consent Mode), no por separado.
