@@ -17,10 +17,16 @@
   align-items: flex-end;
 }
 
-/* El vídeo cubre el marco recortando por el lado que sobre, igual que
-   object-fit:cover en una foto. Sin esto aparecerían bandas al no coincidir
-   la proporción del vídeo (16:9) con la del hueco. */
-.hero video {
+/* El vídeo y el póster cubren el marco recortando por el lado que sobre,
+   igual que object-fit:cover en una foto. Sin esto aparecerían bandas al no
+   coincidir la proporción (16:9) con la del hueco.
+
+   La <img> del póster necesita ESTAS MISMAS reglas, no solo object-fit: sin
+   width/height al 100% se pinta a su proporción natural, object-fit no tiene
+   nada que recortar y quien recorta acaba siendo el overflow:hidden de la
+   sección. Es la trampa que ya costó tiempo en las fotos de Nuestra historia. */
+.hero video,
+.hero img {
   position: absolute;
   inset: 0;
   width: 100%;

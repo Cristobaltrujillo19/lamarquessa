@@ -147,16 +147,31 @@ export default function HeroVideo() {
         href={HERO_POSTER}
         fetchPriority="high"
       />
+      {/* El póster va como <img> DE VERDAD, no como atributo `poster` del
+          vídeo. Medido el 2 de septiembre (§15 del ESTADO): con el atributo,
+          Chrome cronometraba el LCP contra el FICHERO DE VÍDEO y no contra el
+          póster, así que el 44 % del LCP era esperar a que el vídeo empezara
+          a bajar. Un <img> aquí es un candidato a LCP que se pinta con el
+          resto del HTML, y el vídeo se limita a taparlo cuando llega. */}
+      <img
+        src={HERO_POSTER}
+        alt=""
+        aria-hidden="true"
+        width={1280}
+        height={720}
+        fetchPriority="high"
+        decoding="async"
+      />
       <video
         ref={ref}
-        // Sin autoPlay y sin <source>: la fuente la pone el efecto cuando la
-        // página ya cargó. Con un <source> aquí el navegador empezaría la
+        // Sin autoPlay, sin <source> y SIN `poster`: la fuente la pone el
+        // efecto cuando la página ya cargó, y el fotograma fijo lo enseña el
+        // <img> de arriba. Con un <source> aquí el navegador empezaría la
         // descarga durante el primer pintado, que es justo lo que se corrigió.
         muted
         loop
         playsInline
         preload="none"
-        poster={HERO_POSTER}
         aria-hidden="true"
         tabIndex={-1}
       />
