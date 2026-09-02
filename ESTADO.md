@@ -1,12 +1,64 @@
 # ESTADO — La Marquessa · Handoff para la próxima sesión
 
-Última actualización: **31 de agosto de 2026**
-Rama activa: **`feat/nueva-interfaz`** — porting de la interfaz nueva, terminado
-y pendiente de revisión. `main` sigue en `b150351` sirviendo producción.
+Última actualización: **2 de septiembre de 2026**
+Rama: **`main`**, sirviendo producción en https://lamarquessa.co
+El porting de la interfaz nueva terminó y está desplegado. No hay ramas
+pendientes de fusionar.
 
 > ⚠️ **Antes de tocar nada, lee `docs/HANDOFF-INVENTARIO-ANALITICA.md`.** Es el
 > contrato de los 17 eventos de analítica que no se pueden romper, y trae la
 > verificación de paridad del porting.
+
+---
+
+## 0. Por dónde seguir (sesión del 2 de septiembre)
+
+### Lo primero, y es urgente
+
+🔴 **Hay dos pedidos `pendiente` en producción, y uno puede ser una venta
+perdida sin que nadie lo sepa.**
+
+| | |
+|---|---|
+| María José Tamayo Londoño | `mariajtamayo26@gmail.com` · `573128485429` |
+| | Mallorca Amanecer · **$271.500** · 1 sept 15:31 |
+| Cristóbal Trujillo (prueba del dueño) | Menorca Amanecer · $226.500 · 15:32 |
+
+Los dos sin `mpPaymentId` ni `pagadoEn`. Eso significa que se creó la
+preferencia en Mercado Pago pero **la base nunca recibió confirmación de
+pago**, y desde aquí no se distingue entre "no pagó" y "pagó y el webhook no
+lo registró".
+
+**Hay que mirar el panel de Mercado Pago** buscando un pago de $271.500 del 1
+de septiembre. Si aparece, el webhook está roto y hay una clienta esperando.
+Recordar que la prueba real del webhook sigue siendo el bloqueador de siempre:
+nunca se ha visto un pago completo de principio a fin.
+
+### Lo siguiente que aporta valor
+
+1. **Pantalla en `/panel` para los carritos abandonados.** El registro ya
+   guarda datos (§13), pero solo se leen consultando Convex a mano. Sin esa
+   pantalla la función no le sirve al dueño.
+2. **Los 9 PNG sin trackear** en `apps/storefront/public/fotos/` (6,7 MB). No
+   se despliegan —Vercel construye desde git— pero uno sobra:
+   `rallos-x-menorca-base.png`, duplicado con el nombre mal escrito. Decisión
+   del dueño: borrarlos o moverlos a una carpeta de fuentes.
+3. **Punto 7 de la lista del dueño**: vista previa de las iniciales sobre la
+   pieza. Sin definir el enfoque — falta saber si el grabado va en relieve o
+   hundido, y si existe una foto de una pieza ya grabada.
+4. **Punto 3**: mockups de colores con el fondo de la palmerita, esperando
+   fotos del dueño.
+5. **Fondos de los renders de rayos X**: vienen horneados y distintos por pieza
+   (`#EEEAE2`, `#EADCD5`, `#FCFBF7`) sobre un sitio que es `#EAE8DF`. El
+   arreglo real es re-renderizar con transparencia: no se puede recolorear por
+   fuera porque en los translúcidos el fondo se ve A TRAVÉS del bolso.
+
+### Deuda de fondo, solo la cierra el dueño
+
+- La política de privacidad sigue con **`[pendiente]`** en razón social, NIT y
+  domicilio. Toda la estructura de autorización de datos (§13) se apoya en un
+  documento que aún no identifica al responsable del tratamiento.
+- El resto de bloqueadores del §6 siguen abiertos.
 
 ---
 
@@ -194,6 +246,32 @@ Para pasar JSON a `npx convex run` desde PowerShell: **comillas dobles por fuera
 
 ## 9. Gotchas técnicos
 
+### Añadidos el 2 de septiembre — CSS y verificación
+
+- **`.scope :root` NUNCA casa.** `:root` es `<html>` y no puede ser
+  descendiente. Una media query escrita así dejó todo el sitio sirviendo
+  paddings de escritorio en móvil sin que nadie lo viera.
+- **`1fr` es `minmax(auto, 1fr)`**: una columna no baja del ancho de su
+  contenido. Para centrar de verdad, `minmax(0, 1fr)`.
+- **`object-fit` con `<Foto>` es INERTE** si no se dimensiona la `<img>`.
+  `<Foto>` emite `<picture><img width height>` y sin reglas la imagen se pinta
+  a su proporción natural y desborda; entonces recorta el `overflow: hidden`
+  del marco, siempre por abajo. Toda `<Foto>` dentro de un marco con
+  proporción necesita `position:absolute; inset:0; width:100%; height:100%`.
+- **Un comentario XML no admite `--` dentro.** Nombrar tokens en un comentario
+  de un SVG lo invalida: se sirve con 200 y ningún navegador lo pinta.
+- **El favicon necesita `app/icon.png`.** Un `public/favicon.svg` sin `<link>`
+  no lo pide nadie.
+- **Verificar la SALIDA, no la propiedad.** `object-position` estuvo aplicado
+  varios despliegues sin hacer nada. Calcular qué franja de la foto se ve, no
+  leer `getComputedStyle`.
+- **Instrumentos que ya han mentido:** pestaña en segundo plano
+  (`innerWidth === 0`), panel sin componer (`visibilityState === "hidden"`,
+  el `lazy` no dispara), caché del CDN (anticache distinto POR PETICIÓN),
+  `grep -c` cuenta líneas y el HTML viene minificado, React escucha `focusout`
+  y no `blur`, y envolver `fbq` sin copiar sus propiedades lanza un error que
+  parece del sitio.
+
 - **Next 16**: `params` es `Promise` (hay que `await`).
 - **Tailwind 4**: `@theme` en CSS, no `tailwind.config`. Para valores arbitrarios con variables CSS: `top-[var(--x)]`, no `top-[--x]`.
 - **Convex**: cambios de funciones requieren `npx convex dev` (dev) o `npx convex deploy` (prod). Vars de entorno NO se copian entre dev y prod.
@@ -204,7 +282,40 @@ Para pasar JSON a `npx convex run` desde PowerShell: **comillas dobles por fuera
 
 ---
 
-## 10. Últimas cosas hechas (sesión que termina 2026-08-10)
+## 10. Últimas cosas hechas
+
+### Sesión del 26 de agosto al 2 de septiembre
+
+Todo desplegado y verificado en producción.
+
+**La lista de once puntos del dueño: nueve cerrados.** Quedan el 3 (mockups de
+colores, esperando fotos) y el 7 (vista previa de las iniciales, sin definir).
+
+- **Rayos X en las cuatro fichas** (§14), dentro de la sección Medidas.
+- **Carritos abandonados** (§13), con autorización y purga a 90 días.
+- **Muro de Instagram automático** por la API JSON de Behold. Se descartó
+  Elfsight: su plan gratuito son 200 vistas al mes y al pasarse DESACTIVA el
+  widget — los visitantes dejan de verlo mientras el dueño sigue viéndolo.
+- **El porting terminó**: tokens en `:root`, sin envoltorios, y las cinco
+  superficies que seguían con la interfaz anterior (`/gracias`,
+  `/pago-fallido`, `/preguntas-frecuentes`, `/privacidad` y el cajón del
+  carrito).
+- **Favicon con la concha.** El sitio llevaba tiempo SIN favicon: el
+  `public/favicon.svg` anterior no lo enlazaba nada.
+- **Scroll:** la ficha pasó de 5585px a ~4500, y `/nosotros` de 3868 a 3276.
+- **Fuera la raya larga (—)** de todo el copy, incluidos los correos y las
+  descripciones del catálogo. Cero en las trece rutas.
+- **Encabezados de `/tienda`**: los nombres de las piezas eran H3 colgando de
+  un H1. Ahora H2, con el nivel como prop porque la tarjeta se usa en tres
+  sitios y en dos H3 era correcto.
+- **Sitemap**: faltaban `/envios` y `/contacto`, indexables desde siempre.
+  Ahora 11 URLs. Ver `docs/URLS-SEARCH-CONSOLE.md`.
+- **Hover de las tarjetas**: de la toma de ángulo a la toma en uso.
+- Logo centrado en móvil, esquinas de los botones de color, "Color a
+  disposición" → "Color personalizado", fuera el filtro de la colección,
+  galería cuadrada, home a 4 por fila.
+
+### Sesión que terminó el 2026-08-10
 
 - **Cutover al dominio propio `lamarquessa.co`** (Namecheap → Vercel). Apex canónico, `www` con 308 al apex. `NEXT_PUBLIC_SITE_URL` (Vercel) y `SITE_URL` (Convex prod) apuntando al dominio.
 - **Middleware 301** en `apps/storefront/middleware.ts` desde cualquier host distinto al canónico (típicamente el subdominio auto de Vercel) hacia `lamarquessa.co`. Guardado por `VERCEL_ENV === "production"` para no romper previews.
@@ -223,16 +334,23 @@ Sesión anterior (2026-08-06):
 ## 11. Historial de commits recientes
 
 ```
-f2e4ccf  Middleware: 301 desde subdominios de Vercel al dominio propio
-0b5bee6  Ficha de producto: subtitulo H2 con keywords de moda y descripciones enriquecidas
-719f134  Handout de sesión: ESTADO.md actualizado + PROMPT-INICIO.md
-c9f5b02  Ficha de producto: CTA fijo en móvil + selectores de color a 44px táctil
-ceff9b0  Titulos partidos: espacio antes del <br /> para no pegar palabras
+2f252e3 Nuestra historia: las fotos ocupan su marco, y el encuadre por fin se aplica
+a034b9b Nuestra historia: la foto y el texto cierran en la misma línea
+6120bec Checkout: fuera la política duplicada, y la casilla junto al envío
+76dcdb1 Checkout: el aviso de datos al cierre, y el envío internacional en una casilla
+76271ff Datos: el aviso del checkout se acorta y la explicación va a la FAQ
+063067f Datos del carrito: la autorización pasa a la política, sin casilla
+ce50ee2 Carritos abandonados: registrar el tramo que era invisible
+dd8c5cd Ficha: menos aire, segunda pasada
+838d540 Colección: los nombres de las piezas son H2, no H3
+9edacdf Fuera la raya larga de todos los textos del sitio
+4030bfa Favicon: la concha de la marca, esta vez de verdad
+7e087dc docs: las URLs del sitio para Search Console
+5a0dd68 Sitemap: faltaban /envios y /contacto
+2bdefff Nuestra historia: fuera el espacio muerto
 ```
 
----
-
-## 12. Porting de la interfaz nueva (rama `feat/nueva-interfaz`)
+## 12. Porting de la interfaz nueva (histórico — ya en `main`)
 
 Implementación del mockup aprobado (`../LM_MOCKUP`) sobre la tienda viva,
 siguiendo `HANDOFF-IMPLEMENTACION.md` de ese repositorio.
@@ -368,3 +486,67 @@ descomentar la pieza en `productos:actualizarRayosX` y correrla con
    `purchase` de una compra verdadera nunca se ha visto de principio a fin.
 3. Confirmar en el DebugView de GA4 y en el Meta Pixel Helper que los 17
    eventos siguen llegando desde el despliegue de vista previa.
+
+---
+
+## 13. Carritos abandonados (2 de septiembre)
+
+Cubre el tramo que era invisible: **el pedido solo nace al ENVIAR el
+checkout**, así que añadir al carrito y empezar a llenar el formulario no
+dejaban rastro.
+
+Tabla `carritos` en Convex, con **dos zonas que no se pueden mezclar**:
+
+| Zona | Campos | Regla |
+|---|---|---|
+| Anónima | `sesionId`, `items`, `subtotalCop`, `paso` | `sesionId` es un aleatorio del navegador. Sin autorización necesaria |
+| Personal | `contacto`, `consentimiento` | El servidor lo descarta si no viene consentimiento |
+
+**Cuatro decisiones que hay que respetar al tocarlo:**
+
+1. Va por **acción de servidor** (`app/acciones/carrito.ts`), no por
+   `useMutation`: no hay `ConvexProvider` y montarlo abriría un WebSocket a
+   cada visitante.
+2. El navegador manda **qué variante y cuántas, nunca precios**. Los resuelve
+   el catálogo en el servidor, igual que el checkout.
+3. **El paso solo avanza** (`ORDEN_PASO`). El proveedor del carrito escribe con
+   retardo desde cualquier página y devolvía el registro a "carrito".
+4. **Falla en silencio y nunca bloquea.** Es telemetría: si Convex no
+   responde, la compra sigue igual.
+
+**La autorización** es por cláusula en la política, no por casilla (decisión
+del dueño). Aviso corto al cierre del checkout → `/preguntas-frecuentes#datos`.
+
+⚠️ **Se archiva el TEXTO literal del aviso y la fecha, no un `true`.** El
+Decreto 1377 pide que la autorización pueda consultarse después. El texto vive
+en `lib/consentimiento.ts` y **los tres sitios deben decir lo mismo**: el
+aviso, lo archivado y la FAQ.
+
+**Purga a 90 días** en `convex/crons.ts`. No es limpieza opcional: la Ley 1581
+exige un límite de conservación justificado, y es el que declara la política.
+
+---
+
+## 14. Rayos X — cómo añadir o cambiar un render
+
+Las cuatro piezas están en producción. El deslizador vive **dentro de la
+sección Medidas**, no en una propia.
+
+Cada pieza necesita un **PAR de renders de la MISMA cámara**
+(`fotoRayosXBase` opaco y `fotoRayosX` translúcido). Sin los dos, la sección
+no se renderiza.
+
+```
+public/fotos/rayos-x-{slug}-base.png   +   rayos-x-{slug}.png
+```
+
+1. Convertir a AVIF + JPEG con sharp (6,7 MB de PNG quedaron en 269 KB)
+2. Descomentar la pieza en `productos:actualizarRayosX`
+3. `npx convex deploy -y` y luego la mutación con `--prod`
+4. Push
+
+**El contenido de cada bolso tiene que ser cierto:** en Menorca el celular
+ASOMA por la abertura — no entra, igual que dice la FAQ. Es el valor entero de
+la función.
+
+---
