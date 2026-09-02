@@ -18,11 +18,20 @@
   max-width: 480px;
 }
 
-/* `cover` explicito. El hueco lo ocupaba antes un marcador que traia su
-   propio ajuste; con una <img> real y sin esta regla el valor por defecto es
-   `fill`, que ESTIRA. Hoy no se nota porque la foto es 3/4 igual que el
-   marco, pero cualquier sustitucion con otra proporcion saldria deformada
-   sin que nadie lo viera venir. */
+/* La <img> tiene que OCUPAR el marco, no solo vivir dentro de el.
+   <Foto> emite un <picture><img width height>, y sin estas reglas la imagen
+   se pinta a su proporcion natural y desborda: entonces `object-fit` no
+   recorta nada —su caja ya tiene la proporcion de la foto— y quien recorta
+   es el `overflow: hidden` del marco, siempre por abajo.
+   Medido en la foto ancha: marco de 1152x648 con la imagen a 1152x1536. */
+.retrato :global(picture),
+.retrato img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
 .retrato img {
   object-fit: cover;
 }
@@ -86,6 +95,14 @@
    y la fruta de contexto, con el torso arriba dando escala. Al 95% se pierde
    el asa del rojo. Vale igual en el marco 4/5 de movil, donde se ve el 94%
    del alto y el anclaje solo recorta un poco por arriba. */
+.fotoAncha :global(picture),
+.fotoAncha img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
 .fotoAncha img {
   object-fit: cover;
   object-position: center 85%;
