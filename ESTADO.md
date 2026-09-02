@@ -777,6 +777,41 @@ una página que tarda 11 s, y eso importa más que cualquier optimización
 pendiente. Empezar por lo que bloquea el primer pintado (CSS crítico), no por
 la CPU: el trabajo de hilo principal es igual en los dos casos.
 
+### Aplazar la analítica: intentado y REVERTIDO (2 sept)
+
+Los tres proveedores siguen en `afterInteractive`, como estaban. Se intentó
+mover GTM y GA4 y **ninguno de los dos se pudo**. Queda escrito para que no se
+reintente a ciegas.
+
+**GTM con `lazyOnload`: no llega a cargar NUNCA.** Se desplegó y se midió en
+producción: a los 35 segundos no había un solo script de googletagmanager en
+el DOM, y el `dataLayer` no tenía ninguno de sus eventos. Un `<Script>` EN
+LÍNEA con `lazyOnload` no se ejecuta en este montaje. Hoy no habría costado
+datos —el contenedor no tiene tags— pero lo habría dejado roto en silencio
+para el día que se configure el primero, que es justo el día en que nadie se
+acordaría de este cambio.
+
+**GA4 con `lazyOnload`: rompe el orden de la cola.** Al medir el `dataLayer`
+real, la página vista quedaba en la posición 0 y `gtag('config')` en la 5.
+gtag.js procesa la cola EN ORDEN y un evento anterior al config puede
+descartarse, porque todavía no sabe a qué propiedad mandarlo. Sin DebugView no
+se puede comprobar si GA4 lo recibe o lo tira, y el contrato de los 17 eventos
+no se arriesga a ciegas.
+
+**Meta ni se intentó, y es el que más bloquea (~333 ms).** Ni
+`enviarEventoMeta` ni `MetaPixelPageViews` encolan: hacen `return` si `fbq` no
+existe, así que un evento disparado antes de que cargue **se pierde en
+silencio**. GA4 y GTM encolan; Meta no. Para poder aplazarlo hay que darle
+antes una cola propia.
+
+**Lo único que sobrevivió del intento**, y es una mejora real: `Ga4PageViews`
+hacía `if (!w.gtag) return;` y perdía la PRIMERA página vista si el efecto
+corría antes que el script de configuración. Ahora encola con el mismo shim
+que `enviarEvento`. ⚠️ Con `arguments`, **no** con un array: gtag.js reconoce
+las entradas del dataLayer con forma de `Arguments`, y empujar un Array normal
+las deja con otra forma. Es la razón por la que el handoff documenta
+literalmente `dataLayer.push(arguments)`.
+
 ### RESUELTO: la bimodalidad era del simulador, y los números buenos mentían
 
 **Ningún visitante real ve una página de 11 s.** Con `--throttling-method=devtools`
