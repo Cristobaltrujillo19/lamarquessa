@@ -61,19 +61,19 @@ export default function Analitica({ gtmId, ga4Id, metaPixelId }: Props) {
   );
 }
 
-// ⚠️ `lazyOnload` y NO `afterInteractive`. Medido el 2 de septiembre de 2026
-// (§15 del ESTADO): GTM bloqueaba el hilo principal ~190 ms durante la carga,
-// con 286 KB de script.
+// ⚠️ NO PONER `lazyOnload` AQUÍ. Se intentó el 2 de septiembre de 2026 para
+// quitarle al hilo principal los ~190 ms que cuesta GTM, se desplegó, y al
+// medirlo en producción **GTM no llegó a cargar nunca**: a los 35 segundos no
+// había ni un script de googletagmanager en el DOM y el `dataLayer` no tenía
+// ninguno de sus eventos (`gtm.js`, `gtm.dom`, `gtm.load`).
 //
-// Aplazarlo no puede perder un solo evento, por dos razones independientes:
-//   1. Todo lo que va a GTM pasa por `dataLayer.push`, y `dataLayer` es un
-//      array normal que existe desde el primer evento. GTM lo consume entero
-//      cuando llega, por muy tarde que sea.
-//   2. Hoy el contenedor NO tiene ningún tag configurado (ver el §8 del
-//      handoff de analítica). Está cargado para futuros destinos.
+// Un `<Script>` EN LÍNEA con `lazyOnload` no se ejecuta en este montaje. Hoy
+// eso no costaría datos —el contenedor no tiene ningún tag configurado, ver
+// el §8 del handoff de analítica— pero dejaría GTM roto en silencio para el
+// día que se configure el primero.
 //
-// El ORDEN de los tres proveedores no se toca: el handoff lo marca como
-// intocable. Aquí solo cambia CUÁNDO carga cada uno.
+// Si se retoma: hay que verificar que el script llegue a ejecutarse de verdad,
+// no dar por hecho que la estrategia lo hará.
 function GtmScripts({ id }: { id: string }) {
   return (
     <>
@@ -81,7 +81,7 @@ function GtmScripts({ id }: { id: string }) {
         id="gtm"
         // afterInteractive: la analítica no debe competir con el contenido por
         // el hilo principal; cargarla antes empeoraría LCP e INP.
-        strategy="lazyOnload"
+        strategy="afterInteractive"
         dangerouslySetInnerHTML={{
           __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
