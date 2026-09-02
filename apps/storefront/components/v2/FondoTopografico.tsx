@@ -131,185 +131,220 @@ export default function FondoTopografico() {
     const lienzo = ref.current;
     if (!lienzo) return;
 
-    const gl = lienzo.getContext("webgl2", {
-      alpha: true,
-      premultipliedAlpha: false,
-      antialias: false,
-      depth: false,
-      stencil: false,
-      powerPreference: "low-power",
-    });
+    // ⚠️ WebGL NO arranca al montar. Medido el 2 de septiembre de 2026 (§15
+    // del ESTADO): compilar los shaders y empezar a dibujar durante la
+    // hidratación costaba ~1,6 s de hilo principal, y este fondo vive en el
+    // layout raíz, así que ese peaje lo pagaba CADA página. El LCP de la home
+    // esperaba a que terminara. Ahora se espera a que la página haya cargado
+    // y el hilo esté ocioso: hasta entonces el canvas queda transparente,
+    // exactamente igual que antes de que corriera el efecto.
+    let limpiar: (() => void) | undefined;
 
-    // Sin WebGL2 no hay degradado a medias: se cae a la textura SVG fija.
-    // isContextLost() no es paranoia: un <canvas> solo tiene UN contexto de
-    // por vida, así que si alguien lo perdió antes, getContext devuelve ese
-    // mismo cadáver en vez de null.
-    if (!gl || gl.isContextLost()) {
-      lienzo.classList.add("fondo-topo--estatico");
-      lienzo.dataset.modo = "estatico";
-      return;
-    }
+    const iniciar = () => {
+      const gl = lienzo.getContext("webgl2", {
+        alpha: true,
+        premultipliedAlpha: false,
+        antialias: false,
+        depth: false,
+        stencil: false,
+        powerPreference: "low-power",
+      });
 
-    const vs = compilar(gl, gl.VERTEX_SHADER, VERT);
-    const fs = compilar(gl, gl.FRAGMENT_SHADER, FRAG);
-    if (!vs || !fs) {
-      lienzo.classList.add("fondo-topo--estatico");
-      lienzo.dataset.modo = "estatico";
-      return;
-    }
-
-    const prog = gl.createProgram()!;
-    gl.attachShader(prog, vs);
-    gl.attachShader(prog, fs);
-    gl.bindAttribLocation(prog, 0, "pos");
-    gl.linkProgram(prog);
-    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
-      console.error("[fondo-topo] link:", gl.getProgramInfoLog(prog));
-      lienzo.classList.add("fondo-topo--estatico");
-      lienzo.dataset.modo = "estatico";
-      return;
-    }
-    gl.useProgram(prog);
-
-    // Un triángulo que cubre el viewport. Dos triángulos cosen una diagonal
-    // por la que se pierden fragmentos; uno solo no tiene costura.
-    const buf = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-    gl.bufferData(
-      gl.ARRAY_BUFFER,
-      new Float32Array([-1, -1, 3, -1, -1, 3]),
-      gl.STATIC_DRAW
-    );
-    gl.enableVertexAttribArray(0);
-    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
-
-    const uRes = gl.getUniformLocation(prog, "u_res");
-    const uT = gl.getUniformLocation(prog, "u_t");
-    const uInt = gl.getUniformLocation(prog, "u_int");
-    const uBandas = gl.getUniformLocation(prog, "u_bandas");
-    const uGrosor = gl.getUniformLocation(prog, "u_grosor");
-    const uSuave = gl.getUniformLocation(prog, "u_suave");
-
-    /* Los colores salen de los tokens, no de literales en el shader.
-       Ambos ya existen: la textura no introduce color nuevo al sistema.
-
-       El contraste lo da la LUMINANCIA y el calentamiento del crema lo da
-       el croma, así que un bronce apagado sale mucho más barato que uno
-       claro. Medido para llegar a 1.95:1 sobre --crema:
-         --cobre (#BB825A, el del logo) → alfa 0.72
-         --cobre-texto (#8A5A34)        → alfa 0.49
-       --bronce-sombra es más oscuro todavía: llega al mismo contraste con
-       menos alfa y por tanto con menos croma encima del crema.
-
-       Nota: --cobre ES el bronce del logo. Muestreados los píxeles opacos
-       de logo-cobre.png dan #BD835B de media y #BC845C como dominante,
-       contra el #BB825A del token: 1–2 por canal, imperceptible. */
-    const raiz = getComputedStyle(document.documentElement);
-    const tono = (nombre: string, respaldo: string) =>
-      hexAVec3(raiz.getPropertyValue(nombre) || respaldo);
-    gl.uniform3fv(gl.getUniformLocation(prog, "u_c1"), tono("--profundo", "#1E6E70"));
-    gl.uniform3fv(gl.getUniformLocation(prog, "u_c2"), tono("--tinta", "#2F2016"));
-    gl.uniform1f(uInt, INTENSIDAD);
-    gl.uniform1f(uBandas, BANDAS);
-    gl.uniform1f(uGrosor, GROSOR);
-    gl.uniform1f(uSuave, SUAVIZADO);
-
-    lienzo.dataset.modo = "webgl";
-
-    const redimensionar = () => {
-      const w = Math.max(1, Math.round(window.innerWidth * ESCALA_BUFFER));
-      const h = Math.max(1, Math.round(window.innerHeight * ESCALA_BUFFER));
-
-      /* Reasignar canvas.width/height reinicia el buffer, así que eso sí se
-         hace solo cuando el tamaño cambia de verdad. */
-      if (lienzo.width !== w || lienzo.height !== h) {
-        lienzo.width = w;
-        lienzo.height = h;
+      // Sin WebGL2 no hay degradado a medias: se cae a la textura SVG fija.
+      // isContextLost() no es paranoia: un <canvas> solo tiene UN contexto de
+      // por vida, así que si alguien lo perdió antes, getContext devuelve ese
+      // mismo cadáver en vez de null.
+      if (!gl || gl.isContextLost()) {
+        lienzo.classList.add("fondo-topo--estatico");
+        lienzo.dataset.modo = "estatico";
+        return;
       }
 
-      /* El viewport y u_res, en cambio, se fijan SIEMPRE. Van atados al
-         programa, no al canvas: en un remontaje el canvas conserva su
-         tamaño (así que la condición de arriba es falsa) pero el programa
-         es nuevo y sus uniforms arrancan a cero. Tenerlo dentro del if
-         dejaba u_res en [0,0], el shader dividía por cero y todo el fondo
-         salía NaN — invisible, sin un solo error en consola. */
-      gl.viewport(0, 0, w, h);
-      gl.uniform2f(uRes, w, h);
+      const vs = compilar(gl, gl.VERTEX_SHADER, VERT);
+      const fs = compilar(gl, gl.FRAGMENT_SHADER, FRAG);
+      if (!vs || !fs) {
+        lienzo.classList.add("fondo-topo--estatico");
+        lienzo.dataset.modo = "estatico";
+        return;
+      }
+
+      const prog = gl.createProgram()!;
+      gl.attachShader(prog, vs);
+      gl.attachShader(prog, fs);
+      gl.bindAttribLocation(prog, 0, "pos");
+      gl.linkProgram(prog);
+      if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+        console.error("[fondo-topo] link:", gl.getProgramInfoLog(prog));
+        lienzo.classList.add("fondo-topo--estatico");
+        lienzo.dataset.modo = "estatico";
+        return;
+      }
+      gl.useProgram(prog);
+
+      // Un triángulo que cubre el viewport. Dos triángulos cosen una diagonal
+      // por la que se pierden fragmentos; uno solo no tiene costura.
+      const buf = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+      gl.bufferData(
+        gl.ARRAY_BUFFER,
+        new Float32Array([-1, -1, 3, -1, -1, 3]),
+        gl.STATIC_DRAW
+      );
+      gl.enableVertexAttribArray(0);
+      gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+
+      const uRes = gl.getUniformLocation(prog, "u_res");
+      const uT = gl.getUniformLocation(prog, "u_t");
+      const uInt = gl.getUniformLocation(prog, "u_int");
+      const uBandas = gl.getUniformLocation(prog, "u_bandas");
+      const uGrosor = gl.getUniformLocation(prog, "u_grosor");
+      const uSuave = gl.getUniformLocation(prog, "u_suave");
+
+      /* Los colores salen de los tokens, no de literales en el shader.
+         Ambos ya existen: la textura no introduce color nuevo al sistema.
+
+         El contraste lo da la LUMINANCIA y el calentamiento del crema lo da
+         el croma, así que un bronce apagado sale mucho más barato que uno
+         claro. Medido para llegar a 1.95:1 sobre --crema:
+           --cobre (#BB825A, el del logo) → alfa 0.72
+           --cobre-texto (#8A5A34)        → alfa 0.49
+         --bronce-sombra es más oscuro todavía: llega al mismo contraste con
+         menos alfa y por tanto con menos croma encima del crema.
+
+         Nota: --cobre ES el bronce del logo. Muestreados los píxeles opacos
+         de logo-cobre.png dan #BD835B de media y #BC845C como dominante,
+         contra el #BB825A del token: 1–2 por canal, imperceptible. */
+      const raiz = getComputedStyle(document.documentElement);
+      const tono = (nombre: string, respaldo: string) =>
+        hexAVec3(raiz.getPropertyValue(nombre) || respaldo);
+      gl.uniform3fv(gl.getUniformLocation(prog, "u_c1"), tono("--profundo", "#1E6E70"));
+      gl.uniform3fv(gl.getUniformLocation(prog, "u_c2"), tono("--tinta", "#2F2016"));
+      gl.uniform1f(uInt, INTENSIDAD);
+      gl.uniform1f(uBandas, BANDAS);
+      gl.uniform1f(uGrosor, GROSOR);
+      gl.uniform1f(uSuave, SUAVIZADO);
+
+      lienzo.dataset.modo = "webgl";
+
+      const redimensionar = () => {
+        const w = Math.max(1, Math.round(window.innerWidth * ESCALA_BUFFER));
+        const h = Math.max(1, Math.round(window.innerHeight * ESCALA_BUFFER));
+
+        /* Reasignar canvas.width/height reinicia el buffer, así que eso sí se
+           hace solo cuando el tamaño cambia de verdad. */
+        if (lienzo.width !== w || lienzo.height !== h) {
+          lienzo.width = w;
+          lienzo.height = h;
+        }
+
+        /* El viewport y u_res, en cambio, se fijan SIEMPRE. Van atados al
+           programa, no al canvas: en un remontaje el canvas conserva su
+           tamaño (así que la condición de arriba es falsa) pero el programa
+           es nuevo y sus uniforms arrancan a cero. Tenerlo dentro del if
+           dejaba u_res en [0,0], el shader dividía por cero y todo el fondo
+           salía NaN — invisible, sin un solo error en consola. */
+        gl.viewport(0, 0, w, h);
+        gl.uniform2f(uRes, w, h);
+      };
+      redimensionar();
+
+      const quieto = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+      const dibujar = (t: number) => {
+        gl.uniform1f(uT, t);
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+      };
+
+      // Un frame siempre, aunque no se anime: la textura debe existir.
+      dibujar(0);
+
+      let raf = 0;
+      let ultimo = 0;
+      let reloj = 0;
+      const intervalo = 1000 / FPS;
+
+      const bucle = (ahora: number) => {
+        raf = requestAnimationFrame(bucle);
+        if (ultimo === 0) ultimo = ahora;
+        const delta = ahora - ultimo;
+        if (delta < intervalo) return;
+        ultimo = ahora - (delta % intervalo);
+        reloj += (delta / 1000) * VELOCIDAD;
+        dibujar(reloj);
+      };
+
+      const arrancar = () => {
+        if (raf || quieto.matches || document.hidden) return;
+        ultimo = 0;
+        raf = requestAnimationFrame(bucle);
+      };
+      const parar = () => {
+        if (!raf) return;
+        cancelAnimationFrame(raf);
+        raf = 0;
+      };
+
+      const alCambiarVisibilidad = () => (document.hidden ? parar() : arrancar());
+      const alCambiarMotion = () => (quieto.matches ? parar() : arrancar());
+
+      /* El contexto se puede perder en caliente: reinicio del driver, la
+         pestaña en segundo plano mucho tiempo, o simplemente demasiados
+         contextos WebGL vivos en el navegador. Sin esto el canvas se
+         quedaría transparente y el fondo desaparecería sin más. */
+      const alPerderContexto = (e: Event) => {
+        e.preventDefault();
+        parar();
+        lienzo.classList.add("fondo-topo--estatico");
+        lienzo.dataset.modo = "estatico";
+      };
+
+      arrancar();
+      window.addEventListener("resize", redimensionar);
+      document.addEventListener("visibilitychange", alCambiarVisibilidad);
+      quieto.addEventListener("change", alCambiarMotion);
+      lienzo.addEventListener("webglcontextlost", alPerderContexto);
+
+      limpiar = () => {
+        parar();
+        window.removeEventListener("resize", redimensionar);
+        document.removeEventListener("visibilitychange", alCambiarVisibilidad);
+        quieto.removeEventListener("change", alCambiarMotion);
+        lienzo.removeEventListener("webglcontextlost", alPerderContexto);
+        gl.deleteBuffer(buf);
+        gl.deleteProgram(prog);
+        gl.deleteShader(vs);
+        gl.deleteShader(fs);
+        /* Aquí NO se llama a loseContext(). Sería tentador para "liberar la
+           GPU", pero el contexto va atado al elemento canvas de por vida: al
+           volver a montar, getContext devolvería el mismo contexto perdido y
+           el fondo caería al respaldo para siempre. Se nota en dev, donde
+           StrictMode monta, limpia y vuelve a montar. Soltar las referencias
+           basta: el recolector se encarga cuando el canvas muere. */
+      };
     };
-    redimensionar();
 
-    const quieto = window.matchMedia("(prefers-reduced-motion: reduce)");
-
-    const dibujar = (t: number) => {
-      gl.uniform1f(uT, t);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
+    let cancelarOcio: (() => void) | undefined;
+    const cuandoOcioso = () => {
+      // `typeof` y no `"x" in window`: con el `in`, TypeScript estrecha
+      // `window` a `never` en la rama else.
+      if (typeof window.requestIdleCallback === "function") {
+        const id = window.requestIdleCallback(iniciar, { timeout: 2500 });
+        cancelarOcio = () => window.cancelIdleCallback(id);
+      } else {
+        const id = window.setTimeout(iniciar, 900);
+        cancelarOcio = () => window.clearTimeout(id);
+      }
     };
 
-    // Un frame siempre, aunque no se anime: la textura debe existir.
-    dibujar(0);
-
-    let raf = 0;
-    let ultimo = 0;
-    let reloj = 0;
-    const intervalo = 1000 / FPS;
-
-    const bucle = (ahora: number) => {
-      raf = requestAnimationFrame(bucle);
-      if (ultimo === 0) ultimo = ahora;
-      const delta = ahora - ultimo;
-      if (delta < intervalo) return;
-      ultimo = ahora - (delta % intervalo);
-      reloj += (delta / 1000) * VELOCIDAD;
-      dibujar(reloj);
-    };
-
-    const arrancar = () => {
-      if (raf || quieto.matches || document.hidden) return;
-      ultimo = 0;
-      raf = requestAnimationFrame(bucle);
-    };
-    const parar = () => {
-      if (!raf) return;
-      cancelAnimationFrame(raf);
-      raf = 0;
-    };
-
-    const alCambiarVisibilidad = () => (document.hidden ? parar() : arrancar());
-    const alCambiarMotion = () => (quieto.matches ? parar() : arrancar());
-
-    /* El contexto se puede perder en caliente: reinicio del driver, la
-       pestaña en segundo plano mucho tiempo, o simplemente demasiados
-       contextos WebGL vivos en el navegador. Sin esto el canvas se
-       quedaría transparente y el fondo desaparecería sin más. */
-    const alPerderContexto = (e: Event) => {
-      e.preventDefault();
-      parar();
-      lienzo.classList.add("fondo-topo--estatico");
-      lienzo.dataset.modo = "estatico";
-    };
-
-    arrancar();
-    window.addEventListener("resize", redimensionar);
-    document.addEventListener("visibilitychange", alCambiarVisibilidad);
-    quieto.addEventListener("change", alCambiarMotion);
-    lienzo.addEventListener("webglcontextlost", alPerderContexto);
+    // Si se llegó por navegación de cliente el evento `load` ya pasó y no
+    // volverá: sin esta rama el fondo no arrancaría nunca.
+    if (document.readyState === "complete") cuandoOcioso();
+    else window.addEventListener("load", cuandoOcioso, { once: true });
 
     return () => {
-      parar();
-      window.removeEventListener("resize", redimensionar);
-      document.removeEventListener("visibilitychange", alCambiarVisibilidad);
-      quieto.removeEventListener("change", alCambiarMotion);
-      lienzo.removeEventListener("webglcontextlost", alPerderContexto);
-      gl.deleteBuffer(buf);
-      gl.deleteProgram(prog);
-      gl.deleteShader(vs);
-      gl.deleteShader(fs);
-      /* Aquí NO se llama a loseContext(). Sería tentador para "liberar la
-         GPU", pero el contexto va atado al elemento canvas de por vida: al
-         volver a montar, getContext devolvería el mismo contexto perdido y
-         el fondo caería al respaldo para siempre. Se nota en dev, donde
-         StrictMode monta, limpia y vuelve a montar. Soltar las referencias
-         basta: el recolector se encarga cuando el canvas muere. */
+      cancelarOcio?.();
+      window.removeEventListener("load", cuandoOcioso);
+      limpiar?.();
     };
   }, []);
 
