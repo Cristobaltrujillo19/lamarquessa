@@ -11,12 +11,76 @@ pendientes de fusionar.
 
 ---
 
-## 0. Por dónde seguir (sesión del 2 de septiembre)
+## 0. La lista — todo lo que está abierto, numerado
 
-### Lo primero, y es urgente
+Esta es la lista maestra: se ataca de a un número por vez. Los §6 y §7
+conservan el detalle y el porqué de cada cosa; aquí está el orden y el estado.
 
-🔴 **Hay dos pedidos `pendiente` en producción, y uno puede ser una venta
-perdida sin que nadie lo sepa.**
+**Recomendación de orden:** el **#18** primero, que es el único con plata real
+y una persona esperando. Después el **#17**, porque cada día sin GA4 publicado
+es un día de datos que no se recupera. De lo que puede hacer el asistente,
+**#6 + #7** juntos: medir Core Web Vitals y Lighthouse es una sola pasada, y
+hasta no medir no se sabe si el #2 (`srcset`) vale la pena o es trabajo en
+vano.
+
+### ✅ Cerrados en esta sesión
+
+- **Pantalla de carritos abandonados en `/panel`** (2 sept). Query
+  `admin:listarCarritos` + `app/panel/(app)/carritos/page.tsx`. Desplegada a
+  Convex prod y a Vercel; la ruta responde 307 al login, que es lo correcto.
+  **Falta verla con datos reales**: los carritos de prueba están en dev, y en
+  prod la tabla puede estar vacía.
+- **Los 9 PNG de rayos X** (2 sept). Los 8 originales se movieron a
+  `_backup-fotos-rayos-x-2026-09-02/` en la raíz, ignorada por
+  `.gitignore:22`. El duplicado `rallos-x-menorca-base.png` se borró: era byte
+  por byte idéntico a `rayos-x-menorca-base.png`, verificado por SHA-256. El
+  código nunca apuntó a los PNG, solo a los `.jpg`.
+
+### Bloque A — no depende de nadie
+
+| # | Pendiente | Nota |
+|---|---|---|
+| ~~1~~ | ~~Los 9 PNG sin trackear~~ | ✅ Cerrado arriba |
+| **2** | `srcset` responsive (400/800/1200/1600) | Fase 4. Esperar al #6: puede no valer la pena |
+| **3** | Navegación por teclado con foco visible | Fase 5 |
+| **4** | Probar en 320 / 390 / 768 / 1440 px | Fase 5 |
+| **5** | Validar JSON-LD con Rich Results Test | Fase 6 |
+| **6** | Medir Core Web Vitals | Nunca se han medido |
+| **7** | Lighthouse móvil (≥95 SEO/A11y, ≥90 Rendimiento) | Fase 6 |
+| **8** | Banner de consentimiento de cookies (Consent Mode) | |
+| **9** | `CAMBIOS.md` | |
+
+### Bloque B — hace falta una decisión antes de empezar
+
+| # | Pendiente | Qué falta decidir |
+|---|---|---|
+| **10** | Escasez honesta: numeración de pieza | ¿Desde qué número arranca el contador? |
+| **11** | Vista previa de las iniciales (punto 7 del dueño) | ¿El grabado va en relieve o hundido? ¿Hay foto de una pieza ya grabada? |
+| **12** | Los 5 eventos de analítica que faltan | Depende del #17: sin GA4 publicado en GTM no hay dónde medirlos |
+| **13** | Fondos horneados de los rayos X | Vienen distintos por pieza (`#EEEAE2`, `#EADCD5`, `#FCFBF7`) sobre un sitio `#EAE8DF`. Hay que **re-renderizar con transparencia**: recolorear por fuera no sirve, porque en los translúcidos el fondo se ve A TRAVÉS del bolso. Las fuentes están en `_backup-fotos-rayos-x-2026-09-02/` |
+
+### Bloque C — bloqueado esperando material del dueño
+
+| # | Pendiente |
+|---|---|
+| **14** | Mockups de colores con el fondo de la palmerita (punto 3) — esperando fotos |
+| **15** | Prueba social: firma de la diseñadora, foto del taller, contenido de clientes |
+| **16** | Foto macro de la textura 3D — el diferenciador que hoy no se ve |
+
+### Bloque D — solo los cierra el dueño, y son los que frenan la venta
+
+| # | Pendiente | Consecuencia si sigue abierto |
+|---|---|---|
+| 🔴 **17** | Publicar la etiqueta GA4 dentro de GTM | **GTM carga pero no mide nada.** Todo el trabajo de analítica está inerte |
+| 🔴 **18** | Los dos pedidos `pendiente` en Mercado Pago | Puede haber una venta cobrada y sin registrar, con una clienta esperando. Ver detalle abajo |
+| 🔴 **19** | Prueba real con cupón | Lo único que cierra la incógnita del webhook. Nunca se ha visto un pago completo de punta a punta |
+| 🔴 **20** | Rotar `ADMIN_API_SECRET` | Quedó impreso en un error de terminal. El local ya ni coincide con prod |
+| **21** | Razón social, NIT, domicilio | `/privacidad` dice `[pendiente]`, y toda la autorización de datos de los carritos (§13) se apoya en un documento que aún no identifica al responsable del tratamiento |
+| **22** | Search Console: propiedad + sitemap | Google descubre el dominio nuevo más lento |
+| **23** | Link de la bio de Instagram | Sigue apuntando a la URL vieja de Vercel |
+| **24** | Abogado: política de cambios/retracto | La FAQ excluye retracto en piezas personalizadas; la Ley 1480 es restrictiva con esas exclusiones |
+
+### Detalle del #18 (el urgente)
 
 | | |
 |---|---|
@@ -24,41 +88,12 @@ perdida sin que nadie lo sepa.**
 | | Mallorca Amanecer · **$271.500** · 1 sept 15:31 |
 | Cristóbal Trujillo (prueba del dueño) | Menorca Amanecer · $226.500 · 15:32 |
 
-Los dos sin `mpPaymentId` ni `pagadoEn`. Eso significa que se creó la
-preferencia en Mercado Pago pero **la base nunca recibió confirmación de
-pago**, y desde aquí no se distingue entre "no pagó" y "pagó y el webhook no
-lo registró".
+Los dos sin `mpPaymentId` ni `pagadoEn`. Se creó la preferencia en Mercado
+Pago pero **la base nunca recibió confirmación de pago**, y desde el código no
+se distingue entre "no pagó" y "pagó y el webhook no lo registró".
 
 **Hay que mirar el panel de Mercado Pago** buscando un pago de $271.500 del 1
 de septiembre. Si aparece, el webhook está roto y hay una clienta esperando.
-Recordar que la prueba real del webhook sigue siendo el bloqueador de siempre:
-nunca se ha visto un pago completo de principio a fin.
-
-### Lo siguiente que aporta valor
-
-1. **Pantalla en `/panel` para los carritos abandonados.** El registro ya
-   guarda datos (§13), pero solo se leen consultando Convex a mano. Sin esa
-   pantalla la función no le sirve al dueño.
-2. **Los 9 PNG sin trackear** en `apps/storefront/public/fotos/` (6,7 MB). No
-   se despliegan —Vercel construye desde git— pero uno sobra:
-   `rallos-x-menorca-base.png`, duplicado con el nombre mal escrito. Decisión
-   del dueño: borrarlos o moverlos a una carpeta de fuentes.
-3. **Punto 7 de la lista del dueño**: vista previa de las iniciales sobre la
-   pieza. Sin definir el enfoque — falta saber si el grabado va en relieve o
-   hundido, y si existe una foto de una pieza ya grabada.
-4. **Punto 3**: mockups de colores con el fondo de la palmerita, esperando
-   fotos del dueño.
-5. **Fondos de los renders de rayos X**: vienen horneados y distintos por pieza
-   (`#EEEAE2`, `#EADCD5`, `#FCFBF7`) sobre un sitio que es `#EAE8DF`. El
-   arreglo real es re-renderizar con transparencia: no se puede recolorear por
-   fuera porque en los translúcidos el fondo se ve A TRAVÉS del bolso.
-
-### Deuda de fondo, solo la cierra el dueño
-
-- La política de privacidad sigue con **`[pendiente]`** en razón social, NIT y
-  domicilio. Toda la estructura de autorización de datos (§13) se apoya en un
-  documento que aún no identifica al responsable del tratamiento.
-- El resto de bloqueadores del §6 siguen abiertos.
 
 ---
 
