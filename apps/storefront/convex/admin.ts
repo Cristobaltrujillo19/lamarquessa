@@ -422,3 +422,27 @@ export const usuarioPorId = query({
     };
   },
 });
+
+// === Carritos (embudo, incluidos los abandonados) ===
+//
+// La tabla `carritos` guarda el tramo que el pedido no ve: añadir al carrito y
+// empezar el checkout sin enviarlo. Aquí solo se LEE; quien escribe es la
+// mutación pública `carritos:registrar` desde el navegador del visitante.
+//
+// El tope es a propósito. La purga de 90 días mantiene la tabla pequeña, pero
+// una consulta sin límite se rompería sola el día que deje de serlo: mejor
+// devolver los más recientes y AVISAR que se cortó, que mentir con un total.
+const MAX_CARRITOS = 500;
+
+export const listarCarritos = query({
+  args: { secret: v.string() },
+  handler: async (ctx, { secret }) => {
+    exigirSecreto(secret);
+    const filas = await ctx.db
+      .query("carritos")
+      .withIndex("by_actualizado")
+      .order("desc")
+      .take(MAX_CARRITOS);
+    return { carritos: filas, truncado: filas.length === MAX_CARRITOS };
+  },
+});

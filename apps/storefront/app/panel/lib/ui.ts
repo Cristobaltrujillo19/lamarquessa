@@ -10,6 +10,16 @@ export const ESTADOS = {
 
 export type EstadoPedido = keyof typeof ESTADOS;
 
+/** Hasta dónde llegó un carrito. "enviado" ya no es un abandono: ese
+ *  visitante mandó el formulario y existe un pedido suyo. */
+export const PASOS_CARRITO = {
+  carrito: { label: "En el carrito", clase: "bg-[#f5e3e1] text-[#8a3b32]" },
+  checkout: { label: "Llegó al checkout", clase: "bg-[#f0e6d8] text-[#8a6d2f]" },
+  enviado: { label: "Envió el pedido", clase: "bg-[#e6efe6] text-[#3f6b3f]" },
+} as const;
+
+export type PasoCarrito = keyof typeof PASOS_CARRITO;
+
 export const METODO_PAGO_LABEL: Record<string, string> = {
   mercadopago: "Mercado Pago",
   efectivo: "Efectivo",

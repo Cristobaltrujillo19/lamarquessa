@@ -24,6 +24,7 @@ export default async function PanelAppLayout({
             <Link href="/panel/productos" className={navLink}>Productos</Link>
             <Link href="/panel/inventario" className={navLink}>Inventario</Link>
             <Link href="/panel/cupones" className={navLink}>Cupones</Link>
+            <Link href="/panel/carritos" className={navLink}>Carritos</Link>
             {verCuentas && (
               <Link href="/panel/finanzas" className={navLink}>Finanzas</Link>
             )}
