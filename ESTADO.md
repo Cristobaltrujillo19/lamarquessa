@@ -225,6 +225,13 @@ Para verificar qué hay desplegado: `npx convex function-spec --prod | Select-St
 
 Para pasar JSON a `npx convex run` desde PowerShell: **comillas dobles por fuera y simples por dentro** — `"{secret:'$s'}"`. Al revés falla el parseo.
 
+**Mensajes de commit con comillas dobles adentro: usar `git commit -F archivo`.**
+PowerShell 5.1 destroza el paso de argumentos a un ejecutable nativo cuando el
+argumento lleva comillas dobles, aunque venga de un here-string `@'...'@`. Git
+recibe cada palabra como un pathspec distinto y el commit no se hace — pero el
+`git push` que va detrás dice "Everything up-to-date" y parece que todo salió
+bien. Ya pasó el 2 de septiembre.
+
 ---
 
 ## 6. 🔴 Bloqueado esperando al usuario (bloqueadores para vender)
