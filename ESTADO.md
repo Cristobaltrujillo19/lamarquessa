@@ -72,7 +72,7 @@ vano.
 | # | Pendiente | Consecuencia si sigue abierto |
 |---|---|---|
 | 🔴 **17** | Publicar la etiqueta GA4 dentro de GTM | **GTM carga pero no mide nada.** Todo el trabajo de analítica está inerte |
-| 🔴 **18** | Los dos pedidos `pendiente` en Mercado Pago | Puede haber una venta cobrada y sin registrar, con una clienta esperando. Ver detalle abajo |
+| ~~18~~ | ~~Los dos pedidos `pendiente` en Mercado Pago~~ | ✅ **Cerrado por el dueño el 2 sept: las dos eran pruebas.** ⚠️ Consecuencia: si nunca se pagaron, **el webhook sigue sin verse funcionar de punta a punta**. El #19 no se cierra con esto |
 | 🔴 **19** | Prueba real con cupón | Lo único que cierra la incógnita del webhook. Nunca se ha visto un pago completo de punta a punta |
 | 🔴 **20** | Rotar `ADMIN_API_SECRET` | Quedó impreso en un error de terminal. El local ya ni coincide con prod |
 | **21** | Razón social, NIT, domicilio | `/privacidad` dice `[pendiente]`, y toda la autorización de datos de los carritos (§13) se apoya en un documento que aún no identifica al responsable del tratamiento |
@@ -776,6 +776,41 @@ cambia la prioridad entera: si es real, la mitad de los visitantes está viendo
 una página que tarda 11 s, y eso importa más que cualquier optimización
 pendiente. Empezar por lo que bloquea el primer pintado (CSS crítico), no por
 la CPU: el trabajo de hilo principal es igual en los dos casos.
+
+### Investigación de la bimodalidad: lo descartado y lo que queda
+
+**Descartado con medición, no por intuición:**
+
+- **No es CPU ni terceros.** Una corrida buena y una mala son casi idénticas:
+  hilo principal 3.963 vs 4.402 ms, mismas tareas largas, mismo bloqueo de
+  Facebook y GTM.
+- **No es el póster.** Carga ANTES en la corrida mala (649 ms) que en la buena
+  (842 ms).
+- **No es el MISS de caché en régimen normal.** `/privacidad` se sirve con
+  `X-Vercel-Cache: HIT` y tarda lo mismo que la home, que va siempre en MISS:
+  0,337 s contra 0,353 s. Desde fuera el TTFB lo domina la latencia de red, no
+  el render.
+
+**Lo que sí se encontró, y sigue siendo la sospecha viva:**
+
+Todas las páginas públicas son **dinámicas**: no hay `force-dynamic` ni
+`cookies()`, es `fetchQuery` de `convex/nextjs`, que no cachea y por eso saca
+la ruta del render estático. `X-Vercel-Cache: MISS` en las 24 muestras.
+
+En esas 24 muestras aparecieron **dos respuestas lentas: 2,33 s y 1,14 s**, y
+la más lenta fue la primera de la tanda. Eso encaja con **arranques en frío**
+de la función, que solo sufren las rutas dinámicas: una ruta servida desde el
+borde no invoca función y no puede arrancar en frío. Si Lighthouse cae en una
+de esas, el FCP y el LCP se desploman detrás.
+
+⚠️ **NO está probado** que sea esa la causa de las corridas malas. Es la única
+hipótesis que sobrevive, y encaja, pero falta atarla.
+
+**Cómo atarla:** medir TTFB en tanda larga (50+ peticiones espaciadas) y ver si
+la frecuencia de respuestas lentas coincide con la de corridas malas de
+Lighthouse. Si coincide, la corrección es hacer cacheables las páginas
+públicas, y eso es **una decisión del dueño**: cachear el catálogo cambia
+cuánto tarda en verse en la web una edición hecha desde el panel.
 
 ### Accesibilidad: corregida el 2 de septiembre, ambas páginas a 100
 
