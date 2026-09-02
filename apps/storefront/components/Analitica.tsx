@@ -61,6 +61,19 @@ export default function Analitica({ gtmId, ga4Id, metaPixelId }: Props) {
   );
 }
 
+// ⚠️ `lazyOnload` y NO `afterInteractive`. Medido el 2 de septiembre de 2026
+// (§15 del ESTADO): GTM bloqueaba el hilo principal ~190 ms durante la carga,
+// con 286 KB de script.
+//
+// Aplazarlo no puede perder un solo evento, por dos razones independientes:
+//   1. Todo lo que va a GTM pasa por `dataLayer.push`, y `dataLayer` es un
+//      array normal que existe desde el primer evento. GTM lo consume entero
+//      cuando llega, por muy tarde que sea.
+//   2. Hoy el contenedor NO tiene ningún tag configurado (ver el §8 del
+//      handoff de analítica). Está cargado para futuros destinos.
+//
+// El ORDEN de los tres proveedores no se toca: el handoff lo marca como
+// intocable. Aquí solo cambia CUÁNDO carga cada uno.
 function GtmScripts({ id }: { id: string }) {
   return (
     <>
@@ -68,7 +81,7 @@ function GtmScripts({ id }: { id: string }) {
         id="gtm"
         // afterInteractive: la analítica no debe competir con el contenido por
         // el hilo principal; cargarla antes empeoraría LCP e INP.
-        strategy="afterInteractive"
+        strategy="lazyOnload"
         dangerouslySetInnerHTML={{
           __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -90,6 +103,16 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   );
 }
 
+// ⚠️ GA4 se queda en `afterInteractive`. Se PROBÓ pasarlo a `lazyOnload` el 2
+// de septiembre de 2026 y se revirtió: al medir el `dataLayer` real, la página
+// vista quedaba encolada en la posición 0 y `gtag('config')` en la 5. gtag.js
+// procesa la cola EN ORDEN, y un evento anterior al config puede descartarse
+// porque todavía no sabe a qué propiedad mandarlo.
+//
+// No se puede comprobar desde aquí si GA4 lo recibe o lo tira —haría falta
+// DebugView— y el contrato de los 17 eventos no se arriesga a ciegas. Si
+// alguna vez se retoma: hay que garantizar que `config` se encole ANTES que
+// cualquier evento, no solo que gtag.js acabe cargando.
 function Ga4Scripts({ id }: { id: string }) {
   return (
     <>
@@ -116,6 +139,15 @@ gtag('config', '${id}', { send_page_view: false });`,
   );
 }
 
+// ⚠️ Meta se queda en `afterInteractive` A PROPÓSITO, aunque sea el que más
+// bloquea (~333 ms). No se puede aplazar sin perder datos: tanto
+// `enviarEventoMeta` como `MetaPixelPageViews` hacen `return` si `fbq` no
+// existe todavía, así que cualquier evento disparado antes de que cargue se
+// pierde EN SILENCIO. GA4 y GTM encolan; Meta no.
+//
+// Para poder aplazarlo hay que darle antes una cola propia a
+// `enviarEventoMeta`. Es trabajo aparte y con riesgo sobre el contrato de los
+// 17 eventos, así que no se hace de pasada.
 function MetaPixelScripts({ id }: { id: string }) {
   return (
     <>
@@ -195,8 +227,26 @@ function Ga4PageViews({ id }: { id: string }) {
   // veces lo mismo.
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const w = window as unknown as { gtag?: (...args: unknown[]) => void };
-    if (!w.gtag) return;
+    // Antes hacía `if (!w.gtag) return;`, y ahí se perdía la PRIMERA página
+    // vista si el efecto corría antes que el script inline de configuración.
+    // Ahora encola con el MISMO shim que `enviarEvento`.
+    //
+    // ⚠️ `arguments` y no un array. Medido el 2 de septiembre: gtag.js
+    // reconoce las entradas del dataLayer con forma de `Arguments`; empujar un
+    // Array normal las deja con otra forma que no se procesa igual. Es la
+    // razón por la que el handoff documenta literalmente
+    // `dataLayer.push(arguments)`.
+    const w = window as unknown as {
+      gtag?: (...args: unknown[]) => void;
+      dataLayer?: unknown[];
+    };
+    if (typeof w.gtag !== "function") {
+      w.dataLayer = w.dataLayer ?? [];
+      w.gtag = function () {
+        // eslint-disable-next-line prefer-rest-params
+        (w.dataLayer as unknown[]).push(arguments);
+      };
+    }
     w.gtag("event", "page_view", {
       page_path: pathname,
       page_location: window.location.href,
