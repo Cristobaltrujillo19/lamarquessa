@@ -28,27 +28,53 @@ import {
   urlAbsoluta,
 } from "@/lib/site";
 
+// ⚠️ `preload: false` en las tres, y no es un detalle.
+//
+// Medido el 2 de septiembre de 2026 (§15 del ESTADO): next/font precarga por
+// defecto TODA familia declarada en el layout, la pinte la página o no. Eso
+// ponía OCHO ficheros y 264 KB en prioridad alta en cada visita. Comprobado en
+// producción con `document.fonts`: la home y la ficha solo pintan Archivo,
+// Fraunces y Queens. Estas tres no se pintaban en ninguna de las dos.
+//
+// El problema no era el peso sino la COLA: bajo la red simulada de Lighthouse
+// el póster del hero —el recurso del LCP— pedía turno detrás de estos 264 KB,
+// y esa espera era el 42% del LCP.
+//
+// `preload: false` NO las quita: siguen declaradas y disponibles. Solo deja de
+// forzarlas por adelantado, así que se descargan cuando algo las pinta de
+// verdad. Quién las pinta:
+//   - Jost y Cormorant: el panel de administración (`globals.css`), que va
+//     tras un login y donde medio segundo de más no le cuesta una venta a nadie.
+//   - Cormorant, además: la vista previa de las iniciales grabadas, que solo
+//     aparece si el cliente abre la personalización.
+//   - Pinyon: respaldo de "Beauty Angelique" para la letra manuscrita.
+//
+// El comentario que había más abajo decía que convivían "sin coste". La
+// medición dice que costaban 264 KB por delante del LCP.
 const jost = Jost({
   subsets: ["latin"],
   variable: "--font-jost",
   weight: ["300", "400", "500"],
+  preload: false,
 });
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
   variable: "--font-cormorant",
   weight: ["400", "500"],
   style: ["normal", "italic"],
+  preload: false,
 });
 const pinyon = Pinyon_Script({
   subsets: ["latin"],
   variable: "--font-pinyon",
   weight: "400",
+  preload: false,
 });
 
 // Tipografías de la nueva interfaz (globals-v2.css). El mockup se diseñó y
 // midió con estas dos; usar las de la interfaz vieja cambiaría el ritmo de
-// lectura que ya se validó. Conviven con las de arriba sin coste: next/font
-// solo descarga la que una página realmente pinta.
+// lectura que ya se validó. Estas dos SÍ van precargadas: son las que pinta
+// la primera pantalla de todas las páginas públicas.
 //
 // Fraunces cubre además los glifos que a Queen Serif FREE le faltan (acentos,
 // eñe, comillas tipográficas) por fallback por-glifo.
