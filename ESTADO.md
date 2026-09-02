@@ -42,7 +42,7 @@ vano.
 |---|---|---|
 | ~~1~~ | ~~Los 9 PNG sin trackear~~ | ✅ Cerrado arriba |
 | **2** | `srcset` responsive (400/800/1200/1600) | Fase 4. **Medido y confirmado (§15): 882 KB desperdiciados.** En la ficha el LCP es un AVIF de 1600x2000 servido tal cual a un movil |
-| **3** | Navegación por teclado con foco visible | Fase 5. **Bug localizado (§15):** el cajón del carrito deja sus botones enfocables con `aria-hidden="true"` |
+| **3** | Navegación por teclado con foco visible | Fase 5. **Los dos fallos medidos ya están corregidos**: home y ficha marcan accesibilidad **100, cero fallos** (§15). Queda lo que Lighthouse NO mide: recorrer el sitio con el tabulador y comprobar que el anillo de foco se vea en todos los controles |
 | **4** | Probar en 320 / 390 / 768 / 1440 px | Fase 5 |
 | **5** | Validar JSON-LD con Rich Results Test | Fase 6 |
 | ~~6~~ | ~~Medir Core Web Vitals~~ | ✅ Cerrado, línea base en §15. Falta el dato de CAMPO, que depende del #17 |
@@ -679,7 +679,32 @@ seguidas de la MISMA página dieron rendimiento 47, 60, 61 y 63, con LCP entre
 lo que se mantiene. El CLS de 0,024 que apareció en una corrida era ruido: en
 las otras tres volvió a 0.
 
-### El único fallo de accesibilidad (es el #3)
+### Accesibilidad: corregida el 2 de septiembre, ambas páginas a 100
+
+Los dos fallos que encontró la medición están arreglados y verificados contra
+producción: **home y ficha marcan 100 sin ningún fallo**.
+
+1. **El cajón del carrito dejaba entrar el tabulador estando cerrado.**
+   `aria-hidden` lo escondía del lector de pantalla pero **no quita del foco**:
+   sus doce botones seguían siendo enfocables. Se resolvió con `inert`, que
+   saca los hijos del foco, del clic y del árbol de accesibilidad a la vez.
+   Verificado midiendo la salida y no el atributo: se intentó enfocar los doce
+   candidatos uno por uno y ninguno lo consiguió.
+   De paso, dos huecos de teclado del mismo panel: al abrir, el foco va al
+   botón de cerrar; Escape lo cierra; y al cerrar, el foco vuelve al botón que
+   lo abrió en vez de al principio del documento.
+
+2. **`label-content-name-mismatch` en las cuatro fichas.** Los botones de foto
+   enseñan la marca de agua "COLOR AMANECER" y su nombre accesible no la
+   mencionaba. El `aria-hidden` del `<span>` no basta: el texto se sigue
+   viendo en pantalla. Se añadió el rótulo al `aria-label`, que además es
+   justo el dato que la marca de agua existe para dar.
+
+⚠️ **Esto NO cierra el #3 entero.** Lighthouse no mide el recorrido del
+tabulador ni si el anillo de foco se ve. Eso sigue pendiente y hay que hacerlo
+a mano.
+
+### Lo que decía la primera medición (histórico)
 
 En las dos páginas: el cajón del carrito
 (`<aside aria-label="Carrito" aria-hidden="true">`) **deja sus botones
