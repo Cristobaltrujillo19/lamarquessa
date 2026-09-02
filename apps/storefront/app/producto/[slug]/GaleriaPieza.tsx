@@ -168,7 +168,18 @@ export default function GaleriaPieza({
               ref={i === 0 ? disparador : undefined}
               className={`${styles.marcoFoto} ${styles.marcoFotoBtn}`}
               onClick={() => setLightbox({ abierto: true, i })}
-              aria-label={`Ampliar foto ${i + 1}: ${altDeFoto(src, producto.nombre)}`}
+              // El rótulo del color va DENTRO del nombre accesible, no solo
+              // en la marca de agua. Con `aria-hidden` en el <span> el texto
+              // se seguía viendo en pantalla y el nombre accesible no lo
+              // mencionaba: quien usa lector de pantalla no se enteraba del
+              // color de esta foto, y axe lo marcaba como
+              // `label-content-name-mismatch`. Decirlo es mejor que taparlo.
+              aria-label={[
+                `Ampliar foto ${i + 1}: ${altDeFoto(src, producto.nombre)}`,
+                rotuloColorDeFoto(producto, src),
+              ]
+                .filter(Boolean)
+                .join(". ")}
             >
               <Foto
                 src={src}
