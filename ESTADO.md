@@ -720,14 +720,62 @@ el 42% del LCP.**
 | TBT | 1.010 ms | **~800 ms** |
 | Vídeo servido a un móvil | 5,3 MB | **1,2 MB** |
 | React, coste de CPU | 1.759 ms | **405 ms** |
-| **LCP** | **4.400 ms** | **~4.400 ms (sin cambio)** |
-| Rendimiento | 59 | 60-63 |
+| **LCP** (corridas limpias) | **4.400 ms** | **~3.800 ms** |
+| Rendimiento (corridas limpias) | 59 | **67-71** |
 
 ⚠️ **Tres intentos sobre el LCP no lo movieron.** Queda escrito para que nadie
 los repita: aplazar el vídeo del hero, aplazar el arranque de WebGL, y
 precargar el póster. El primero mejoró el TBT y los datos móviles, el segundo
 liberó CPU, el tercero hizo falta para que el elemento LCP dejara de ser el
 vídeo. Ninguno tocó la causa.
+
+### Cuarta medición: las fuentes SÍ eran, y aparece una inestabilidad nueva
+
+Se aplicó lo que decía la medición anterior y **funcionó**: `preload: false` en
+Jost, Cormorant y Pinyon, las tres familias que ninguna página pública pinta.
+
+| | Antes | Después |
+|---|---|---|
+| Precargas de fuente | 8 | **4** |
+| Peso de fuentes en la ruta crítica | 264 KB | **136 KB** |
+| Load Delay del LCP | 1.850 ms | **1.282 ms** |
+| LCP en corridas limpias | 4.400 ms | **3.669-3.927 ms** |
+| Rendimiento en corridas limpias | 59 | **67-71** |
+
+Verificado en producción con `document.fonts`: se siguen pintando Archivo,
+Fraunces y Queens, el H1 sigue en Queens y el cuerpo en Archivo. Las tres
+apartadas siguen declaradas y con sus variables intactas; solo dejan de
+forzarse por adelantado.
+
+**Por qué se podían apartar:** `document.fonts` en producción demostró que ni
+la home ni la ficha las pintan. Jost y Cormorant las usa el panel, que va tras
+un login. Cormorant también la vista previa de las iniciales, que solo aparece
+si el cliente abre la personalización. Pinyon es respaldo de la manuscrita.
+
+### 🔴 Lo siguiente: la bimodalidad
+
+Las corridas se parten en dos grupos limpios, y esto lleva pasando todo el día:
+
+| | Corridas buenas | Corridas malas |
+|---|---|---|
+| Rendimiento | 67-71 | 40-42 |
+| **FCP** | **1.187 ms** | **2.979 ms** |
+| LCP | 3.669-3.927 ms | 11.6-11.8 s |
+
+**Lo desconcertante:** las dos son casi idénticas en todo lo que debería
+explicarlo. Mismo TTFB (60 vs 72 ms), mismo trabajo de hilo principal (3.963
+vs 4.402 ms), mismas tareas largas, mismos terceros. Y el póster carga ANTES
+en la corrida mala (649 ms) que en la buena (842 ms).
+
+Lo único que se mueve es el **FCP**: el primer pintado tarda 1,8 s más, y el
+LCP se desploma detrás. En las malas el 74% del LCP es *Render Delay*: el
+recurso está y no se pinta.
+
+**Hay que averiguar si esto es real o es artefacto del simulador**, porque
+cambia la prioridad entera: si es real, la mitad de los visitantes está viendo
+una página que tarda 11 s, y eso importa más que cualquier optimización
+pendiente. Empezar por lo que bloquea el primer pintado (CSS crítico), no por
+la CPU: el trabajo de hilo principal es igual en los dos casos.
 
 ### Accesibilidad: corregida el 2 de septiembre, ambas páginas a 100
 
