@@ -204,3 +204,34 @@
   color: var(--tinta-70);
   max-width: var(--max-ancho-texto);
 }
+
+/* Casilla de envio internacional. Sin marcar es una sola linea: la mayoria
+   compra desde Colombia y no deberia leer un parrafo que no le toca. */
+.avisoCasilla {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  cursor: pointer;
+}
+
+.avisoCasilla input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--cobre);
+  flex-shrink: 0;
+}
+
+/* Lo que aparece al marcarla: la explicacion y la accion. */
+.avisoAccion {
+  margin-top: var(--s-3);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s-2);
+}
+
+.avisoAccion p {
+  margin: 0;
+  max-width: var(--max-ancho-texto);
+}

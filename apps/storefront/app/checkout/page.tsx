@@ -11,6 +11,7 @@ import {
   guardarSnapshotCompra,
   trackAddPaymentInfo,
   trackBeginCheckout,
+  trackWhatsAppClick,
 } from "@/lib/analytics";
 import { addOnsPorUnidad } from "@/lib/personalizacion";
 import {
@@ -64,6 +65,7 @@ export default function CheckoutPage() {
      teniendo el aviso a la vista. Por eso el aviso va ARRIBA del formulario y
      no al final — "informada" exige que se lea antes de escribir, no despues.
      Se archiva el texto exacto que se mostro y cuando. */
+  const [envioInternacional, setEnvioInternacional] = useState(false);
   const datosForm = useRef<HTMLFormElement | null>(null);
 
   const registrar = useCallback(
@@ -234,24 +236,45 @@ export default function CheckoutPage() {
       <div className="contenedor">
       <h1 className="h1">Finalizar compra.</h1>
 
-      {/* Aviso de compra internacional: los envíos fuera de Colombia se cotizan
-          uno a uno por WhatsApp (el formulario solo cobra dentro del país),
-          así que quien viene de fuera no debería atascarse en el selector de
-          departamentos. Va arriba del formulario para verse antes de empezar
-          a llenar. */}
-      <p className={styles.aviso}>
-        ¿Tu envío es fuera de Colombia? Este formulario cobra dentro del país.
-        Para envíos internacionales,{" "}
-        <a
-          href={enlaceWhatsApp(MENSAJES.pedido)}
-          target="_blank"
-          rel="noopener"
-          className="link-terciario"
-        >
-          escríbenos por WhatsApp
-        </a>{" "}
-        y te cotizamos el envío antes de la compra.
-      </p>
+      {/* Compra internacional. El formulario solo cobra dentro de Colombia, y
+          quien viene de fuera se atascaba en el selector de departamentos.
+
+          Antes era un parrafo con un enlace dentro. Ahora es una casilla que,
+          al marcarla, abre un boton directo a WhatsApp: quien compra desde
+          Colombia —la mayoria— ve una sola linea y sigue, y quien compra
+          desde fuera se identifica solo y recibe una accion, no un parrafo.
+
+          El boton SI dispara `whatsapp_click`; el enlace de antes no lo hacia,
+          asi que este camino no se estaba midiendo. `link_location` distingue
+          esta salida de las demas: es parametro nuevo, no evento nuevo. */}
+      <div className={styles.aviso}>
+        <label className={styles.avisoCasilla}>
+          <input
+            type="checkbox"
+            checked={envioInternacional}
+            onChange={(e) => setEnvioInternacional(e.target.checked)}
+          />
+          <span>Mi envío es fuera de Colombia</span>
+        </label>
+
+        {envioInternacional && (
+          <div className={styles.avisoAccion}>
+            <p>
+              Este formulario solo cobra dentro del país. Te cotizamos el envío
+              internacional por WhatsApp antes de la compra.
+            </p>
+            <a
+              href={enlaceWhatsApp(MENSAJES.pedido)}
+              target="_blank"
+              rel="noopener"
+              onClick={() => trackWhatsAppClick("checkout_internacional")}
+              className="btn btn-primario"
+            >
+              Cotizar por WhatsApp
+            </a>
+          </div>
+        )}
+      </div>
 
       <form ref={datosForm} onSubmit={alEnviar} className={styles.disposicion}>
         <div className={styles.grupo}>
@@ -262,26 +285,6 @@ export default function CheckoutPage() {
               son obligatorios.
             </p>
 
-            {/* Aviso de tratamiento de datos. Dos decisiones:
-
-                VA ARRIBA de los campos, no al pie. La autorizacion aqui es por
-                conducta —escribir los datos—, y para que valga hay que haber
-                podido leer el aviso ANTES de escribir. Debajo del boton de
-                pagar llegaria tarde.
-
-                ES CORTO, y el detalle vive en la FAQ. Un parrafo largo en
-                mitad del formulario no se lee, y un aviso que no se lee no
-                informa. */}
-            <p className={styles.avisoDatos}>
-              {TEXTO_AVISO_DATOS}{" "}
-              <Link
-                href="/preguntas-frecuentes#datos"
-                className="link-terciario"
-              >
-                Qué hacemos con tus datos
-              </Link>
-              .
-            </p>
             <div className={styles.rejilla}>
               <label className={styles.anchoCompleto}>
                 <span className={etiqueta}>
@@ -499,6 +502,19 @@ export default function CheckoutPage() {
           <p className={styles.notaPie}>
             Tu bolso se fabrica a pedido: {PRODUCCION_SEMANAS} semanas + {ENVIO_DIAS}{" "}
             días hábiles de envío.
+          </p>
+
+          {/* Aviso de tratamiento de datos, al cierre del formulario.
+              Es corto a proposito: el detalle vive en la FAQ, porque un
+              parrafo largo aqui no se lee. El texto que se muestra es
+              EXACTAMENTE el que se archiva como prueba — ver
+              lib/consentimiento.ts antes de tocarlo. */}
+          <p className={styles.avisoDatos}>
+            {TEXTO_AVISO_DATOS}{" "}
+            <Link href="/preguntas-frecuentes#datos" className="link-terciario">
+              Qué hacemos con tus datos
+            </Link>
+            .
           </p>
         </aside>
       </form>
