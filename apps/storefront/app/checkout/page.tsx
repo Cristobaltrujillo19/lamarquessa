@@ -236,46 +236,6 @@ export default function CheckoutPage() {
       <div className="contenedor">
       <h1 className="h1">Finalizar compra.</h1>
 
-      {/* Compra internacional. El formulario solo cobra dentro de Colombia, y
-          quien viene de fuera se atascaba en el selector de departamentos.
-
-          Antes era un parrafo con un enlace dentro. Ahora es una casilla que,
-          al marcarla, abre un boton directo a WhatsApp: quien compra desde
-          Colombia —la mayoria— ve una sola linea y sigue, y quien compra
-          desde fuera se identifica solo y recibe una accion, no un parrafo.
-
-          El boton SI dispara `whatsapp_click`; el enlace de antes no lo hacia,
-          asi que este camino no se estaba midiendo. `link_location` distingue
-          esta salida de las demas: es parametro nuevo, no evento nuevo. */}
-      <div className={styles.aviso}>
-        <label className={styles.avisoCasilla}>
-          <input
-            type="checkbox"
-            checked={envioInternacional}
-            onChange={(e) => setEnvioInternacional(e.target.checked)}
-          />
-          <span>Mi envío es fuera de Colombia</span>
-        </label>
-
-        {envioInternacional && (
-          <div className={styles.avisoAccion}>
-            <p>
-              Este formulario solo cobra dentro del país. Te cotizamos el envío
-              internacional por WhatsApp antes de la compra.
-            </p>
-            <a
-              href={enlaceWhatsApp(MENSAJES.pedido)}
-              target="_blank"
-              rel="noopener"
-              onClick={() => trackWhatsAppClick("checkout_internacional")}
-              className="btn btn-primario"
-            >
-              Cotizar por WhatsApp
-            </a>
-          </div>
-        )}
-      </div>
-
       <form ref={datosForm} onSubmit={alEnviar} className={styles.disposicion}>
         <div className={styles.grupo}>
           <section>
@@ -333,13 +293,11 @@ export default function CheckoutPage() {
               </label>
 
             </div>
+            {/* Sin la coletilla de la politica de datos: ya la declara el
+                aviso del cierre del formulario, y dos veces en la misma
+                pagina no informa mas, solo pesa. */}
             <p className={styles.notaPie}>
-              Te escribimos por aquí para coordinar la entrega. Al comprar
-              aceptas nuestra{" "}
-              <Link href="/privacidad" className="link-terciario">
-                política de datos
-              </Link>
-              .
+              Te escribimos por aquí para coordinar la entrega.
             </p>
           </section>
 
@@ -392,6 +350,46 @@ export default function CheckoutPage() {
                   className={campo}
                 />
               </label>
+            </div>
+
+            {/* Compra internacional. El formulario solo cobra dentro de Colombia, y
+                quien viene de fuera se atascaba en el selector de departamentos.
+
+                Antes era un parrafo con un enlace dentro. Ahora es una casilla que,
+                al marcarla, abre un boton directo a WhatsApp: quien compra desde
+                Colombia —la mayoria— ve una sola linea y sigue, y quien compra
+                desde fuera se identifica solo y recibe una accion, no un parrafo.
+
+                El boton SI dispara `whatsapp_click`; el enlace de antes no lo hacia,
+                asi que este camino no se estaba midiendo. `link_location` distingue
+                esta salida de las demas: es parametro nuevo, no evento nuevo. */}
+            <div className={styles.aviso}>
+              <label className={styles.avisoCasilla}>
+                <input
+                  type="checkbox"
+                  checked={envioInternacional}
+                  onChange={(e) => setEnvioInternacional(e.target.checked)}
+                />
+                <span>Mi envío es fuera de Colombia</span>
+              </label>
+
+              {envioInternacional && (
+                <div className={styles.avisoAccion}>
+                  <p>
+                    Este formulario solo cobra dentro del país. Te cotizamos el envío
+                    internacional por WhatsApp antes de la compra.
+                  </p>
+                  <a
+                    href={enlaceWhatsApp(MENSAJES.pedido)}
+                    target="_blank"
+                    rel="noopener"
+                    onClick={() => trackWhatsAppClick("checkout_internacional")}
+                    className="btn btn-primario"
+                  >
+                    Cotizar por WhatsApp
+                  </a>
+                </div>
+              )}
             </div>
           </section>
         </div>
