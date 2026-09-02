@@ -777,6 +777,50 @@ una página que tarda 11 s, y eso importa más que cualquier optimización
 pendiente. Empezar por lo que bloquea el primer pintado (CSS crítico), no por
 la CPU: el trabajo de hilo principal es igual en los dos casos.
 
+### RESUELTO: la bimodalidad era del simulador, y los números buenos mentían
+
+**Ningún visitante real ve una página de 11 s.** Con `--throttling-method=devtools`
+(estrangulamiento REAL en vez de simulado) la dispersión desaparece:
+
+```
+corrida 1: FCP 3100 ms | LCP 5934 ms | TBT 1252 ms | perf 47
+corrida 2: FCP 3052 ms | LCP 5949 ms | TBT 1178 ms | perf 48
+corrida 3: FCP 2963 ms | LCP 6046 ms | TBT 1213 ms | perf 47
+corrida 4: FCP 3060 ms | LCP 4692 ms | TBT 1161 ms | perf 53
+```
+
+**Lo que lo delató:** en las corridas simuladas "malas" el documento y el CSS
+llegaban ANTES que en las "buenas" (documento 359-421 ms contra 599-649 ms) y
+aun así el FCP era el triple. Una red más rápida no puede dar un pintado más
+lento: la causa no estaba en la red ni en el servidor.
+
+⚠️ **Y el hallazgo incómodo: las corridas "buenas" eran las que mentían.** El
+FCP real (~3.000 ms) coincide con el de las corridas "malas" simuladas
+(2.979-3.043 ms). Las "buenas" (1.187 ms) eran optimismo del simulador.
+
+**Cifras reales del sitio hoy, que son las que valen:**
+
+| | Simulado (optimista) | **Real (devtools)** |
+|---|---|---|
+| Rendimiento | 67-71 | **47-53** |
+| FCP | 1.190 ms | **~3.000 ms** |
+| LCP | 3.700 ms | **~5.900 ms** |
+| TBT | 720 ms | **~1.200 ms** |
+
+**Regla para la próxima vez: medir con `--throttling-method=devtools`.** El
+simulado sirve para comparar dos versiones entre sí, no para saber cómo va el
+sitio.
+
+**Dónde está ahora el problema, sin ambigüedad: el hilo principal.** TBT real
+de 1,2 s. Los dos candidatos, por tamaño:
+
+1. **El fondo topográfico WebGL cuesta ~1,2 s de CPU** y está en el layout
+   raíz, así que lo paga cada página. Aplazarlo lo quitó de la ruta crítica
+   pero no lo hizo gratis. **Decisión del dueño:** ¿vale ese segundo largo, o
+   en móvil basta el respaldo SVG estático que ya existe?
+2. **Meta Pixel bloquea ~333 ms y GTM ~190 ms.** Cargarlos más tarde no le
+   quita un solo dato a la analítica.
+
 ### Investigación de la bimodalidad: lo descartado y lo que queda
 
 **Descartado con medición, no por intuición:**
