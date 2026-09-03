@@ -34,9 +34,14 @@ export default function TarjetaProducto({
   mostrarPrecio = true,
   listName = "Colección",
   nivel = 3,
+  // Por defecto, la rejilla de la home: 4 columnas dentro de un contenedor de
+  // 1280 px son ~320 px por tarjeta; 2 columnas hasta 1024 y una sola hasta
+  // 768. La colección de /tienda va a 2 columnas y pasa el suyo.
+  tallas = "(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 320px",
 }: {
   producto: Producto;
   prioridad?: boolean;
+  tallas?: string;
   /** La home no muestra precio: ahí la tarjeta invita a entrar en la pieza,
    *  y el precio se encuentra en la ficha y en la colección. Está en la lista
    *  de "no tocar" del handoff. */
@@ -82,6 +87,7 @@ export default function TarjetaProducto({
             ancho={1600}
             alto={2000}
             prioridad={prioridad}
+            tallas={tallas}
             className={`${styles.foto} ${styles.principal}`}
           />
         )}
@@ -91,6 +97,7 @@ export default function TarjetaProducto({
             alt=""
             ancho={1600}
             alto={2000}
+            tallas={tallas}
             className={`${styles.foto} ${styles.hover}`}
           />
         )}

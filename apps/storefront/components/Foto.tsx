@@ -1,5 +1,25 @@
-// Imagen de producto: sirve AVIF a quien lo soporte y JPEG al resto.
-// Las dos versiones se generan al importar las fotos, con el mismo nombre.
+import { ANCHOS_FOTO } from "@/lib/fotos-anchos";
+
+// Imagen de producto: sirve AVIF a quien lo soporte y JPEG al resto, en varias
+// tallas para que un teléfono no baje la foto de 1600 px.
+//
+// Medido el 2 de septiembre de 2026 (§15 del ESTADO): sin `srcset` se
+// desperdiciaban 882 KB por página, y el elemento LCP de la ficha era un AVIF
+// de 1600×2000 servido tal cual a un móvil.
+
+/** Construye el `srcset` de una extensión a partir de los anchos que EXISTEN.
+ *  El ancho mayor es el original y va sin sufijo; los demás son
+ *  `<nombre>-<ancho>.<ext>`. */
+function srcSet(src: string, ext: string): string | undefined {
+  const anchos = ANCHOS_FOTO[src];
+  if (!anchos || anchos.length < 2) return undefined;
+  const sinExt = src.replace(/\.(jpe?g|png)$/i, "");
+  const mayor = anchos[anchos.length - 1];
+  return anchos
+    .map((w) => `${w === mayor ? sinExt : `${sinExt}-${w}`}.${ext} ${w}w`)
+    .join(", ");
+}
+
 export default function Foto({
   src,
   alt,
@@ -7,6 +27,7 @@ export default function Foto({
   ancho,
   alto,
   prioridad = false,
+  tallas = "100vw",
 }: {
   src: string;
   alt: string;
@@ -14,14 +35,29 @@ export default function Foto({
   ancho: number;
   alto: number;
   prioridad?: boolean;
+  /** Qué ancho ocupará la foto en pantalla, para que el navegador elija talla.
+   *  Por defecto `100vw`, que nunca se queda corto aunque desperdicie: cada
+   *  sitio de uso debería pasar el suyo. */
+  tallas?: string;
 }) {
   const avif = src.replace(/\.(jpe?g|png)$/i, ".avif");
+  const setAvif = srcSet(src, "avif");
+  const setJpg = srcSet(src, "jpg");
+
   return (
     <picture>
-      <source srcSet={avif} type="image/avif" />
+      <source
+        // Sin variantes conocidas cae al fichero único de siempre: una foto
+        // nueva sin regenerar sigue mostrándose, solo que sin tallas.
+        srcSet={setAvif ?? avif}
+        sizes={setAvif ? tallas : undefined}
+        type="image/avif"
+      />
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={src}
+        srcSet={setJpg}
+        sizes={setJpg ? tallas : undefined}
         alt={alt}
         className={className}
         width={ancho}

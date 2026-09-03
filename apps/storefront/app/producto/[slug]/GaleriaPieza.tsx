@@ -187,6 +187,12 @@ export default function GaleriaPieza({
                 ancho={1600}
                 alto={2000}
                 prioridad={i === 0}
+                // La columna de fotos es 1.15fr de una rejilla 1.15fr 1fr
+                // dentro de 1280 px: unos 685 px. Bajo 960 pasa a una sola
+                // columna y ocupa el ancho entero. Esta foto es el elemento
+                // LCP de la ficha, así que la talla importa más aquí que en
+                // ningún otro sitio.
+                tallas="(max-width: 960px) 100vw, 685px"
               />
               {/* Marca de agua: dice el color QUE ENSEÑA ESTA FOTO, no el que
                   esté seleccionado. Si siguiera al selector, elegir Marea
