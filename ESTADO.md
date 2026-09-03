@@ -47,7 +47,7 @@ vano.
 | ~~5~~ | ~~Validar JSON-LD~~ | ✅ **Cerrado el 3 sept.** Los cinco tipos bien formados, las imágenes del `Product` responden 200, `Organization` y `WebSite` limpios. **Cero errores.** Se añadió `BreadcrumbList` a las cuatro páginas que no lo tenían |
 | ~~6~~ | ~~Medir Core Web Vitals~~ | ✅ Cerrado, línea base en §15. Falta el dato de CAMPO, que depende del #17 |
 | ~~7~~ | ~~Lighthouse móvil~~ | ✅ Cerrado, §15. **SEO 100 y A11y 96 cumplen; Rendimiento 59-62 NO** |
-| **8** | Banner de consentimiento de cookies (Consent Mode) | Es lo que sube Buenas prácticas de 79. **Bloqueado por una decisión: ¿opt-in al estilo europeo (bloquea la analítica hasta aceptar) o aviso informativo?** Cambia la implementación entera |
+| ~~8~~ | ~~Banner de cookies~~ | ✅ **Cerrado el 3 sept.** **Informativo, no opt-in**, por decisión del dueño: el mercado es Colombia y la Ley 1581 no exige consentimiento previo. Rechazar apaga de verdad (Consent Mode `denied` + `fbq revoke`) y se re-aplica en cada carga. ⚠️ Si algún día se vende habitualmente a Europa hay que pasarlo a opt-in |
 | **9** | `CAMBIOS.md` | |
 
 ### Bloque B — hace falta una decisión antes de empezar
@@ -74,8 +74,8 @@ vano.
 | ~~17~~ | ~~Publicar la etiqueta GA4 dentro de GTM~~ | ❌ **EL PUNTO ESTABA MAL Y HACERLO ROMPERÍA LA ANALÍTICA.** Verificado en producción el 3 sept: GA4 y Meta **sí reciben datos** por sus rutas directas (`/g/collect?tid=G-Q5PW0TY6SX` y `facebook.com/tr/?id=1046…`). Lo que está vacío es GTM, **a propósito**: es contenedor de reserva. El §8 del handoff lo marca como regla dura — añadir un tag de GA4 dentro de GTM obliga a desactivar el envío directo, o **cada evento llegaría dos veces** |
 | ~~18~~ | ~~Los dos pedidos `pendiente` en Mercado Pago~~ | ✅ **Cerrado por el dueño el 2 sept: las dos eran pruebas.** ⚠️ Consecuencia: si nunca se pagaron, **el webhook sigue sin verse funcionar de punta a punta**. El #19 no se cierra con esto |
 | 🔴 **19** | Prueba real con cupón | Lo único que cierra la incógnita del webhook. Nunca se ha visto un pago completo de punta a punta |
-| 🔴 **20** | Rotar `ADMIN_API_SECRET` | Quedó impreso en un error de terminal. El local ya ni coincide con prod |
-| **21** | Razón social, NIT, domicilio | `/privacidad` dice `[pendiente]`, y toda la autorización de datos de los carritos (§13) se apoya en un documento que aún no identifica al responsable del tratamiento |
+| ~~20~~ | ~~Rotar `ADMIN_API_SECRET`~~ | ✅ **Rotado por el dueño el 3 sept.** ⚠️ Sin verificar desde aquí: ninguna ruta pública usa el secreto, así que la única prueba es **entrar a `/panel` en producción y ver si carga la lista de pedidos**. Si da «No autorizado», es que Convex y Vercel no tienen el mismo valor |
+| ~~21~~ | ~~Razón social, NIT, domicilio~~ | ✅ **Cerrado el 3 sept.** No hay razón social ni NIT: la marca no está constituida como sociedad y responde una **persona natural**, que es lo que la Ley 1581 admite. La política ya identifica al responsable y da dirección de notificación. Cero campos `[pendiente]` |
 | **22** | Search Console: propiedad + sitemap | Google descubre el dominio nuevo más lento |
 | **23** | Link de la bio de Instagram | Sigue apuntando a la URL vieja de Vercel |
 | **24** | Abogado: política de cambios/retracto | La FAQ excluye retracto en piezas personalizadas; la Ley 1480 es restrictiva con esas exclusiones |
