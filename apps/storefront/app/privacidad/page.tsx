@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { EMAIL, MARCA, urlAbsoluta } from "@/lib/site";
 import css from "./privacidad.module.css";
+import { schemaMigas } from "@/lib/migas";
 
 export const metadata: Metadata = {
   title: "Política de tratamiento de datos personales | La Marquessa",
@@ -14,9 +15,15 @@ export const metadata: Metadata = {
 // ley exige que la política indique su fecha de entrada en vigencia.
 const ACTUALIZADA = "28 de julio de 2026";
 
+const migas = schemaMigas([{ nombre: "Política de privacidad", ruta: "/privacidad" }]);
+
 export default function PrivacidadPage() {
   return (
     <section className="seccion-base" aria-labelledby="titular-privacidad">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(migas) }}
+      />
       <article className={`contenedor ${css.texto}`}>
         <p className="eyebrow eyebrow-seccion">Legal</p>
         <h1 id="titular-privacidad" className="h2 aire-arriba">

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Aparece from "@/components/v2/Aparece";
 import BotonWhatsApp from "./BotonWhatsApp";
 import { EMAIL, WHATSAPP_VISIBLE, urlAbsoluta } from "@/lib/site";
+import { schemaMigas } from "@/lib/migas";
 
 // Ruta nueva: no existía en producción. Maqueta del mockup, datos reales.
 //
@@ -20,9 +21,15 @@ export const metadata: Metadata = {
   alternates: { canonical: urlAbsoluta("/contacto") },
 };
 
+const migas = schemaMigas([{ nombre: "Contacto", ruta: "/contacto" }]);
+
 export default function Contacto() {
   return (
     <div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(migas) }}
+      />
       <section className="seccion-base" aria-labelledby="titular-contacto">
         <div className="contenedor">
           <Aparece className="ancho-texto">

@@ -4,6 +4,7 @@ import Aparece from "@/components/v2/Aparece";
 import Foto from "@/components/Foto";
 import { urlAbsoluta } from "@/lib/site";
 import styles from "./nosotros.module.css";
+import { schemaMigas } from "@/lib/migas";
 
 // Primera ruta que se porto a la interfaz nueva. El sistema de diseno vive en
 // app/globals-v2.css y rige el sitio entero desde :root, asi que esta pagina
@@ -29,9 +30,15 @@ export const metadata: Metadata = {
   alternates: { canonical: urlAbsoluta("/nosotros") },
 };
 
+const migas = schemaMigas([{ nombre: "Nuestra historia", ruta: "/nosotros" }]);
+
 export default function Nosotros() {
   return (
     <div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(migas) }}
+      />
       <section className="seccion-respiro" aria-labelledby="titular-historia">
         <div className="contenedor">
           <Aparece className={styles.encabezado}>

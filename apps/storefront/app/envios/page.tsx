@@ -7,6 +7,7 @@ import {
   SHIPPING_COP,
   urlAbsoluta,
 } from "@/lib/site";
+import { schemaMigas } from "@/lib/migas";
 
 // Ruta nueva: no existía en producción. La maqueta viene del mockup; los datos
 // son los que ya estaban publicados en la FAQ, no los briefs del mockup.
@@ -57,9 +58,15 @@ const BLOQUES = [
   },
 ];
 
+const migas = schemaMigas([{ nombre: "Envíos", ruta: "/envios" }]);
+
 export default function Envios() {
   return (
     <div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(migas) }}
+      />
       <section className="seccion-base" aria-labelledby="titular-envios">
         <div className="contenedor">
           <Aparece className="ancho-texto">
