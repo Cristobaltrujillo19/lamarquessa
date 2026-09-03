@@ -16,9 +16,9 @@ pendientes de fusionar.
 Esta es la lista maestra: se ataca de a un número por vez. Los §6 y §7
 conservan el detalle y el porqué de cada cosa; aquí está el orden y el estado.
 
-**Recomendación de orden:** el **#18** primero, que es el único con plata real
-y una persona esperando. Después el **#17**, porque cada día sin GA4 publicado
-es un día de datos que no se recupera. De lo que puede hacer el asistente,
+**Recomendación de orden:** los #18 y #17 se cerraron — el primero eran
+pruebas, el segundo estaba mal planteado (ver la tabla del bloque D). De lo que
+puede hacer el asistente,
 **#6 + #7** juntos: medir Core Web Vitals y Lighthouse es una sola pasada, y
 hasta no medir no se sabe si el #2 (`srcset`) vale la pena o es trabajo en
 vano.
@@ -71,7 +71,7 @@ vano.
 
 | # | Pendiente | Consecuencia si sigue abierto |
 |---|---|---|
-| 🔴 **17** | Publicar la etiqueta GA4 dentro de GTM | **GTM carga pero no mide nada.** Todo el trabajo de analítica está inerte |
+| ~~17~~ | ~~Publicar la etiqueta GA4 dentro de GTM~~ | ❌ **EL PUNTO ESTABA MAL Y HACERLO ROMPERÍA LA ANALÍTICA.** Verificado en producción el 3 sept: GA4 y Meta **sí reciben datos** por sus rutas directas (`/g/collect?tid=G-Q5PW0TY6SX` y `facebook.com/tr/?id=1046…`). Lo que está vacío es GTM, **a propósito**: es contenedor de reserva. El §8 del handoff lo marca como regla dura — añadir un tag de GA4 dentro de GTM obliga a desactivar el envío directo, o **cada evento llegaría dos veces** |
 | ~~18~~ | ~~Los dos pedidos `pendiente` en Mercado Pago~~ | ✅ **Cerrado por el dueño el 2 sept: las dos eran pruebas.** ⚠️ Consecuencia: si nunca se pagaron, **el webhook sigue sin verse funcionar de punta a punta**. El #19 no se cierra con esto |
 | 🔴 **19** | Prueba real con cupón | Lo único que cierra la incógnita del webhook. Nunca se ha visto un pago completo de punta a punta |
 | 🔴 **20** | Rotar `ADMIN_API_SECRET` | Quedó impreso en un error de terminal. El local ya ni coincide con prod |
