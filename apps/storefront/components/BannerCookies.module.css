@@ -1,0 +1,84 @@
+/* Aviso de cookies. Va abajo y a la derecha, no a lo ancho de la pantalla:
+   en móvil una franja completa tapa el CTA fijo de la ficha, que es el botón
+   que vende. */
+
+.banner {
+  position: fixed;
+  z-index: 80; /* Bajo el cajón del carrito (70+) y sobre el resto. */
+  right: var(--s-3);
+  bottom: var(--s-3);
+  width: min(420px, calc(100vw - var(--s-3) * 2));
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  padding: var(--s-3);
+  background: var(--espuma);
+  color: var(--tinta);
+  border: 1px solid var(--tinta-12);
+  border-radius: var(--radio);
+  box-shadow: 0 10px 30px rgba(47, 32, 22, 0.16);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.texto {
+  margin: 0;
+  color: var(--tinta-70);
+}
+
+.enlace {
+  color: var(--cobre-texto);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.acciones {
+  display: flex;
+  gap: var(--s-2);
+  justify-content: flex-end;
+}
+
+/* Los dos botones cumplen el mínimo de 44px de alto de área táctil, igual que
+   el resto de controles del sitio. */
+.aceptar,
+.rechazar {
+  min-height: 44px;
+  padding-inline: var(--s-3);
+  border-radius: var(--radio);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color var(--dur) var(--curva),
+    color var(--dur) var(--curva);
+}
+
+.aceptar {
+  background: var(--tinta);
+  color: var(--espuma);
+  border: 1px solid var(--tinta);
+}
+.aceptar:hover {
+  background: var(--cobre-texto);
+  border-color: var(--cobre-texto);
+}
+
+/* Rechazar no se esconde: tiene el mismo tamaño y la misma legibilidad que
+   aceptar. Un botón de rechazo gris sobre gris es una forma de no ofrecerlo. */
+.rechazar {
+  background: transparent;
+  color: var(--tinta);
+  border: 1px solid var(--tinta-12);
+}
+.rechazar:hover {
+  border-color: var(--tinta);
+}
+
+@media (max-width: 480px) {
+  .banner {
+    right: var(--s-2);
+    left: var(--s-2);
+    bottom: var(--s-2);
+    width: auto;
+  }
+}

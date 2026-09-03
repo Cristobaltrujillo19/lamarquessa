@@ -1,6 +1,12 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { EMAIL, MARCA, urlAbsoluta } from "@/lib/site";
+import {
+  EMAIL,
+  MARCA,
+  WHATSAPP_VISIBLE,
+  enlaceWhatsApp,
+  urlAbsoluta,
+} from "@/lib/site";
 import css from "./privacidad.module.css";
 import { schemaMigas } from "@/lib/migas";
 
@@ -35,19 +41,22 @@ export default function PrivacidadPage() {
         </p>
 
         <p className={css.aviso}>
-          ⚠️ <strong>Borrador de referencia.</strong> Este texto debe ser
-          revisado por un abogado y completado con los datos legales reales de
-          la marca (razón social, NIT, domicilio y teléfono) antes de
-          considerarse definitivo. Los campos marcados como{" "}
-          <em>[pendiente]</em> están sin diligenciar.
+          ⚠️ <strong>Pendiente de revisión legal.</strong> Los datos del
+          responsable ya están diligenciados, pero la política de cambios y
+          retracto del punto 9 no ha sido revisada por un abogado. La Ley 1480
+          es restrictiva con las exclusiones al derecho de retracto.
         </p>
 
         <h2>1. Responsable del tratamiento</h2>
+        {/* Persona natural: no hay razón social ni NIT porque la marca no
+            está constituida como sociedad. La Ley 1581 no los exige — exige
+            identificar al responsable y dar una dirección de notificación,
+            que es lo que hay aquí. */}
         <p>
-          {MARCA} <em>[pendiente: razón social]</em>, identificada con NIT{" "}
-          <em>[pendiente]</em>, con domicilio en <em>[pendiente]</em>, Colombia,
-          es la responsable del tratamiento de los datos personales que recoge a
-          través de este sitio.
+          <strong>Cristóbal Trujillo</strong>, persona natural, con domicilio en{" "}
+          <strong>Calle 14 #40A-269, Medellín, Colombia</strong>, es el
+          responsable del tratamiento de los datos personales que se recogen a
+          través de este sitio, que opera bajo la marca {MARCA}.
         </p>
         <ul>
           <li>
@@ -56,7 +65,13 @@ export default function PrivacidadPage() {
           </a>
           </li>
           <li>
-            Teléfono / WhatsApp: <em>[pendiente]</em>
+            Teléfono / WhatsApp:{" "}
+            <a href={enlaceWhatsApp("Hola, escribo por un tema de datos personales.")} className="link-terciario">
+              {WHATSAPP_VISIBLE}
+            </a>
+          </li>
+          <li>
+            Dirección de notificación: Calle 14 #40A-269, Medellín, Colombia
           </li>
         </ul>
 

@@ -15,6 +15,7 @@ import Chrome from "./Chrome";
 import Reveal from "@/components/marca/Reveal";
 import FabWhatsApp from "@/components/marca/FabWhatsApp";
 import Analitica from "@/components/Analitica";
+import BannerCookies from "@/components/BannerCookies";
 import FondoTopografico from "@/components/v2/FondoTopografico";
 import { CarritoProvider } from "@/lib/carrito";
 import {
@@ -198,6 +199,10 @@ export default function RootLayout({
           ga4Id={process.env.NEXT_PUBLIC_GA4_ID}
           metaPixelId={process.env.NEXT_PUBLIC_META_PIXEL_ID}
         />
+        {/* Va DESPUÉS de Analitica: el aviso es informativo, así que los
+            proveedores arrancan concedidos y el banner solo los revoca si la
+            persona lo pide. Ver lib/cookies.ts. */}
+        <BannerCookies />
       </body>
     </html>
   );
