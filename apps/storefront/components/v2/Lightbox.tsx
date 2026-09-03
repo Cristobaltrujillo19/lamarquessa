@@ -31,6 +31,8 @@ export default function Lightbox({
 }: Props) {
   const [i, setI] = useState(indiceInicial);
   const botonCerrar = useRef<HTMLButtonElement | null>(null);
+  /** La caja del diálogo, para poder retener el tabulador dentro. */
+  const dialogo = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     setI(indiceInicial);
@@ -61,6 +63,33 @@ export default function Lightbox({
         e.preventDefault();
         siguiente();
       }
+      // Retener el tabulador dentro del diálogo. `aria-modal` le dice al
+      // lector de pantalla que ignore el fondo, pero NO impide que el
+      // tabulador salga: sin esto se recorría a ciegas la ficha que está
+      // debajo, tapada por el modal a pantalla completa.
+      if (e.key === "Tab") {
+        const caja = dialogo.current;
+        if (!caja) return;
+        const focos = caja.querySelectorAll<HTMLElement>(
+          'a[href],button:not([disabled]),input,select,textarea,[tabindex]:not([tabindex="-1"])',
+        );
+        if (focos.length === 0) return;
+        const primero = focos[0];
+        const ultimo = focos[focos.length - 1];
+        // Si el foco se salió del diálogo (o nunca entró), volverlo a meter.
+        if (!caja.contains(document.activeElement)) {
+          e.preventDefault();
+          primero.focus();
+          return;
+        }
+        if (e.shiftKey && document.activeElement === primero) {
+          e.preventDefault();
+          ultimo.focus();
+        } else if (!e.shiftKey && document.activeElement === ultimo) {
+          e.preventDefault();
+          primero.focus();
+        }
+      }
     };
     document.addEventListener("keydown", alTecla);
     // Bloquea el desplazamiento del fondo mientras el modal esta abierto.
@@ -79,6 +108,7 @@ export default function Lightbox({
 
   return (
     <div
+      ref={dialogo}
       className={styles.overlay}
       role="dialog"
       aria-modal="true"
