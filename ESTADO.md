@@ -73,7 +73,7 @@ vano.
 |---|---|---|
 | ~~17~~ | ~~Publicar la etiqueta GA4 dentro de GTM~~ | ❌ **EL PUNTO ESTABA MAL Y HACERLO ROMPERÍA LA ANALÍTICA.** Verificado en producción el 3 sept: GA4 y Meta **sí reciben datos** por sus rutas directas (`/g/collect?tid=G-Q5PW0TY6SX` y `facebook.com/tr/?id=1046…`). Lo que está vacío es GTM, **a propósito**: es contenedor de reserva. El §8 del handoff lo marca como regla dura — añadir un tag de GA4 dentro de GTM obliga a desactivar el envío directo, o **cada evento llegaría dos veces** |
 | ~~18~~ | ~~Los dos pedidos `pendiente` en Mercado Pago~~ | ✅ **Cerrado por el dueño el 2 sept: las dos eran pruebas.** ⚠️ Consecuencia: si nunca se pagaron, **el webhook sigue sin verse funcionar de punta a punta**. El #19 no se cierra con esto |
-| 🔴 **19** | Prueba real con cupón | Lo único que cierra la incógnita del webhook. Nunca se ha visto un pago completo de punta a punta |
+| ~~19~~ | ~~Prueba real con cupón~~ | ✅ **CERRADO el 3 sept: el webhook FUNCIONA.** Pago real de $16.500 con `mpPaymentId` 176110884951. Ver §18 |
 | ~~20~~ | ~~Rotar `ADMIN_API_SECRET`~~ | ✅ **Rotado por el dueño el 3 sept.** ⚠️ Sin verificar desde aquí: ninguna ruta pública usa el secreto, así que la única prueba es **entrar a `/panel` en producción y ver si carga la lista de pedidos**. Si da «No autorizado», es que Convex y Vercel no tienen el mismo valor |
 | ~~21~~ | ~~Razón social, NIT, domicilio~~ | ✅ **Cerrado el 3 sept.** No hay razón social ni NIT: la marca no está constituida como sociedad y responde una **persona natural**, que es lo que la Ley 1581 admite. La política ya identifica al responsable y da dirección de notificación. Cero campos `[pendiente]` |
 | **22** | Search Console: propiedad + sitemap | Google descubre el dominio nuevo más lento |
@@ -962,3 +962,64 @@ se eligió mantener el vídeo en móvil y recomprimirlo, sin saber todavía que 
 vídeo ES el elemento LCP. Hoy se sabe: **quitar el vídeo en móvil bajaría el
 LCP de la home a la altura de la ficha (~3 s)**. La alternativa es aceptar que
 la home siga en ~5,7 s. Es una decisión de marca, no técnica.
+
+---
+
+## 18. El webhook funciona — prueba real del 3 de septiembre de 2026
+
+**Se cerró el bloqueador más antiguo del proyecto.** Por primera vez se vio un
+pago completo de punta a punta en producción.
+
+**Cómo se montó:** cupón `PRUEBAWEBHOOK` del 100% creado desde `/panel/cupones`.
+Un cupón del 100% **no deja el total en cero**: descuenta solo el subtotal, no
+el envío, así que quedó un pago real de **$16.500** — pequeño pero suficiente
+para que Mercado Pago dispare la notificación. Un pago de $0 no habría probado
+nada.
+
+**Resultado, verificado en Convex producción:**
+
+| Comprobación | Resultado |
+|---|---|
+| `estado` | **`pagado`** ✅ |
+| `mpPaymentId` | **`176110884951`**, coincide con la operación del recibo ✅ |
+| `pagadoEn` | **49 segundos** después de crear el pedido ✅ |
+| Cupón `usados` | **1** ✅ |
+| Correo de confirmación | Llegó ✅ |
+| Inventario | No baja al pagar — **es por diseño**, baja al despachar |
+
+### ⚠️ Mercado Pago no te deja comprarte a ti mismo
+
+El primer intento se quedó con el botón «Pagar» **en gris y sin explicar nada**.
+La causa: el pagador y el cobrador eran la misma cuenta (`payer.email` iba con
+el correo personal del dueño, y la cuenta vendedora «Amor y Brillitos» es suya).
+
+**Cómo se sorteó:** poner OTRO correo en el checkout. Si hace falta repetir la
+prueba, usar un correo distinto al de la cuenta de Mercado Pago, o que compre
+otra persona.
+
+⚠️ Y ojo con el efecto secundario: se usó `info.lamarquessa@gmail.com`, que es
+también el remitente, así que la confirmación salió **de la tienda para la
+tienda**. Buscarla en ese buzón, no en el personal.
+
+### 🐛 Bug encontrado por la prueba: `paso: "enviado"` no se escribe nunca
+
+**Nadie asigna nunca ese valor.** El tipo lo permite, la pantalla de carritos
+lo filtra, pero no hay una sola línea que lo ponga. Y al llegar a `/gracias` el
+carrito se vacía, lo que **borra la fila** en Convex (ver §13: un carrito vacío
+se borra a propósito).
+
+Consecuencia: en `/panel/carritos` la pestaña **«Enviaron el pedido» está
+siempre vacía y siempre lo estará**. El resto de la pantalla funciona: los
+carritos abandonados sí se ven, y el filtro «Abandonados» acaba siendo «todos»,
+que en la práctica es correcto porque los completados se borran solos.
+
+**Decisión pendiente**: quitar la pestaña (más honesto — los carritos
+completados viven en `pedidos`) o marcar `enviado` de verdad antes de vaciar y
+dejar de borrar esas filas (da la conversión del embudo completo, a cambio de
+guardar compras completadas en una tabla pensada para abandonos).
+
+### 🐛 El fallo de correo se traga en silencio
+
+`correoCliente.ts` captura el error de SMTP y solo hace `console.error`. Si
+Gmail falla, **el cliente paga y nunca se entera, y en el panel no queda ni
+rastro**. Merece guardar en el pedido si el correo salió o no.
