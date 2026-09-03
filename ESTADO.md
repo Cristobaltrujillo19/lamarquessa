@@ -41,13 +41,13 @@ vano.
 | # | Pendiente | Nota |
 |---|---|---|
 | ~~1~~ | ~~Los 9 PNG sin trackear~~ | ✅ Cerrado arriba |
-| **2** | `srcset` responsive (400/800/1200/1600) | Fase 4. **Medido y confirmado (§15): 882 KB desperdiciados.** En la ficha el LCP es un AVIF de 1600x2000 servido tal cual a un movil |
-| **3** | Navegación por teclado con foco visible | Fase 5. **Los dos fallos medidos ya están corregidos**: home y ficha marcan accesibilidad **100, cero fallos** (§15). Queda lo que Lighthouse NO mide: recorrer el sitio con el tabulador y comprobar que el anillo de foco se vea en todos los controles |
+| ~~2~~ | ~~`srcset` responsive~~ | ✅ **Cerrado el 3 sept.** 112 variantes (400/800/1200 en AVIF y JPEG). **La ficha pasó de LCP ~5.900 a ~3.100 ms** y de 1.958 a 1.343 KB. La home NO mejoró: su LCP es el vídeo, no una foto (§17) |
+| ~~3~~ | ~~Navegación por teclado con foco visible~~ | ✅ **Cerrado el 3 sept.** Recorrido a mano: regla global `:focus-visible` de 2px comprobada con tabulaciones reales, orden = DOM sin ningún `tabindex` positivo, enlace de salto primero. Se arregló lo único que fallaba: el lightbox no retenía el tabulador |
 | **4** | Probar en 320 / 390 / 768 / 1440 px | Fase 5 |
-| **5** | Validar JSON-LD con Rich Results Test | Fase 6 |
+| ~~5~~ | ~~Validar JSON-LD~~ | ✅ **Cerrado el 3 sept.** Los cinco tipos bien formados, las imágenes del `Product` responden 200, `Organization` y `WebSite` limpios. **Cero errores.** Se añadió `BreadcrumbList` a las cuatro páginas que no lo tenían |
 | ~~6~~ | ~~Medir Core Web Vitals~~ | ✅ Cerrado, línea base en §15. Falta el dato de CAMPO, que depende del #17 |
 | ~~7~~ | ~~Lighthouse móvil~~ | ✅ Cerrado, §15. **SEO 100 y A11y 96 cumplen; Rendimiento 59-62 NO** |
-| **8** | Banner de consentimiento de cookies (Consent Mode) | Es lo que sube Buenas prácticas de 79: los dos fallos son cookies de tercero (§15) |
+| **8** | Banner de consentimiento de cookies (Consent Mode) | Es lo que sube Buenas prácticas de 79. **Bloqueado por una decisión: ¿opt-in al estilo europeo (bloquea la analítica hasta aceptar) o aviso informativo?** Cambia la implementación entera |
 | **9** | `CAMBIOS.md` | |
 
 ### Bloque B — hace falta una decisión antes de empezar
@@ -930,3 +930,35 @@ nombre accesible no contiene el texto que se ve. Sin diagnosticar todavía.
 
 Los dos fallos son cookies de tercero (Meta Pixel y GTM). Se arregla de raíz
 con el **#8** (Consent Mode), no por separado.
+
+---
+
+## 17. El vídeo del hero es el LCP de la home (3 de septiembre)
+
+Con estrangulamiento REAL, las fases del LCP de la home son:
+
+```
+TTFB           202 ms   4%
+Load Delay     566 ms  10%
+Load Time    4.933 ms  86%   <- la descarga
+Render Delay    16 ms   0%
+```
+
+**El 86% del LCP es descargar un fichero**, y el más pesado de la home es
+`hero-720.mp4` con 1.275 KB. El póster ya es un `<img>` de 58 KB precargado:
+no puede tardar 4,9 s. El recurso que Chrome cronometra es el vídeo.
+
+Por eso el `srcset` (#2) mejoró muchísimo la ficha y **no movió la home**:
+
+| | Ficha | Home |
+|---|---|---|
+| LCP antes | ~5.900 ms | ~5.900 ms |
+| LCP después | **~3.100 ms** | ~5.750 ms |
+| Peso antes | 1.958 KB | 3.563 KB |
+| Peso después | **1.343 KB** | 3.083 KB |
+
+⚠️ **Decisión pendiente del dueño, con información nueva.** El 2 de septiembre
+se eligió mantener el vídeo en móvil y recomprimirlo, sin saber todavía que el
+vídeo ES el elemento LCP. Hoy se sabe: **quitar el vídeo en móvil bajaría el
+LCP de la home a la altura de la ficha (~3 s)**. La alternativa es aceptar que
+la home siga en ~5,7 s. Es una decisión de marca, no técnica.
