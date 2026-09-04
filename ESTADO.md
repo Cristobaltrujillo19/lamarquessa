@@ -45,8 +45,8 @@ vano.
 | ~~3~~ | ~~Navegación por teclado con foco visible~~ | ✅ **Cerrado el 3 sept.** Recorrido a mano: regla global `:focus-visible` de 2px comprobada con tabulaciones reales, orden = DOM sin ningún `tabindex` positivo, enlace de salto primero. Se arregló lo único que fallaba: el lightbox no retenía el tabulador |
 | **4** | Probar en 320 / 390 / 768 / 1440 px | Fase 5 |
 | ~~5~~ | ~~Validar JSON-LD~~ | ✅ **Cerrado el 3 sept.** Los cinco tipos bien formados, las imágenes del `Product` responden 200, `Organization` y `WebSite` limpios. **Cero errores.** Se añadió `BreadcrumbList` a las cuatro páginas que no lo tenían |
-| ~~6~~ | ~~Medir Core Web Vitals~~ | ✅ Cerrado, línea base en §15. Falta el dato de CAMPO, que depende del #17 |
-| ~~7~~ | ~~Lighthouse móvil~~ | ✅ Cerrado, §15. **SEO 100 y A11y 96 cumplen; Rendimiento 59-62 NO** |
+| ~~6~~ | ~~Medir Core Web Vitals~~ | ✅ Cerrado, línea base en §15. El dato de CAMPO (CrUX) sigue sin existir, pero **no depende de nadie**: hace falta más tráfico para que Google junte muestra |
+| ~~7~~ | ~~Lighthouse móvil~~ | ✅ Cerrado, §15. Cifras REALES (devtools): **SEO 100 y A11y 100 cumplen; Rendimiento NO** — home 45-49, ficha 58-60 |
 | ~~8~~ | ~~Banner de cookies~~ | ✅ **Cerrado el 3 sept.** **Informativo, no opt-in**, por decisión del dueño: el mercado es Colombia y la Ley 1581 no exige consentimiento previo. Rechazar apaga de verdad (Consent Mode `denied` + `fbq revoke`) y se re-aplica en cada carga. ⚠️ Si algún día se vende habitualmente a Europa hay que pasarlo a opt-in |
 | **9** | `CAMBIOS.md` | |
 
@@ -56,8 +56,12 @@ vano.
 |---|---|---|
 | **10** | Escasez honesta: numeración de pieza | ¿Desde qué número arranca el contador? |
 | **11** | Vista previa de las iniciales (punto 7 del dueño) | ¿El grabado va en relieve o hundido? ¿Hay foto de una pieza ya grabada? |
-| **12** | Los 5 eventos de analítica que faltan | Depende del #17: sin GA4 publicado en GTM no hay dónde medirlos |
+| **12** | Los 5 eventos de analítica que faltan (`view_product`, `whatsapp_click`, `instagram_click`, `faq_open`, `scroll_50`) | **DESBLOQUEADO.** Dependía del #17, que resultó no existir: GA4 recibe datos desde siempre. Se pueden cablear ya, siguiendo el contrato de `docs/HANDOFF-INVENTARIO-ANALITICA.md` |
 | **13** | Fondos horneados de los rayos X | Vienen distintos por pieza (`#EEEAE2`, `#EADCD5`, `#FCFBF7`) sobre un sitio `#EAE8DF`. Hay que **re-renderizar con transparencia**: recolorear por fuera no sirve, porque en los translúcidos el fondo se ve A TRAVÉS del bolso. Las fuentes están en `_backup-fotos-rayos-x-2026-09-02/` |
+
+| **25** | El fallo de envío de correo se traga en silencio | `correoCliente.ts` captura el error de SMTP y solo hace `console.error`. **Un cliente puede pagar y no recibir nada, sin rastro en el panel.** Descubierto en la prueba del §18 |
+| **26** | La pestaña «Enviaron el pedido» de `/panel/carritos` está siempre vacía | `paso: "enviado"` **no lo escribe nadie**, y al llegar a `/gracias` el carrito se vacía y la fila se borra. Decisión: quitar la pestaña, o marcar `enviado` de verdad y dejar de borrar esas filas (§18) |
+| **27** | El vídeo del hero es el LCP de la home | **El 86% del LCP es su descarga** (§17). Quitarlo en móvil pondría la home a la altura de la ficha (~3 s). Se decidió mantenerlo el 2 sept, **antes de saber esto** |
 
 ### Bloque C — bloqueado esperando material del dueño
 
