@@ -59,7 +59,7 @@ vano.
 | ~~12~~ | ~~Los 5 eventos de analítica que faltan~~ | ✅ **Cerrado el 4 sept, y el punto estaba casi todo mal.** Cuatro de los cinco **ya existían y estaban cableados** (`view_item`, `whatsapp_click`, `instagram_click`, `faq_open`). Solo faltaba `scroll_50`, ahora añadido. Verificado en producción capturando las peticiones: `faq_open` llega a GA4 **y** a Meta (§19) |
 | **13** | Fondos horneados de los rayos X | Vienen distintos por pieza (`#EEEAE2`, `#EADCD5`, `#FCFBF7`) sobre un sitio `#EAE8DF`. Hay que **re-renderizar con transparencia**: recolorear por fuera no sirve, porque en los translúcidos el fondo se ve A TRAVÉS del bolso. Las fuentes están en `_backup-fotos-rayos-x-2026-09-02/` |
 
-| **25** | El fallo de envío de correo se traga en silencio | `correoCliente.ts` captura el error de SMTP y solo hace `console.error`. **Un cliente puede pagar y no recibir nada, sin rastro en el panel.** Descubierto en la prueba del §18 |
+| **25** | El fallo de envío de correo se traga en silencio | ⚠️ **NO es un bug observado: el correo funciona.** En la prueba del §18 llegó, solo tardó un poco. Es un riesgo latente: `correoCliente.ts` captura el error de SMTP y solo hace `console.error`, así que el día que Gmail falle, el cliente no recibirá nada y en el panel no quedará rastro. **Prioridad baja** |
 | **26** | La pestaña «Enviaron el pedido» de `/panel/carritos` está siempre vacía | `paso: "enviado"` **no lo escribe nadie**, y al llegar a `/gracias` el carrito se vacía y la fila se borra. Decisión: quitar la pestaña, o marcar `enviado` de verdad y dejar de borrar esas filas (§18) |
 | **27** | El vídeo del hero es el LCP de la home | **El 86% del LCP es su descarga** (§17). Quitarlo en móvil pondría la home a la altura de la ficha (~3 s). Se decidió mantenerlo el 2 sept, **antes de saber esto** |
 
@@ -988,7 +988,7 @@ nada.
 | `mpPaymentId` | **`176110884951`**, coincide con la operación del recibo ✅ |
 | `pagadoEn` | **49 segundos** después de crear el pedido ✅ |
 | Cupón `usados` | **1** ✅ |
-| Correo de confirmación | Llegó ✅ |
+| Correo de confirmación | Llegó ✅ (con algo de retraso) |
 | Inventario | No baja al pagar — **es por diseño**, baja al despachar |
 
 ### ⚠️ Mercado Pago no te deja comprarte a ti mismo
@@ -1022,11 +1022,15 @@ completados viven en `pedidos`) o marcar `enviado` de verdad antes de vaciar y
 dejar de borrar esas filas (da la conversión del embudo completo, a cambio de
 guardar compras completadas en una tabla pensada para abandonos).
 
-### 🐛 El fallo de correo se traga en silencio
+### El correo funciona (y una nota, no un bug)
 
-`correoCliente.ts` captura el error de SMTP y solo hace `console.error`. Si
-Gmail falla, **el cliente paga y nunca se entera, y en el panel no queda ni
-rastro**. Merece guardar en el pedido si el correo salió o no.
+**El correo de confirmación llegó**, solo tardó un poco. No hay ningún fallo
+observado en el envío.
+
+Lo que sí conviene saber: `correoCliente.ts` captura el error de SMTP y solo
+hace `console.error`. El día que Gmail falle, el cliente no recibirá nada y en
+el panel no quedará rastro. Es prevención, no una corrección: **prioridad
+baja** (#25).
 
 ---
 
