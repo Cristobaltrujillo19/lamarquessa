@@ -71,7 +71,7 @@ vano.
 |---|---|
 | **14** | Mockups de colores con el fondo de la palmerita (punto 3) — esperando fotos |
 | **15** | Prueba social: firma de la diseñadora, foto del taller, contenido de clientes |
-| **16** | Foto macro de la textura 3D — el diferenciador que hoy no se ve |
+| **16** | Foto macro de la textura 3D — el diferenciador que hoy no se ve. ⚠️ **NO se puede recortar de las fotos de estudio: son renders 3D, no fotografías.** Un macro de un render sería un primer plano de algo que no existe |
 
 ### Bloque D — solo los cierra el dueño, y son los que frenan la venta
 
@@ -1122,3 +1122,43 @@ tráfico (#22).**
 ¿tiene sentido ofrecer acabados que no se pueden enseñar? Esconderlos hasta
 tener fotos reduce la variedad aparente, pero elimina un problema de confianza
 y el riesgo de devoluciones por «no era el color que esperaba».
+
+---
+
+## 21. Las fotos de estudio son RENDERS, no fotografías (4 de septiembre)
+
+Descubierto al intentar recortar un macro de la textura para el #16.
+
+`bolso-*-impresion-3d-frente.jpg` y `bolso-*-impresion-3d-angulo.jpg` son
+**renders 3D**: fondo de estudio limpio y reflejo perfecto bajo la pieza. Solo
+`-en-uso` y `-ambiente` son fotografías reales.
+
+**Consecuencias, y son dos:**
+
+1. **El #16 no se puede resolver recortando.** Un macro sacado de un render
+   sería un primer plano de una superficie que no existe. La textura impresa y
+   pulida a mano es lo que justifica el precio; enseñar CGI en su lugar es
+   justo lo contrario de lo que el punto persigue, y si alguien lo nota
+   destruye la confianza en vez de construirla.
+2. **Y explica por qué faltan acabados.** Los renders existen en los colores
+   que se modelaron. Manglar y Marea no tienen fotos porque nunca se
+   renderizaron ni se fotografiaron.
+
+### Una sola sesión cierra el #16 y el #28
+
+Guía de toma preparada para el dueño (artefacto publicado el 4 sept). Lo
+esencial, por si se pierde el enlace:
+
+- **Luz RASANTE, de lado.** Es lo único técnico que decide si la foto sirve:
+  de frente o con flash el relieve desaparece y la pieza parece lisa.
+- Macro de textura en **Amanecer**, horizontal, llenando el encuadre. Una sola
+  sirve para todo el sitio.
+- Manglar y Marea: frente y ángulo de las cuatro piezas.
+- Una muestra de material (`fotoReferencia`) por acabado — hoy el selector
+  dice «Referencia pendiente» en tres de los cinco.
+- Originales sin editar, mínimo 2000 px el lado largo. El recorte a las cuatro
+  tallas lo hace el pipeline (§ del commit de fotos responsive).
+
+**Trabajo posterior estimado: media hora.** Convertir, meter en `fotoColores`
+y `fotoReferencia`, correr la mutación y desplegar. El aviso de «todavía no
+tenemos fotos» desaparece solo en los acabados que se cubran.
