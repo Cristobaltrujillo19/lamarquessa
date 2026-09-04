@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import GaleriaPieza from "./GaleriaPieza";
+import { coloresConFoto } from "@/lib/productos";
+import { enlaceWhatsApp } from "@/lib/site";
 import SelectorColor from "./SelectorColor";
 import {
   type Color,
@@ -65,6 +67,20 @@ export default function ConfiguradorPieza({ producto }: { producto: Producto }) 
 
   const color =
     producto.colores.find((c) => c.id === colorId) ?? producto.colores[0];
+
+  /** ¿El acabado elegido tiene alguna foto de ESTA pieza?
+   *
+   *  Medido el 4 de septiembre de 2026 (§20 del ESTADO): Manglar y Marea no
+   *  tienen ni una sola toma en todo el catálogo. Quien los elige ve las fotos
+   *  en Amanecer con su marca de agua, que dice la verdad pero se lee como una
+   *  etiqueta, no como un aviso.
+   *
+   *  El selector ya avisaba, pero solo en el panel que se asoma al pasar el
+   *  cursor o tocar: un aviso pasajero para un desajuste permanente. Este se
+   *  queda al lado del precio, que es donde se decide. */
+  const acabadoSinFotos = !coloresConFoto(producto).some(
+    (c) => c.id === color.id,
+  );
   const tamano =
     producto.tamanos.find((t) => t.id === tamanoId) ?? producto.tamanos[0];
 
@@ -235,6 +251,27 @@ export default function ConfiguradorPieza({ producto }: { producto: Producto }) 
             </strong>
             {color.descripcion ? `. ${color.descripcion}` : ""}
           </p>
+
+          {/* No se esconde el acabado ni se disfraza la foto: se dice. Y el
+              hueco se convierte en una conversación, que para una pieza de
+              este precio convierte mejor que una foto de archivo. */}
+          {acabadoSinFotos && (
+            <p className={`cuerpo ${styles.avisoSinFoto}`} aria-live="polite">
+              Todavía no tenemos fotos de {producto.nombre} en{" "}
+              {color.nombre}: las de arriba son de otro acabado.{" "}
+              <a
+                href={enlaceWhatsApp(
+                  `Hola, quiero ver una foto real de ${producto.nombre} en color ${color.nombre}.`,
+                )}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="link-terciario"
+              >
+                Pídenos una foto real por WhatsApp
+              </a>
+              .
+            </p>
+          )}
 
           {/* Sin esta pista, la vista previa es un secreto: nadie pasa el
               cursor por encima de un cuadradito de color a ver qué pasa. */}

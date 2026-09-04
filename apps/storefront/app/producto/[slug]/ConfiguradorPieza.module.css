@@ -315,3 +315,16 @@
 @media (max-width: 860px) {
   .vistaColor { width: 100%; }
 }
+
+/* Aviso de acabado sin fotos. No va en rojo de error: no es un fallo, es una
+   advertencia honesta, y pintarla de alarma junto al precio asusta más de lo
+   que informa. Se apoya en el cobre de la marca. */
+.avisoSinFoto {
+  margin-top: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  border-left: 2px solid var(--cobre-texto);
+  background: var(--espuma);
+  color: var(--tinta-70);
+  font-size: 14px;
+  line-height: 1.5;
+}
