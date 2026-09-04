@@ -378,3 +378,24 @@ export function trackEmailClick(location: string): void {
   enviarEvento("email_click", { link_location: location });
   enviarEventoMeta("Contact", { link_location: location, channel: "email" });
 }
+
+/**
+ * Profundidad de lectura. Se dispara UNA vez por página, cuando la persona ha
+ * llegado a la mitad del documento.
+ *
+ * Es la única señal que distingue "entró y se fue" de "leyó". Sin ella, una
+ * visita de tres segundos y una de tres minutos cuentan igual, y con el
+ * tráfico de Instagram —que llega en frío— esa diferencia es justo lo que hay
+ * que saber.
+ *
+ * `porcentaje` queda como argumento y no horneado en el nombre para poder
+ * añadir el 75 o el 90 sin tocar el schema del evento.
+ */
+export function trackScroll(porcentaje: number): void {
+  enviarEvento(`scroll_${porcentaje}`, { percent_scrolled: porcentaje });
+  enviarEventoMeta(
+    `Scroll${porcentaje}`,
+    { percent_scrolled: porcentaje },
+    "trackCustom",
+  );
+}

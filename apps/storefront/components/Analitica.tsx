@@ -1,6 +1,7 @@
 "use client";
 
 import Script from "next/script";
+import ScrollTracker from "./ScrollTracker";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, Suspense } from "react";
 
@@ -57,6 +58,12 @@ export default function Analitica({ gtmId, ga4Id, metaPixelId }: Props) {
           </Suspense>
         </>
       )}
+      {/* Va aqui dentro y no en el layout para heredar las dos guardas de
+          arriba: no se monta en /panel y no se monta si no hay ningun
+          proveedor configurado. */}
+      <Suspense fallback={null}>
+        <ScrollTracker />
+      </Suspense>
     </>
   );
 }

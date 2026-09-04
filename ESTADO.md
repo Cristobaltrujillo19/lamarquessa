@@ -6,7 +6,7 @@ El porting de la interfaz nueva terminó y está desplegado. No hay ramas
 pendientes de fusionar.
 
 > ⚠️ **Antes de tocar nada, lee `docs/HANDOFF-INVENTARIO-ANALITICA.md`.** Es el
-> contrato de los 17 eventos de analítica que no se pueden romper, y trae la
+> contrato de los 18 eventos de analítica que no se pueden romper, y trae la
 > verificación de paridad del porting.
 
 ---
@@ -56,7 +56,7 @@ vano.
 |---|---|---|
 | **10** | Escasez honesta: numeración de pieza | ¿Desde qué número arranca el contador? |
 | **11** | Vista previa de las iniciales (punto 7 del dueño) | ¿El grabado va en relieve o hundido? ¿Hay foto de una pieza ya grabada? |
-| **12** | Los 5 eventos de analítica que faltan (`view_product`, `whatsapp_click`, `instagram_click`, `faq_open`, `scroll_50`) | **DESBLOQUEADO.** Dependía del #17, que resultó no existir: GA4 recibe datos desde siempre. Se pueden cablear ya, siguiendo el contrato de `docs/HANDOFF-INVENTARIO-ANALITICA.md` |
+| ~~12~~ | ~~Los 5 eventos de analítica que faltan~~ | ✅ **Cerrado el 4 sept, y el punto estaba casi todo mal.** Cuatro de los cinco **ya existían y estaban cableados** (`view_item`, `whatsapp_click`, `instagram_click`, `faq_open`). Solo faltaba `scroll_50`, ahora añadido. Verificado en producción capturando las peticiones: `faq_open` llega a GA4 **y** a Meta (§19) |
 | **13** | Fondos horneados de los rayos X | Vienen distintos por pieza (`#EEEAE2`, `#EADCD5`, `#FCFBF7`) sobre un sitio `#EAE8DF`. Hay que **re-renderizar con transparencia**: recolorear por fuera no sirve, porque en los translúcidos el fondo se ve A TRAVÉS del bolso. Las fuentes están en `_backup-fotos-rayos-x-2026-09-02/` |
 
 | **25** | El fallo de envío de correo se traga en silencio | `correoCliente.ts` captura el error de SMTP y solo hace `console.error`. **Un cliente puede pagar y no recibir nada, sin rastro en el panel.** Descubierto en la prueba del §18 |
@@ -201,7 +201,7 @@ npx convex deploy -y               # desde apps/storefront, para desplegar a PRO
 
 ### ✅ Configuración
 - **Vars en Convex prod**: `ADMIN_API_SECRET`, `MP_ACCESS_TOKEN`, `SITE_URL`, `GMAIL_USER`, `GMAIL_APP_PASSWORD`. Todas puestas y verificadas.
-- **Analítica**: GTM `GTM-56LQL4LL` + GA4 `G-Q5PW0TY6SX` (gtag.js directo) + Meta Pixel `1046242051600058`. 17 eventos cableados — ver `docs/HANDOFF-INVENTARIO-ANALITICA.md`.
+- **Analítica**: GTM `GTM-56LQL4LL` + GA4 `G-Q5PW0TY6SX` (gtag.js directo) + Meta Pixel `1046242051600058`. **18 eventos cableados y verificados en producción** el 4 de septiembre — ver `docs/HANDOFF-INVENTARIO-ANALITICA.md`.
 - **Cuenta MP**: `id=515941663`, nombre visible **"Amor y Brillitos"** (paraguas para SER + La Marquessa).
 
 ---
@@ -1027,3 +1027,48 @@ guardar compras completadas en una tabla pensada para abandonos).
 `correoCliente.ts` captura el error de SMTP y solo hace `console.error`. Si
 Gmail falla, **el cliente paga y nunca se entera, y en el panel no queda ni
 rastro**. Merece guardar en el pedido si el correo salió o no.
+
+---
+
+## 19. Los eventos de analítica llegan de verdad (4 de septiembre de 2026)
+
+**El #12 estaba casi todo mal.** Decía que faltaban cinco eventos; **cuatro ya
+existían y estaban cableados** desde hacía tiempo. Solo faltaba uno.
+
+| Evento del #12 | Realidad |
+|---|---|
+| `view_product` | Ya existía como `trackViewItem` → `ViewItemTracker.tsx` |
+| `whatsapp_click` | Ya existía, en **4** sitios |
+| `instagram_click` | Ya existía, en 2 sitios |
+| `faq_open` | Ya existía → `Pregunta.tsx` |
+| `scroll_50` | ❌ **El único que faltaba de verdad.** Añadido |
+
+### Verificado en producción, no leído del código
+
+Se capturaron las peticiones de red reales al abrir una pregunta del FAQ:
+
+- **GA4** → `/g/collect?...&en=faq_open`
+- **Meta** → `facebook.com/tr/?...&ev=FaqOpen`
+
+⚠️ **gtag AGRUPA los eventos.** El de GA4 tardó **31 segundos** en salir. Al
+verificar analítica hay que esperar de verdad: mirar a los 3 segundos y
+concluir que «no dispara» es un falso negativo, y estuvo a punto de serlo aquí.
+
+### `scroll_50`
+
+`lib/analytics.ts` → `trackScroll(50)`, y `components/ScrollTracker.tsx`
+montado **dentro de `Analitica`** para heredar sus dos guardas: no se monta en
+`/panel` ni si no hay proveedores configurados.
+
+Dos decisiones deliberadas:
+
+1. **El listener se quita a sí mismo** al disparar. El sitio ya arrastra 1,2 s
+   de bloqueo del hilo principal (§15) y no se le añade un handler permanente.
+   Va `passive`.
+2. **No se comprueba al montar.** En una página corta, media pantalla ya es más
+   del 50% del documento sin que nadie haga nada: se mandaría el evento en
+   cada visita rebotada, que es exactamente lo que existe para distinguir.
+
+Verificado con desplazamiento real del navegador: no dispara al 25%, dispara
+una sola vez al pasar la mitad, y **no se repite** al seguir bajando ni al
+subir y volver a bajar.

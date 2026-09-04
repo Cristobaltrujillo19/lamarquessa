@@ -138,6 +138,13 @@ preservar durante el porting.**
 | Click en link Instagram del footer | `trackInstagramClick(location)` | `instagram_click` (custom) | `InstagramClick` (custom) | `app/Footer.tsx` |
 | Click en mailto del footer | `trackEmailClick(location)` | `email_click` (custom) | `Contact` (estándar, `channel:"email"`) | `app/Footer.tsx` |
 | Abrir una pregunta del FAQ | `trackFaqOpen(id, pregunta)` | `faq_open` (custom, con `faq_id` y `faq_question`) | `FaqOpen` (custom) | `app/preguntas-frecuentes/Pregunta.tsx` onToggle, solo en apertura (no en cierre) |
+| Llegar a la mitad del documento | `trackScroll(50)` | `scroll_50` (custom, con `percent_scrolled`) | `Scroll50` (custom) | `components/ScrollTracker.tsx`, montado dentro de `Analitica`. Una vez por página; el listener se quita a sí mismo al disparar |
+
+
+⚠️ **`scroll_50` NO se comprueba al montar, a propósito.** En una página corta
+media pantalla ya es más del 50% del documento sin que nadie haga nada, y eso
+mandaría el evento en cada visita rebotada — justo lo que existe para
+distinguir. Hace falta un desplazamiento real.
 
 ---
 
