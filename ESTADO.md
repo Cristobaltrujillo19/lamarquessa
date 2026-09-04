@@ -63,6 +63,8 @@ vano.
 | **26** | La pestaña «Enviaron el pedido» de `/panel/carritos` está siempre vacía | `paso: "enviado"` **no lo escribe nadie**, y al llegar a `/gracias` el carrito se vacía y la fila se borra. Decisión: quitar la pestaña, o marcar `enviado` de verdad y dejar de borrar esas filas (§18) |
 | **27** | El vídeo del hero es el LCP de la home | **El 86% del LCP es su descarga** (§17). Quitarlo en móvil pondría la home a la altura de la ficha (~3 s). Se decidió mantenerlo el 2 sept, **antes de saber esto** |
 
+| 🔴 **28** | **Dos de los cinco acabados no se pueden ver** | Medido en producción el 4 sept: Manglar y Marea tienen **cero fotos y cero muestra de material**; Horizonte tiene 2 fotos y ninguna muestra. Quien elige Marea ve **una foto beige rotulada «Color Amanecer»** y paga $195.000-255.000 a ciegas. **Es el mayor freno a la venta del sitio**, por encima de cualquier cosa de rendimiento o analítica (§20) |
+
 ### Bloque C — bloqueado esperando material del dueño
 
 | # | Pendiente |
@@ -1076,3 +1078,47 @@ Dos decisiones deliberadas:
 Verificado con desplazamiento real del navegador: no dispara al 25%, dispara
 una sola vez al pasar la mitad, y **no se repite** al seguir bajando ni al
 subir y volver a bajar.
+
+---
+
+## 20. Lo que de verdad frena la venta (4 de septiembre de 2026)
+
+Pregunta del dueño: *«hagamos lo que nos traiga más ventas»*. La respuesta,
+medida, **no estaba en la lista numerada**.
+
+### Dos de los cinco acabados son invisibles
+
+| Acabado | Fotos de producto | Muestra del material |
+|---|---|---|
+| Amanecer | 12 | sí |
+| Caribe | 3 | sí |
+| Horizonte | 2 | **NO** |
+| **Manglar** | **0** | **NO** |
+| **Marea** | **0** | **NO** |
+
+Comprobado en producción con `/producto/montt?color=marea`: la primera foto es
+`bolso-montt-impresion-3d-frente` y la marca de agua dice **«Color Amanecer»**.
+El cliente elige azul marino, ve un bolso beige, y tiene que pagar entre
+$195.000 y $255.000 confiando.
+
+**No es un bug**: la marca de agua dice la verdad sobre la foto que se está
+enseñando. El problema es que no hay ninguna foto que enseñar.
+
+### Y el embudo está casi vacío
+
+En producción, a 4 de septiembre: **1 carrito abandonado** (sin datos de
+contacto) y **2 pedidos reales** en toda la historia, uno de ellos la prueba
+del webhook. Optimizar la conversión con ese volumen es prematuro: la
+restricción no es la tasa, es que entre gente y que pueda ver lo que compra.
+
+### Corolario para priorizar
+
+Nada de lo que queda en el Bloque A trae una venta. El #26 (la pestaña vacía)
+es limpieza; el #25 es prevención; el #9 es documentación. **El trabajo con
+retorno está en el material fotográfico (#14, #15, #16 y este #28) y en traer
+tráfico (#22).**
+
+⚠️ Y hay una **decisión de negocio** detrás del #28, no solo de producción:
+¿tiene sentido ofrecer acabados que no se pueden enseñar? Esconderlos hasta
+tener fotos reduce la variedad aparente, pero elimina un problema de confianza
+y el riesgo de devoluciones por «no era el color que esperaba».
