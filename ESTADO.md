@@ -1162,3 +1162,88 @@ esencial, por si se pierde el enlace:
 **Trabajo posterior estimado: media hora.** Convertir, meter en `fotoColores`
 y `fotoReferencia`, correr la mutación y desplegar. El aviso de «todavía no
 tenemos fotos» desaparece solo en los acabados que se cubran.
+
+---
+
+## 22. La tienda deja de ser solo bolsos (4 de septiembre de 2026)
+
+Decisión del dueño: entran **scrunchies** y **charms**. Es el primer cambio de
+catálogo desde que existe la tienda.
+
+### Los dos productos
+
+| | Scrunchie | Charm **Múcura** |
+|---|---|---|
+| Variantes | Ninguna, talla única | Amanecer y Manglar, talla única |
+| Qué es | — | Una conchita con anilla de llavero |
+| Precio | **[PENDIENTE: dato]** | **[PENDIENTE: dato]** |
+
+**El charm es el único producto del catálogo que NO exige tener un bolso La
+Marquessa.** Se cuelga de cualquier bolso, de unas llaves, de una mochila. Es
+la puerta de entrada y el producto de regalo, y eso cambia a quién le puede
+vender la tienda.
+
+### Por qué se llama Múcura
+
+Isla del archipiélago de San Bernardo, Caribe colombiano. Encaja en el patrón
+de los cuatro bolsos, que son nombres de lugares de costa (Menorca y Mallorca
+en el Mediterráneo, Kruta en el Caribe hondureño, Montt en el sur de Chile).
+
+⚠️ **La palabra tiene dos vidas en Colombia**, y se eligió sabiéndolo: una
+múcura es también una **jarra de barro** hecha a mano, y existe la canción
+popular *«la múcura está en el suelo»*. Se consideró que juega a favor —
+vasija artesanal colombiana sobre una marca de piezas hechas a mano en
+Colombia— pero conviene no sorprenderse si aparece en los comentarios.
+
+Grafía: **Múcura**, esdrújula, con tilde. Slug `mucura`, sin tilde, como los
+otros cuatro.
+
+Se descartaron: **Cayo** (rechazado por el dueño), **Dragonera** y **Cabrera**
+(islas pequeñas de Mallorca, la lógica más sistemática), **Taganga** (arrastra
+fama de pueblo mochilero) y **Barú** (aire de souvenir de playa, choca con el
+precio).
+
+### Lo que hay que cambiar en la tienda
+
+Verificado en el código el 4 de septiembre. **Lo que ya sirve:** `categoria`
+es un campo libre, y todo lo específico de bolso ya es opcional en el esquema
+(`altoCm`, `anchoCm`, `profundidadCm`, `material`, `fotoRayosX`, `insignia`,
+`serie`). Checkout, cupones, correos, inventario y webhook son agnósticos.
+
+**Lo que se rompe:**
+
+1. **La sección «Medidas» siempre se renderiza** → un scrunchie mostraría un
+   encabezado vacío.
+2. **La personalización se ofrece siempre** → «Iniciales +$30.000» sobre un
+   accesorio barato.
+3. **`item_category: "Bolsos"` está hardcodeado en 5 sitios** de analítica.
+4. **`/tienda` no agrupa por categoría.**
+5. La rejilla de la home es de 4 por fila, elegida para que nunca quede una
+   fila coja.
+
+**El plazo deja de ser del sitio y pasa a ser del producto.** Hoy
+`PRODUCCION_SEMANAS = 2` vive en `lib/site.ts` y se usa en ocho sitios,
+incluidos los correos y el `handlingTime` del JSON-LD. Los accesorios salen en
+**no más de 4 días**. Diseño acordado: campo opcional por producto, y **el
+pedido hereda el plazo MAYOR de sus líneas** — si el carrito lleva un bolso y
+un charm, sale cuando esté el bolso. Así el mensaje del carrito y de los
+correos sigue siendo uno solo y sigue siendo cierto.
+
+### Envío gratis desde un monto
+
+Decisión del dueño: se activa. `ENVIO_GRATIS_DESDE = 350_000` ya está
+**declarado en `lib/site.ts` y no se usa en ninguna parte**; el checkout
+siempre cobra la tarifa plana.
+
+⚠️ **Recomendación: bajarlo a $250.000**, porque a 350.000 no lo alcanza nadie:
+
+| Bolso | Umbral 350.000 | Umbral 250.000 |
+|---|---|---|
+| Montt $195.000 | faltan $155.000 | faltan **$55.000** |
+| Menorca $210.000 | faltan $140.000 | faltan **$40.000** |
+| Kruta $230.000 | faltan $120.000 | faltan **$20.000** |
+| Mallorca $255.000 | faltan $95.000 | **ya gratis** |
+
+A 250.000 cada bolso queda a un accesorio de distancia del envío gratis, que
+es el trabajo que hace un accesorio aquí: subir el valor del pedido, no
+venderse suelto. **Sin confirmar por el dueño.**
