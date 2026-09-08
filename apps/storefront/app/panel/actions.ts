@@ -335,8 +335,11 @@ export async function crearCuponAction(
   const tipo = String(formData.get("tipo") ?? "") as
     | "porcentaje"
     | "fijo"
-    | "envio_gratis";
-  if (!["porcentaje", "fijo", "envio_gratis"].includes(tipo)) {
+    | "envio_gratis"
+    | "personalizacion";
+  if (
+    !["porcentaje", "fijo", "envio_gratis", "personalizacion"].includes(tipo)
+  ) {
     return { error: "Elige un tipo de descuento." };
   }
   if (!codigo) return { error: "El código es obligatorio." };

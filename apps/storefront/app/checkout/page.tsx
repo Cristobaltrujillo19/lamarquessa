@@ -146,13 +146,20 @@ export default function CheckoutPage() {
   // Mismo cálculo que el servidor: lo que se enseña y lo que se cobra no
   // pueden separarse nunca.
   const envio = envioCop(subtotal);
+  /** Lo que suman los add-ons de personalización del carrito. Es lo que
+   *  regala un cupón de tipo `personalizacion`. Se manda a la vista previa
+   *  para que la cifra que se enseña coincida con la que cobra el servidor. */
+  const addOnsCop = lineas.reduce(
+    (s, l) => s + addOnsPorUnidad(l.personalizacion) * l.cantidad,
+    0,
+  );
   const descuento = cupon?.descuentoCop ?? 0;
   const total = Math.max(0, subtotal + envio - descuento);
 
   async function aplicarCupon() {
     setValidandoCupon(true);
     setAvisoCupon(null);
-    const r = await revisarCupon(codigo, subtotal, envio);
+    const r = await revisarCupon(codigo, subtotal, envio, addOnsCop);
     if (r.valido) {
       setCupon({ codigo: r.codigo, descuentoCop: r.descuentoCop });
       setAvisoCupon(null);

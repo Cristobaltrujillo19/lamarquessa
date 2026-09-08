@@ -17,14 +17,30 @@ const tipoV = v.union(
   v.literal("porcentaje"),
   v.literal("fijo"),
   v.literal("envio_gratis"),
+  v.literal("personalizacion"),
 );
 
-// Cuánto descuenta un cupón dado un subtotal (bolsos) y el envío.
+/**
+ * Cuánto descuenta un cupón.
+ *
+ * `addOnsCop` es lo que suman los add-ons de personalización del carrito
+ * (iniciales +30.000, color +60.000, por unidad). Va aparte del subtotal a
+ * propósito: un cupón de "personalización gratis" tiene que descontar
+ * EXACTAMENTE eso y nada más.
+ *
+ * Con un `fijo` de 90.000 no se puede hacer: su tope es el subtotal entero,
+ * así que descontaría 90.000 de un bolso sin personalizar. Ver §24 del ESTADO.
+ */
 function calcularDescuentoCop(
   cupon: Pick<Doc<"cupones">, "tipo" | "valor">,
   subtotalCop: number,
   envioCop: number,
+  addOnsCop: number,
 ): number {
+  if (cupon.tipo === "personalizacion") {
+    // Nunca más de lo que se personalizó, y nunca más que el subtotal.
+    return Math.min(subtotalCop, Math.max(0, Math.round(addOnsCop)));
+  }
   if (cupon.tipo === "porcentaje") {
     return Math.min(subtotalCop, Math.round((subtotalCop * cupon.valor) / 100));
   }
@@ -58,8 +74,15 @@ function motivoInvalido(
 
 // === Validación pública (la llama el checkout para mostrar el descuento) ===
 export const validarCupon = query({
-  args: { codigo: v.string(), subtotalCop: v.number(), envioCop: v.number() },
-  handler: async (ctx, { codigo, subtotalCop, envioCop }) => {
+  args: {
+    codigo: v.string(),
+    subtotalCop: v.number(),
+    envioCop: v.number(),
+    // Opcional para no romper a quien ya llamaba con tres argumentos: sin
+    // add-ons, un cupón de personalización descuenta 0, que es correcto.
+    addOnsCop: v.optional(v.number()),
+  },
+  handler: async (ctx, { codigo, subtotalCop, envioCop, addOnsCop }) => {
     const cod = codigo.trim().toUpperCase();
     const cupon = cod
       ? await ctx.db
@@ -75,15 +98,25 @@ export const validarCupon = query({
       valido: true as const,
       codigo: cupon.codigo,
       tipo: cupon.tipo,
-      descuentoCop: calcularDescuentoCop(cupon, subtotalCop, envioCop),
+      descuentoCop: calcularDescuentoCop(
+        cupon,
+        subtotalCop,
+        envioCop,
+        addOnsCop ?? 0,
+      ),
     };
   },
 });
 
 // === Re-validación interna (la usará createCheckout antes de crear el pago) ===
 export const evaluarCupon = internalQuery({
-  args: { codigo: v.string(), subtotalCop: v.number(), envioCop: v.number() },
-  handler: async (ctx, { codigo, subtotalCop, envioCop }) => {
+  args: {
+    codigo: v.string(),
+    subtotalCop: v.number(),
+    envioCop: v.number(),
+    addOnsCop: v.optional(v.number()),
+  },
+  handler: async (ctx, { codigo, subtotalCop, envioCop, addOnsCop }) => {
     const cod = codigo.trim().toUpperCase();
     const cupon = cod
       ? await ctx.db
@@ -98,7 +131,12 @@ export const evaluarCupon = internalQuery({
     return {
       ok: true as const,
       codigo: cupon.codigo,
-      descuentoCop: calcularDescuentoCop(cupon, subtotalCop, envioCop),
+      descuentoCop: calcularDescuentoCop(
+        cupon,
+        subtotalCop,
+        envioCop,
+        addOnsCop ?? 0,
+      ),
     };
   },
 });
@@ -142,6 +180,8 @@ export const crearCupon = mutation({
     if (a.tipo === "porcentaje" && (a.valor <= 0 || a.valor > 100)) {
       throw new Error("El porcentaje debe estar entre 1 y 100");
     }
+    // `personalizacion` ignora `valor`, igual que `envio_gratis`: lo que
+    // descuenta lo decide el carrito, no el cupón.
     if (a.tipo === "fijo" && a.valor <= 0) {
       throw new Error("El valor del descuento debe ser mayor a 0");
     }
@@ -149,7 +189,10 @@ export const crearCupon = mutation({
     await ctx.db.insert("cupones", {
       codigo,
       tipo: a.tipo,
-      valor: a.tipo === "envio_gratis" ? 0 : Math.round(a.valor),
+      valor:
+        a.tipo === "envio_gratis" || a.tipo === "personalizacion"
+          ? 0
+          : Math.round(a.valor),
       activo: true,
       expiraEn: a.expiraEn,
       usosMax: a.usosMax,
@@ -180,5 +223,82 @@ export const eliminarCupon = mutation({
   handler: async (ctx, { secret, cuponId }) => {
     exigirSecreto(secret);
     await ctx.db.delete(cuponId);
+  },
+});
+
+/**
+ * Siembra los once cupones de la feria de septiembre de 2026.
+ *
+ * Idempotente: si un código ya existe, lo actualiza en vez de duplicarlo, así
+ * que se puede correr dos veces sin repartir premios de más.
+ *
+ * ⚠️ Los códigos llevan un sufijo aleatorio de cuatro caracteres A PROPÓSITO.
+ * Sin él, `SARA` o `AMALIA` los adivina cualquiera probando nombres comunes, y
+ * son ocho personalizaciones gratis de hasta 90.000 cada una: 720.000 de
+ * exposición. El alfabeto del sufijo excluye O/0 e I/1/L, que se confunden al
+ * dictarlos por teléfono.
+ *
+ * Vencen a los 6 meses. Un premio sin fecha es un pasivo abierto para siempre.
+ */
+export const sembrarCuponesFeria = mutation({
+  args: { secret: v.string() },
+  handler: async (ctx, { secret }) => {
+    exigirSecreto(secret);
+
+    // 8 de septiembre de 2026 + 6 meses.
+    const VENCE = new Date("2027-03-08T23:59:59-05:00").getTime();
+
+    const premios: Array<{
+      codigo: string;
+      persona: string;
+      tipo: "personalizacion" | "porcentaje";
+      valor: number;
+    }> = [
+      // --- Personalización gratis ---
+      { codigo: "MARCELAB-2K8G", persona: "Marcela Botero", tipo: "personalizacion", valor: 0 },
+      { codigo: "TEFAM-FY6C", persona: "Tefa Mejía", tipo: "personalizacion", valor: 0 },
+      { codigo: "ALEJAH-RD39", persona: "Aleja Hernández", tipo: "personalizacion", valor: 0 },
+      { codigo: "SARAC-CW59", persona: "Sara Cardona", tipo: "personalizacion", valor: 0 },
+      { codigo: "AMALIAV-Q5D9", persona: "Amalia Villegas", tipo: "personalizacion", valor: 0 },
+      { codigo: "MPAULAM-TEBC", persona: "María Paula Mejía", tipo: "personalizacion", valor: 0 },
+      { codigo: "STEFANYC-FJ7S", persona: "Stefany Castañeda", tipo: "personalizacion", valor: 0 },
+      { codigo: "EMILIANAR-FE7D", persona: "Emiliana Rada", tipo: "personalizacion", valor: 0 },
+      // --- 10% de descuento ---
+      { codigo: "MAPI-NPGW", persona: "Mapi", tipo: "porcentaje", valor: 10 },
+      { codigo: "SUSANAR-V9WJ", persona: "Susana Restrepo", tipo: "porcentaje", valor: 10 },
+      { codigo: "STEPHANIEA-CZVA", persona: "Stephanie Arango", tipo: "porcentaje", valor: 10 },
+    ];
+
+    const creados: string[] = [];
+    const actualizados: string[] = [];
+
+    for (const p of premios) {
+      const codigo = p.codigo.trim().toUpperCase();
+      const campos = {
+        codigo,
+        tipo: p.tipo,
+        valor: p.valor,
+        activo: true,
+        expiraEn: VENCE,
+        // Personal e intransferible: un solo uso.
+        usosMax: 1,
+      };
+
+      const previo = await ctx.db
+        .query("cupones")
+        .withIndex("by_codigo", (q) => q.eq("codigo", codigo))
+        .unique();
+
+      if (previo) {
+        // `usados` NO se toca: si alguien ya lo canjeó, se respeta.
+        await ctx.db.patch(previo._id, campos);
+        actualizados.push(`${codigo} (${p.persona})`);
+      } else {
+        await ctx.db.insert("cupones", { ...campos, usados: 0 });
+        creados.push(`${codigo} (${p.persona})`);
+      }
+    }
+
+    return { creados, actualizados, vencen: new Date(VENCE).toISOString() };
   },
 });

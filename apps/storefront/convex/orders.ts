@@ -125,6 +125,13 @@ export const createCheckout = action({
       (s, l) => s + (l.precioCop + addOnsPorUnidad(l.personalizacion)) * l.cantidad,
       0,
     );
+    // Lo que suman SOLO los add-ons de personalización. Es lo que regala un
+    // cupón de tipo `personalizacion`, y se calcula aquí desde las líneas ya
+    // revalidadas contra el catálogo: el navegador no lo decide.
+    const addOnsCop = lineas.reduce(
+      (s, l) => s + addOnsPorUnidad(l.personalizacion) * l.cantidad,
+      0,
+    );
     // Envío gratis desde el umbral (§22 del ESTADO). Se calcula SIEMPRE
     // aquí, nunca se acepta del navegador, igual que los precios.
     //
@@ -142,6 +149,7 @@ export const createCheckout = action({
         codigo: args.codigo,
         subtotalCop: subtotal,
         envioCop,
+        addOnsCop,
       });
       if (!r.ok) throw avisoCliente(r.mensaje);
       descuentoCop = r.descuentoCop;

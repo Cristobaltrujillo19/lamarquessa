@@ -100,6 +100,11 @@ export async function revisarCupon(
   codigo: string,
   subtotalCop: number,
   envioCop: number,
+  /** Lo que suman los add-ons de personalización del carrito. Sin esto, un
+   *  cupón de personalización enseñaría 0 de descuento en la vista previa y
+   *  luego descontaría de verdad al pagar: el cliente vería dos cifras
+   *  distintas y desconfiaría con razón. */
+  addOnsCop = 0,
 ) {
   if (!codigo.trim()) return { valido: false as const, mensaje: "Escribe un código." };
   try {
@@ -107,6 +112,7 @@ export async function revisarCupon(
       codigo,
       subtotalCop,
       envioCop,
+      addOnsCop,
     });
   } catch {
     return { valido: false as const, mensaje: "No pudimos validar el código." };

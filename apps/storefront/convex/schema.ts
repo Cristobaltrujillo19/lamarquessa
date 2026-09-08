@@ -313,8 +313,13 @@ export default defineSchema({
       v.literal("porcentaje"),
       v.literal("fijo"),
       v.literal("envio_gratis"),
+      // Regala los add-ons de personalización que la clienta haya elegido, y
+      // SOLO esos. Nació para los premios de la feria de septiembre de 2026:
+      // un cupón `fijo` de 90.000 habría descontado 90.000 aunque no
+      // personalizara nada, porque el tope de `fijo` es el subtotal entero.
+      v.literal("personalizacion"),
     ),
-    valor: v.number(), // % (porcentaje) o COP (fijo); ignorado en envio_gratis
+    valor: v.number(), // % (porcentaje) o COP (fijo); ignorado en envio_gratis y personalizacion
     activo: v.boolean(),
     expiraEn: v.optional(v.number()), // timestamp; vacío = sin vencimiento
     usosMax: v.optional(v.number()), // límite total de usos; vacío = ilimitado
