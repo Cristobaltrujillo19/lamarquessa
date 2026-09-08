@@ -17,7 +17,8 @@ import { addOnsPorUnidad } from "@/lib/personalizacion";
 import {
   ENVIO_DIAS,
   MENSAJES,
-  PRODUCCION_SEMANAS,
+  formatPlazo,
+  plazoPedidoDias,
   envioCop,
   enlaceWhatsApp,
 } from "@/lib/site";
@@ -503,7 +504,8 @@ export default function CheckoutPage() {
             los datos de tu tarjeta.
           </p>
           <p className={styles.notaPie}>
-            Tu bolso se fabrica a pedido: {PRODUCCION_SEMANAS} semanas + {ENVIO_DIAS}{" "}
+            Tu pedido se fabrica a pedido: {formatPlazo(plazoPedidoDias(lineas))} +{" "}
+            {ENVIO_DIAS}{" "}
             días hábiles de envío.
           </p>
 

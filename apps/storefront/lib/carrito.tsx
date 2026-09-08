@@ -26,6 +26,10 @@ export type LineaCarrito = {
   colorNombre: string;
   tamanoId: string;
   tamanoNombre: string;
+  /** Días de fabricación de ESTA pieza. Opcional por la misma razón que
+   *  `categoria`: los carritos ya guardados no la tienen. Ausente = el plazo
+   *  del bolso. */
+  produccionDias?: number;
   /** Categoría del catálogo, para que la analítica no etiquete un scrunchie
    *  como bolso. OPCIONAL a propósito: los carritos que ya viven en
    *  localStorage se guardaron sin ella y no se van a migrar. Ausente cae en

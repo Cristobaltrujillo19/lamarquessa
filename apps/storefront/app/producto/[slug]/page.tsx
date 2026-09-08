@@ -8,7 +8,12 @@ import Aparece from "@/components/v2/Aparece";
 import ConfiguradorPieza from "./ConfiguradorPieza";
 import DeslizadorRayosX from "@/components/v2/DeslizadorRayosX";
 import ViewItemTracker from "./ViewItemTracker";
-import { formatCm, precioDesde, tieneMedidas } from "@/lib/productos";
+import {
+  categoriaDe,
+  formatCm,
+  precioDesde,
+  tieneMedidas,
+} from "@/lib/productos";
 import styles from "./producto.module.css";
 import {
   ENVIO_DIAS,
@@ -107,7 +112,12 @@ export default async function ProductoPage({
   const schemaProducto = {
     "@context": "https://schema.org",
     "@type": "Product",
-    name: `Bolso ${producto.nombre}`,
+    // El prefijo "Bolso" solo donde es cierto: un scrunchie aparecería en
+    // Google como "Bolso Scrunchie".
+    name:
+      categoriaDe(producto) === "Bolsos"
+        ? `Bolso ${producto.nombre}`
+        : producto.nombre,
     description: producto.descripcion.replace(/\s+/g, " ").trim(),
     image: producto.fotos.map((f) => urlAbsoluta(f)),
     sku: producto.slug,

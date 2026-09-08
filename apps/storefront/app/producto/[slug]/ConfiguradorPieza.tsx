@@ -211,6 +211,7 @@ export default function ConfiguradorPieza({ producto }: { producto: Producto }) 
       slug: producto.slug,
       nombre: producto.nombre,
       categoria: categoriaDe(producto),
+      produccionDias: producto.produccionDias,
       colorId: color.id,
       colorNombre: color.nombre,
       tamanoId: tamano.id,

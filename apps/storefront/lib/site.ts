@@ -30,8 +30,41 @@ export const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://lamarquessa.co"
 ).replace(/\/$/, "");
 
-/** Semanas de fabricación: cada bolso se hace a pedido. */
+/** Semanas de fabricación de un BOLSO. Se conserva porque lo usan las
+ *  páginas de texto general (/envios, metadatos de la home), donde hablar de
+ *  días sería más preciso y peor de leer. */
 export const PRODUCCION_SEMANAS = 2;
+
+/** El mismo plazo en días, que es la unidad en la que piensan los productos:
+ *  un charm sale en 4, no en media semana. */
+export const PRODUCCION_DIAS = PRODUCCION_SEMANAS * 7;
+
+/** Plazo de un PEDIDO: el MAYOR de sus líneas.
+ *
+ *  Un carrito con un bolso y un charm sale cuando esté el bolso, no cuando
+ *  esté el charm. Por eso el carrito y los correos siguen diciendo un solo
+ *  plazo y sigue siendo cierto — y por eso NO se puede promediar ni sumar.
+ *
+ *  Sin líneas devuelve el plazo del bolso, que es el que llevaba el sitio
+ *  antes de que existieran los accesorios. */
+export function plazoPedidoDias(
+  lineas: Array<{ produccionDias?: number }>,
+): number {
+  return lineas.reduce(
+    (max, l) => Math.max(max, l.produccionDias ?? PRODUCCION_DIAS),
+    0,
+  ) || PRODUCCION_DIAS;
+}
+
+/** Días a texto. En semanas cuando cae justo, porque "2 semanas" se lee mejor
+ *  que "14 días"; en días cuando no, porque "0,6 semanas" no significa nada. */
+export function formatPlazo(dias: number): string {
+  if (dias >= 7 && dias % 7 === 0) {
+    const s = dias / 7;
+    return s === 1 ? "1 semana" : `${s} semanas`;
+  }
+  return dias === 1 ? "1 día" : `${dias} días`;
+}
 
 /** Envío: tarifa plana nacional (confirmada). */
 export const SHIPPING_COP = 16_500;

@@ -9,8 +9,9 @@ import { trackRemoveFromCart, trackViewCart } from "@/lib/analytics";
 import { addOnsPorUnidad, nombreFuente } from "@/lib/personalizacion";
 import {
   ENVIO_GRATIS_DESDE,
-  PRODUCCION_SEMANAS,
   envioCop,
+  formatPlazo,
+  plazoPedidoDias,
 } from "@/lib/site";
 import styles from "./carrito.module.css";
 
@@ -184,7 +185,7 @@ export default function CarritoPage() {
               </Link>
 
               <p className={`texto-suave ${styles.plazo}`}>
-                Se fabrica a pedido: {PRODUCCION_SEMANAS} semanas antes del
+                Se fabrica a pedido: {formatPlazo(plazoPedidoDias(lineas))} antes del
                 envío.
               </p>
             </aside>
