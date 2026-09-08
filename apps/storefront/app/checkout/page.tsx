@@ -24,6 +24,7 @@ import {
 } from "@/lib/site";
 import { DEPARTAMENTOS } from "@/lib/colombia";
 import { iniciarCheckout, revisarCupon } from "./actions";
+import { CLAVE_CUPON } from "@/components/CapturaCupon";
 import styles from "./checkout.module.css";
 
 // Checkout con la interfaz nueva. SOLO cambia la presentación: el flujo
@@ -63,8 +64,14 @@ export default function CheckoutPage() {
     // un efecto ya provocaron page_views duplicados (ver el handoff de
     // analítica). Aquí solo hace falta el valor inicial.
     if (typeof window === "undefined") return "";
-    const c = new URLSearchParams(window.location.search).get("cupon");
-    return c ? c.trim().toUpperCase().slice(0, 40) : "";
+    const enUrl = new URLSearchParams(window.location.search).get("cupon");
+    if (enUrl) return enUrl.trim().toUpperCase().slice(0, 40);
+    // Y si llego por la tienda, lo guardo CapturaCupon al entrar.
+    try {
+      return window.sessionStorage.getItem(CLAVE_CUPON) ?? "";
+    } catch {
+      return "";
+    }
   });
   const [cupon, setCupon] = useState<Cupon | null>(null);
   const [avisoCupon, setAvisoCupon] = useState<string | null>(null);

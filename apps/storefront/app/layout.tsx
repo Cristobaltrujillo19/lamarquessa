@@ -16,6 +16,7 @@ import Reveal from "@/components/marca/Reveal";
 import FabWhatsApp from "@/components/marca/FabWhatsApp";
 import Analitica from "@/components/Analitica";
 import BannerCookies from "@/components/BannerCookies";
+import CapturaCupon from "@/components/CapturaCupon";
 import FondoTopografico from "@/components/v2/FondoTopografico";
 import { CarritoProvider } from "@/lib/carrito";
 import {
@@ -203,6 +204,8 @@ export default function RootLayout({
             proveedores arrancan concedidos y el banner solo los revoca si la
             persona lo pide. Ver lib/cookies.ts. */}
         <BannerCookies />
+        {/* Recoge ?cupon= en cualquier pagina y lo guarda hasta el checkout. */}
+        <CapturaCupon />
       </body>
     </html>
   );
