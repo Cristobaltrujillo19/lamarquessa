@@ -17,29 +17,31 @@ const tipoV = v.union(
   v.literal("porcentaje"),
   v.literal("fijo"),
   v.literal("envio_gratis"),
-  v.literal("personalizacion"),
+  v.literal("iniciales_gratis"),
 );
 
 /**
  * Cuánto descuenta un cupón.
  *
- * `addOnsCop` es lo que suman los add-ons de personalización del carrito
- * (iniciales +30.000, color +60.000, por unidad). Va aparte del subtotal a
- * propósito: un cupón de "personalización gratis" tiene que descontar
- * EXACTAMENTE eso y nada más.
+ * `inicialesCop` es lo que suma SOLO el grabado de iniciales del carrito
+ * (30.000 por unidad grabada). Va aparte del subtotal a propósito: un cupón de
+ * "iniciales gratis" tiene que descontar exactamente eso y nada más.
  *
- * Con un `fijo` de 90.000 no se puede hacer: su tope es el subtotal entero,
- * así que descontaría 90.000 de un bolso sin personalizar. Ver §24 del ESTADO.
+ * ⚠️ El color a disposición (60.000) NO entra: el premio de la feria era el
+ * grabado, no la personalización entera. Regalar los dos sería el doble.
+ *
+ * Con un `fijo` de 30.000 no se puede hacer: su tope es el subtotal entero,
+ * así que descontaría 30.000 de un bolso sin grabar. Ver §24 del ESTADO.
  */
 function calcularDescuentoCop(
   cupon: Pick<Doc<"cupones">, "tipo" | "valor">,
   subtotalCop: number,
   envioCop: number,
-  addOnsCop: number,
+  inicialesCop: number,
 ): number {
-  if (cupon.tipo === "personalizacion") {
-    // Nunca más de lo que se personalizó, y nunca más que el subtotal.
-    return Math.min(subtotalCop, Math.max(0, Math.round(addOnsCop)));
+  if (cupon.tipo === "iniciales_gratis") {
+    // Nunca más de lo que se grabó, y nunca más que el subtotal.
+    return Math.min(subtotalCop, Math.max(0, Math.round(inicialesCop)));
   }
   if (cupon.tipo === "porcentaje") {
     return Math.min(subtotalCop, Math.round((subtotalCop * cupon.valor) / 100));
@@ -79,10 +81,10 @@ export const validarCupon = query({
     subtotalCop: v.number(),
     envioCop: v.number(),
     // Opcional para no romper a quien ya llamaba con tres argumentos: sin
-    // add-ons, un cupón de personalización descuenta 0, que es correcto.
-    addOnsCop: v.optional(v.number()),
+    // grabado, un cupón de iniciales descuenta 0, que es correcto.
+    inicialesCop: v.optional(v.number()),
   },
-  handler: async (ctx, { codigo, subtotalCop, envioCop, addOnsCop }) => {
+  handler: async (ctx, { codigo, subtotalCop, envioCop, inicialesCop }) => {
     const cod = codigo.trim().toUpperCase();
     const cupon = cod
       ? await ctx.db
@@ -102,7 +104,7 @@ export const validarCupon = query({
         cupon,
         subtotalCop,
         envioCop,
-        addOnsCop ?? 0,
+        inicialesCop ?? 0,
       ),
     };
   },
@@ -114,9 +116,9 @@ export const evaluarCupon = internalQuery({
     codigo: v.string(),
     subtotalCop: v.number(),
     envioCop: v.number(),
-    addOnsCop: v.optional(v.number()),
+    inicialesCop: v.optional(v.number()),
   },
-  handler: async (ctx, { codigo, subtotalCop, envioCop, addOnsCop }) => {
+  handler: async (ctx, { codigo, subtotalCop, envioCop, inicialesCop }) => {
     const cod = codigo.trim().toUpperCase();
     const cupon = cod
       ? await ctx.db
@@ -135,7 +137,7 @@ export const evaluarCupon = internalQuery({
         cupon,
         subtotalCop,
         envioCop,
-        addOnsCop ?? 0,
+        inicialesCop ?? 0,
       ),
     };
   },
@@ -180,7 +182,7 @@ export const crearCupon = mutation({
     if (a.tipo === "porcentaje" && (a.valor <= 0 || a.valor > 100)) {
       throw new Error("El porcentaje debe estar entre 1 y 100");
     }
-    // `personalizacion` ignora `valor`, igual que `envio_gratis`: lo que
+    // `iniciales_gratis` ignora `valor`, igual que `envio_gratis`: lo que
     // descuenta lo decide el carrito, no el cupón.
     if (a.tipo === "fijo" && a.valor <= 0) {
       throw new Error("El valor del descuento debe ser mayor a 0");
@@ -190,7 +192,7 @@ export const crearCupon = mutation({
       codigo,
       tipo: a.tipo,
       valor:
-        a.tipo === "envio_gratis" || a.tipo === "personalizacion"
+        a.tipo === "envio_gratis" || a.tipo === "iniciales_gratis"
           ? 0
           : Math.round(a.valor),
       activo: true,
@@ -251,18 +253,18 @@ export const sembrarCuponesFeria = mutation({
     const premios: Array<{
       codigo: string;
       persona: string;
-      tipo: "personalizacion" | "porcentaje";
+      tipo: "iniciales_gratis" | "porcentaje";
       valor: number;
     }> = [
-      // --- Personalización gratis ---
-      { codigo: "MARCELAB-2K8G", persona: "Marcela Botero", tipo: "personalizacion", valor: 0 },
-      { codigo: "TEFAM-FY6C", persona: "Tefa Mejía", tipo: "personalizacion", valor: 0 },
-      { codigo: "ALEJAH-RD39", persona: "Aleja Hernández", tipo: "personalizacion", valor: 0 },
-      { codigo: "SARAC-CW59", persona: "Sara Cardona", tipo: "personalizacion", valor: 0 },
-      { codigo: "AMALIAV-Q5D9", persona: "Amalia Villegas", tipo: "personalizacion", valor: 0 },
-      { codigo: "MPAULAM-TEBC", persona: "María Paula Mejía", tipo: "personalizacion", valor: 0 },
-      { codigo: "STEFANYC-FJ7S", persona: "Stefany Castañeda", tipo: "personalizacion", valor: 0 },
-      { codigo: "EMILIANAR-FE7D", persona: "Emiliana Rada", tipo: "personalizacion", valor: 0 },
+      // --- Iniciales gratis (el grabado, NO el color a disposición) ---
+      { codigo: "MARCELAB-2K8G", persona: "Marcela Botero", tipo: "iniciales_gratis", valor: 0 },
+      { codigo: "TEFAM-FY6C", persona: "Tefa Mejía", tipo: "iniciales_gratis", valor: 0 },
+      { codigo: "ALEJAH-RD39", persona: "Aleja Hernández", tipo: "iniciales_gratis", valor: 0 },
+      { codigo: "SARAC-CW59", persona: "Sara Cardona", tipo: "iniciales_gratis", valor: 0 },
+      { codigo: "AMALIAV-Q5D9", persona: "Amalia Villegas", tipo: "iniciales_gratis", valor: 0 },
+      { codigo: "MPAULAM-TEBC", persona: "María Paula Mejía", tipo: "iniciales_gratis", valor: 0 },
+      { codigo: "STEFANYC-FJ7S", persona: "Stefany Castañeda", tipo: "iniciales_gratis", valor: 0 },
+      { codigo: "EMILIANAR-FE7D", persona: "Emiliana Rada", tipo: "iniciales_gratis", valor: 0 },
       // --- 10% de descuento ---
       { codigo: "MAPI-NPGW", persona: "Mapi", tipo: "porcentaje", valor: 10 },
       { codigo: "SUSANAR-V9WJ", persona: "Susana Restrepo", tipo: "porcentaje", valor: 10 },

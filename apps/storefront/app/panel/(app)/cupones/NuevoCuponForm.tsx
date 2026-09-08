@@ -6,7 +6,7 @@ import { crearCuponAction } from "@/app/panel/actions";
 const inputClass =
   "mt-1 w-full rounded-sm border border-cacao/25 bg-blanco px-3 py-2 text-cacao outline-none focus:border-cobre";
 
-type Tipo = "porcentaje" | "fijo" | "envio_gratis" | "personalizacion";
+type Tipo = "porcentaje" | "fijo" | "envio_gratis" | "iniciales_gratis";
 
 export function NuevoCuponForm() {
   const [state, action, pending] = useActionState(crearCuponAction, undefined);
@@ -41,14 +41,14 @@ export function NuevoCuponForm() {
             <option value="porcentaje">Porcentaje (%)</option>
             <option value="fijo">Valor fijo ($)</option>
             <option value="envio_gratis">Envío gratis</option>
-            <option value="personalizacion">Personalización gratis</option>
+            <option value="iniciales_gratis">Iniciales gratis (grabado)</option>
           </select>
         </label>
       </div>
 
       {/* Ni envío gratis ni personalización usan `valor`: lo que
           descuentan lo decide el carrito, no el cupón. */}
-      {tipo !== "envio_gratis" && tipo !== "personalizacion" && (
+      {tipo !== "envio_gratis" && tipo !== "iniciales_gratis" && (
         <label className="block text-sm font-medium">
           {tipo === "porcentaje" ? "Porcentaje (1–100)" : "Valor del descuento (COP)"}
           <input

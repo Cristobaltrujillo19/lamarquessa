@@ -6,6 +6,7 @@ import { direccionValidator, lineaPedidoV } from "./schema";
 import { envioCop as calcularEnvio } from "../lib/site";
 import {
   addOnsPorUnidad,
+  inicialesPorUnidad,
   nombreFuente,
   PERSONALIZACION_COLOR_COP,
   PERSONALIZACION_INICIALES_COP,
@@ -125,11 +126,13 @@ export const createCheckout = action({
       (s, l) => s + (l.precioCop + addOnsPorUnidad(l.personalizacion)) * l.cantidad,
       0,
     );
-    // Lo que suman SOLO los add-ons de personalización. Es lo que regala un
-    // cupón de tipo `personalizacion`, y se calcula aquí desde las líneas ya
+    // Lo que suma SOLO el grabado de iniciales. Es lo que regala un cupón de
+    // tipo `iniciales_gratis`, y se calcula aquí desde las líneas ya
     // revalidadas contra el catálogo: el navegador no lo decide.
-    const addOnsCop = lineas.reduce(
-      (s, l) => s + addOnsPorUnidad(l.personalizacion) * l.cantidad,
+    //
+    // ⚠️ NO se usa `addOnsPorUnidad`, que incluiría el color a disposición.
+    const inicialesCop = lineas.reduce(
+      (s, l) => s + inicialesPorUnidad(l.personalizacion) * l.cantidad,
       0,
     );
     // Envío gratis desde el umbral (§22 del ESTADO). Se calcula SIEMPRE
@@ -149,7 +152,7 @@ export const createCheckout = action({
         codigo: args.codigo,
         subtotalCop: subtotal,
         envioCop,
-        addOnsCop,
+        inicialesCop,
       });
       if (!r.ok) throw avisoCliente(r.mensaje);
       descuentoCop = r.descuentoCop;

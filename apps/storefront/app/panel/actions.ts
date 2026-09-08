@@ -336,9 +336,9 @@ export async function crearCuponAction(
     | "porcentaje"
     | "fijo"
     | "envio_gratis"
-    | "personalizacion";
+    | "iniciales_gratis";
   if (
-    !["porcentaje", "fijo", "envio_gratis", "personalizacion"].includes(tipo)
+    !["porcentaje", "fijo", "envio_gratis", "iniciales_gratis"].includes(tipo)
   ) {
     return { error: "Elige un tipo de descuento." };
   }

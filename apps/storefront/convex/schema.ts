@@ -313,13 +313,15 @@ export default defineSchema({
       v.literal("porcentaje"),
       v.literal("fijo"),
       v.literal("envio_gratis"),
-      // Regala los add-ons de personalización que la clienta haya elegido, y
-      // SOLO esos. Nació para los premios de la feria de septiembre de 2026:
-      // un cupón `fijo` de 90.000 habría descontado 90.000 aunque no
-      // personalizara nada, porque el tope de `fijo` es el subtotal entero.
-      v.literal("personalizacion"),
+      // Regala EL GRABADO DE INICIALES (30.000) y solo eso: el color a
+      // disposición (60.000) se sigue cobrando. Nació para los premios de la
+      // feria de septiembre de 2026, que eran "iniciales gratis".
+      //
+      // Un cupón `fijo` no servía: su tope es el subtotal entero, así que uno
+      // de 30.000 habría descontado 30.000 aunque no se grabara nada.
+      v.literal("iniciales_gratis"),
     ),
-    valor: v.number(), // % (porcentaje) o COP (fijo); ignorado en envio_gratis y personalizacion
+    valor: v.number(), // % (porcentaje) o COP (fijo); ignorado en envio_gratis e iniciales_gratis
     activo: v.boolean(),
     expiraEn: v.optional(v.number()), // timestamp; vacío = sin vencimiento
     usosMax: v.optional(v.number()), // límite total de usos; vacío = ilimitado

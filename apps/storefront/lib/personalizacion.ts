@@ -82,6 +82,15 @@ export function validarPersonalizacion(entrada: {
   return salida;
 }
 
+/** Lo que cuesta SOLO el grabado de iniciales en una unidad.
+ *
+ *  Existe aparte de `addOnsPorUnidad` porque el premio de la feria era
+ *  "iniciales gratis", no "personalización gratis": el color a disposición
+ *  (60.000) NO entra. Ver §24 del ESTADO. */
+export function inicialesPorUnidad(personalizacion?: Personalizacion): number {
+  return personalizacion?.iniciales ? PERSONALIZACION_INICIALES_COP : 0;
+}
+
 /** Suma en COP de los add-ons de UNA unidad. Cada bolso se personaliza por
  *  separado, así que dos unidades cobran los add-ons dos veces. */
 export function addOnsPorUnidad(personalizacion?: Personalizacion): number {

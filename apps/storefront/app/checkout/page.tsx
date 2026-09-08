@@ -13,7 +13,7 @@ import {
   trackBeginCheckout,
   trackWhatsAppClick,
 } from "@/lib/analytics";
-import { addOnsPorUnidad } from "@/lib/personalizacion";
+import { addOnsPorUnidad, inicialesPorUnidad } from "@/lib/personalizacion";
 import {
   ENVIO_DIAS,
   MENSAJES,
@@ -146,11 +146,11 @@ export default function CheckoutPage() {
   // Mismo cálculo que el servidor: lo que se enseña y lo que se cobra no
   // pueden separarse nunca.
   const envio = envioCop(subtotal);
-  /** Lo que suman los add-ons de personalización del carrito. Es lo que
-   *  regala un cupón de tipo `personalizacion`. Se manda a la vista previa
-   *  para que la cifra que se enseña coincida con la que cobra el servidor. */
-  const addOnsCop = lineas.reduce(
-    (s, l) => s + addOnsPorUnidad(l.personalizacion) * l.cantidad,
+  /** Lo que suma SOLO el grabado de iniciales. Es lo que regala un cupón de
+   *  tipo `iniciales_gratis`. Se manda a la vista previa para que la cifra que
+   *  se enseña coincida con la que cobra el servidor. */
+  const inicialesCop = lineas.reduce(
+    (s, l) => s + inicialesPorUnidad(l.personalizacion) * l.cantidad,
     0,
   );
   const descuento = cupon?.descuentoCop ?? 0;
@@ -159,7 +159,7 @@ export default function CheckoutPage() {
   async function aplicarCupon() {
     setValidandoCupon(true);
     setAvisoCupon(null);
-    const r = await revisarCupon(codigo, subtotal, envio, addOnsCop);
+    const r = await revisarCupon(codigo, subtotal, envio, inicialesCop);
     if (r.valido) {
       setCupon({ codigo: r.codigo, descuentoCop: r.descuentoCop });
       setAvisoCupon(null);
