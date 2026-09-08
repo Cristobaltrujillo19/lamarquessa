@@ -815,3 +815,78 @@ export const sembrarMucura = mutation({
     return { accion: "creado", id };
   },
 });
+
+/**
+ * Siembra el scrunchie. Idempotente, igual que `sembrarMucura`.
+ *
+ * Nace **INACTIVO** por lo mismo: no hay fotos y `fotos` es obligatorio.
+ *
+ * ⚠️ Sus tres colores NO son los acabados de la marca. Blanco, negro y
+ * plateado son otra paleta, y tiene sentido: un scrunchie no es PLA impreso.
+ * Por eso NO se toman de ACABADOS_MARCA — pero el blanco reutiliza `--espuma`
+ * y el negro reutiliza el de Horizonte, para no meter tonos nuevos en un
+ * sistema de color que ya está decidido.
+ *
+ * ⚠️ El plateado es lo único aproximado: un hex plano no puede parecer
+ * metálico. La solución de verdad es una `fotoReferencia` del material, que
+ * es lo que el selector enseña al tocar la muestra.
+ *
+ * ⚠️ `material` se deja SIN PONER a propósito: nadie ha dicho de qué está
+ * hecho, y copiar el "PLA impreso en 3D" de los bolsos sería falso.
+ */
+export const sembrarScrunchie = mutation({
+  args: { secret: v.string() },
+  handler: async (ctx, { secret }) => {
+    exigirSecreto(secret);
+
+    const campos = {
+      slug: "scrunchie",
+      nombre: "Scrunchie",
+      subtitulo: "En blanco, negro y plateado",
+      descripcion:
+        "Un scrunchie en tres tonos pensados para combinar con cualquier " +
+        "pieza de la colección.\n\n" +
+        "[PENDIENTE: descripción del dueño — de qué está hecho y qué lo " +
+        "distingue. Este texto es un marcador, no copy definitivo.]",
+      categoria: "Scrunchies",
+      colores: [
+        {
+          id: "blanco",
+          nombre: "Blanco",
+          // El blanco de la marca (--espuma), no un #FFF plano.
+          hex: "#FBFAF7",
+        },
+        {
+          id: "negro",
+          nombre: "Negro",
+          // El mismo negro que la mitad oscura de Horizonte.
+          hex: "#171310",
+        },
+        {
+          id: "plateado",
+          nombre: "Plateado",
+          // ⚠️ Aproximación: un hex plano no puede parecer metálico.
+          hex: "#B9BCC0",
+        },
+      ],
+      tamanos: [{ id: "unica", nombre: "Talla única", precioCop: 12_000 }],
+      fotos: [] as string[],
+      produccionDias: 4,
+      permitePersonalizacion: false,
+      activo: false,
+      orden: 11,
+    };
+
+    const previo = await ctx.db
+      .query("productos")
+      .withIndex("by_slug", (q) => q.eq("slug", "scrunchie"))
+      .unique();
+
+    if (previo) {
+      await ctx.db.patch(previo._id, campos);
+      return { accion: "actualizado", id: previo._id };
+    }
+    const id = await ctx.db.insert("productos", campos);
+    return { accion: "creado", id };
+  },
+});
