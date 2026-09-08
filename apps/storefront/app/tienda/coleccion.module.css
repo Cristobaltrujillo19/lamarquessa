@@ -26,3 +26,9 @@
     gap: var(--s-5);
   }
 }
+
+/* Separacion entre secciones de categoria. Solo se ve cuando hay mas de una:
+   con solo bolsos, la pagina queda identica a como estaba. */
+.bloqueCategoria + .bloqueCategoria {
+  margin-top: var(--s-6);
+}
