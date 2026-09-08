@@ -53,7 +53,19 @@ export default function CheckoutPage() {
   const [enviando, iniciarTransicion] = useTransition();
 
   const [error, setError] = useState<string | null>(null);
-  const [codigo, setCodigo] = useState("");
+  const [codigo, setCodigo] = useState(() => {
+    // Prellenado desde ?cupon= para que un enlace de WhatsApp traiga el código
+    // puesto. Con sufijos aleatorios como SARAC-CW59, pedirle a alguien que lo
+    // teclee es fricción y erratas justo en el paso donde se paga.
+    //
+    // ⚠️ Se lee UNA vez, en el inicializador del estado, y NO con
+    // useSearchParams: en este proyecto los searchParams como dependencia de
+    // un efecto ya provocaron page_views duplicados (ver el handoff de
+    // analítica). Aquí solo hace falta el valor inicial.
+    if (typeof window === "undefined") return "";
+    const c = new URLSearchParams(window.location.search).get("cupon");
+    return c ? c.trim().toUpperCase().slice(0, 40) : "";
+  });
   const [cupon, setCupon] = useState<Cupon | null>(null);
   const [avisoCupon, setAvisoCupon] = useState<string | null>(null);
   const [validandoCupon, setValidandoCupon] = useState(false);
