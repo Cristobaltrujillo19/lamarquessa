@@ -1174,7 +1174,7 @@ catálogo desde que existe la tienda.
 
 | | Scrunchie | Charm **Múcura** |
 |---|---|---|
-| Variantes | Talla única. ⚠️ **[PENDIENTE: de qué color es]** | Amanecer y Manglar, talla única |
+| Variantes | **Blanco, negro y plateado**, talla única | Amanecer y Manglar, talla única |
 | Qué es | — | Una conchita con anilla de llavero |
 | Precio | **$12.000** | **$28.000** |
 
@@ -1307,8 +1307,13 @@ seguir verificando el camino del accesorio sin volver a sembrarlo.
 
 1. 🔴 **Fotos.** `fotos` es obligatorio y no hay ninguna de ninguno de los dos.
    Por eso Múcura nace **inactivo**. Es la misma sesión del §21.
-2. 🔴 **De qué color es el scrunchie.** Sin ese dato no se siembra: inventarlo
-   sería justo lo que las reglas del proyecto prohíben.
+2. ~~De qué color es el scrunchie~~ ✅ **Blanco, negro y plateado.** Sembrado el
+   4 sept, inactivo. ⚠️ **Sus colores NO son los acabados de la marca**, y con
+   razón: no es PLA impreso. El blanco reutiliza `--espuma` y el negro el de
+   Horizonte, para no meter tonos nuevos. **El plateado es aproximado**: un hex
+   plano no puede parecer metálico, y la solución es una `fotoReferencia` del
+   material. ⚠️ Su `material` se dejó **sin poner** —nadie ha dicho de qué está
+   hecho— y su descripción lleva un marcador `[PENDIENTE]` visible en el panel.
 3. **Sembrar Múcura en producción.** La mutación `productos:sembrarMucura` ya
    está desplegada, pero ejecutarla pide el `ADMIN_API_SECRET` rotado, que el
    asistente no tiene. No corre prisa: nacería inactivo igual. Lo natural es
