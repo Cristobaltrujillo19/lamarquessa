@@ -1174,9 +1174,9 @@ catálogo desde que existe la tienda.
 
 | | Scrunchie | Charm **Múcura** |
 |---|---|---|
-| Variantes | Ninguna, talla única | Amanecer y Manglar, talla única |
+| Variantes | Talla única. ⚠️ **[PENDIENTE: de qué color es]** | Amanecer y Manglar, talla única |
 | Qué es | — | Una conchita con anilla de llavero |
-| Precio | **[PENDIENTE: dato]** | **[PENDIENTE: dato]** |
+| Precio | **$12.000** | **$28.000** |
 
 **El charm es el único producto del catálogo que NO exige tener un bolso La
 Marquessa.** Se cuelga de cualquier bolso, de unas llaves, de una mochila. Es
@@ -1244,6 +1244,72 @@ siempre cobra la tarifa plana.
 | Kruta $230.000 | faltan $120.000 | faltan **$20.000** |
 | Mallorca $255.000 | faltan $95.000 | **ya gratis** |
 
-A 250.000 cada bolso queda a un accesorio de distancia del envío gratis, que
-es el trabajo que hace un accesorio aquí: subir el valor del pedido, no
-venderse suelto. **Sin confirmar por el dueño.**
+⚠️ **Con los precios reales (12.000 y 28.000) esa cuenta no sale**, y se
+recomendó bajarlo otra vez a 235.000: un cliente de Montt (195.000) llega a
+235.000 comprando charm + scrunchie, pero no a 250.000. **Decisión del dueño el
+4 sept: se queda en 250.000.** Queda anotado que el umbral se alcanza sobre
+todo con Mallorca sola (255.000) o con Kruta + charm (258.000).
+
+Y una realidad que ningún umbral arregla: un scrunchie suelto son **$12.000 de
+producto y $16.500 de envío** — el envío cuesta el 137% de la pieza. Los
+accesorios se van a vender acompañando un bolso.
+
+---
+
+## 23. La tienda ya admite accesorios (4 de septiembre de 2026)
+
+**Los seis cambios del §22 están hechos, desplegados y verificados**, en ocho
+commits atómicos. Convex prod fue antes del push, como manda el §5.
+
+### Lo que se hizo
+
+1. **Dos campos opcionales**: `produccionDias` y `permitePersonalizacion`.
+   Ausentes conservan el comportamiento de los bolsos: **cero migración**.
+2. **La ficha dejó de asumir bolso**: sin medidas no hay sección de Medidas, y
+   la personalización solo aparece donde se admite.
+3. **La categoría sale del producto**, no de un literal.
+4. **Plazo por pieza**, y el pedido hereda el **mayor** de sus líneas.
+5. **`/tienda` agrupada** por categoría, invisible mientras solo haya bolsos.
+6. **Envío gratis desde 250.000**, calculado en el servidor.
+
+### 🐛 El prefijo "Bolso" estaba en SIETE sitios
+
+Y solo aparecieron todos al sembrar Múcura y ver el título de la pestaña decir
+*"Bolso Múcura"*. Estaban en: el título de la ficha, el alt de la portada, el
+alt del carrito, el `name` del JSON-LD, `item_name` de GA4, `content_name` de
+Meta y el correo de confirmación.
+
+**Nunca hubo un helper**, y por eso el mismo error se repitió siete veces en
+vez de una. Ahora hay uno solo: `nombreConTipo()` en `lib/productos.ts`.
+
+⚠️ **El prefijo se conserva en Bolsos a propósito.** Quitarlo de todos
+renombraría los cuatro productos que llevan meses acumulando datos en GA4 y
+partiría sus series históricas en dos.
+
+### Verificado en desarrollo, con Múcura activo
+
+| | Charm Múcura | Bolso Menorca |
+|---|---|---|
+| Título | «Múcura: Charm…» | «**Bolso** Menorca…» sin cambios |
+| Sección Medidas | **no** | sí |
+| Personalización | **no** | sí |
+| Fabricación | **4 días** | 2 semanas |
+| `handlingTime` | **4-4 días** | 10-14 días |
+
+Y `/tienda` con dos categorías: encabezados «Bolsos» y «Charms», las tarjetas
+bajando a H3 solas, el titular contando solo bolsos y el pie cambiando a «el
+plazo de cada pieza está en su ficha».
+
+**Múcura queda ACTIVO en el Convex de DESARROLLO a propósito**, para poder
+seguir verificando el camino del accesorio sin volver a sembrarlo.
+
+### Lo que falta para que salgan a la venta
+
+1. 🔴 **Fotos.** `fotos` es obligatorio y no hay ninguna de ninguno de los dos.
+   Por eso Múcura nace **inactivo**. Es la misma sesión del §21.
+2. 🔴 **De qué color es el scrunchie.** Sin ese dato no se siembra: inventarlo
+   sería justo lo que las reglas del proyecto prohíben.
+3. **Sembrar Múcura en producción.** La mutación `productos:sembrarMucura` ya
+   está desplegada, pero ejecutarla pide el `ADMIN_API_SECRET` rotado, que el
+   asistente no tiene. No corre prisa: nacería inactivo igual. Lo natural es
+   correrla el día de las fotos y encenderlo en el mismo movimiento.
