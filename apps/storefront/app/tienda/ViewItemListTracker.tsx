@@ -3,7 +3,12 @@
 import { useEffect, useRef } from "react";
 import { trackViewItemList } from "@/lib/analytics";
 
-type ItemLista = { slug: string; nombre: string; precioDesde: number };
+type ItemLista = {
+  slug: string;
+  nombre: string;
+  precioDesde: number;
+  categoria?: string;
+};
 
 // Dispara view_item_list una sola vez por listName al llegar al catálogo.
 // Va aquí y no en la página porque la página es server (async fetchQuery);

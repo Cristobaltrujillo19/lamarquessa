@@ -214,9 +214,12 @@ export default function CheckoutPage() {
             extra.push("Color personalizado");
           return {
             item_id: `${l.slug}|${l.colorId}|${l.tamanoId}`,
-            item_name: `Bolso ${l.nombre}`,
+            item_name:
+              (l.categoria ?? "Bolsos") === "Bolsos"
+                ? `Bolso ${l.nombre}`
+                : l.nombre,
             item_variant: [l.colorNombre, l.tamanoNombre, ...extra].join(" · "),
-            item_category: "Bolsos",
+            item_category: l.categoria ?? "Bolsos",
             price: l.precioCop + addOns,
             quantity: l.cantidad,
           };

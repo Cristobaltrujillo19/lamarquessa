@@ -5,6 +5,7 @@ import Foto from "@/components/Foto";
 import {
   type Producto,
   formatCop,
+  categoriaDe,
   precioDesde,
   rotuloColorDeFoto,
   colorDeFoto,
@@ -74,6 +75,7 @@ export default function TarjetaProducto({
             slug: producto.slug,
             nombre: producto.nombre,
             precioDesde: precioDesde(producto),
+            categoria: categoriaDe(producto),
           },
           listName,
         )

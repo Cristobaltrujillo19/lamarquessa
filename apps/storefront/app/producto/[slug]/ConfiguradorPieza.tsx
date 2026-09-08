@@ -3,7 +3,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import GaleriaPieza from "./GaleriaPieza";
-import { admitePersonalizacion, coloresConFoto } from "@/lib/productos";
+import {
+  admitePersonalizacion,
+  categoriaDe,
+  coloresConFoto,
+} from "@/lib/productos";
 import { enlaceWhatsApp } from "@/lib/site";
 import SelectorColor from "./SelectorColor";
 import {
@@ -107,6 +111,7 @@ export default function ConfiguradorPieza({ producto }: { producto: Producto }) 
   const elegirColor = (c: Color) => {
     setColorId(c.id);
     trackCustomizeProduct({
+      categoria: categoriaDe(producto),
       slug: producto.slug,
       nombre: producto.nombre,
       colorId: c.id,
@@ -205,6 +210,7 @@ export default function ConfiguradorPieza({ producto }: { producto: Producto }) 
     const linea = {
       slug: producto.slug,
       nombre: producto.nombre,
+      categoria: categoriaDe(producto),
       colorId: color.id,
       colorNombre: color.nombre,
       tamanoId: tamano.id,

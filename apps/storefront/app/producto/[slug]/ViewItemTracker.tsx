@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { trackViewItem } from "@/lib/analytics";
+import { categoriaDe } from "@/lib/productos";
 import type { Producto } from "@/lib/productos";
 
 // Dispara view_item una sola vez por slug con la primera variante (color y
@@ -23,6 +24,7 @@ export default function ViewItemTracker({ producto }: { producto: Producto }) {
     trackViewItem({
       slug: producto.slug,
       nombre: producto.nombre,
+      categoria: categoriaDe(producto),
       colorId: color.id,
       colorNombre: color.nombre,
       tamanoId: tamano.id,

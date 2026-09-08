@@ -26,6 +26,11 @@ export type LineaCarrito = {
   colorNombre: string;
   tamanoId: string;
   tamanoNombre: string;
+  /** Categoría del catálogo, para que la analítica no etiquete un scrunchie
+   *  como bolso. OPCIONAL a propósito: los carritos que ya viven en
+   *  localStorage se guardaron sin ella y no se van a migrar. Ausente cae en
+   *  "Bolsos", que es lo único que había cuando se guardaron. */
+  categoria?: string;
   /** BASE del bolso, sin add-ons. Para mostrar el efectivo, sumar
    *  addOnsPorUnidad(personalizacion). */
   precioCop: number;

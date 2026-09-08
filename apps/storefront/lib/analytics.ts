@@ -52,14 +52,27 @@ function variantEtiqueta(
   return partes.join(" · ");
 }
 
+/** Nombre del item para GA4 y Meta.
+ *
+ *  El prefijo "Bolso" estaba horneado, y con el catálogo ampliado (§22 del
+ *  ESTADO) habría mandado "Bolso Scrunchie" a los informes. Se antepone solo
+ *  en la categoría donde es cierto; las demás van con su nombre a secas.
+ *
+ *  Se conserva el prefijo en Bolsos y no se quita de todos: cambiarlo
+ *  renombraría los cuatro productos que llevan meses acumulando datos, y
+ *  partiría las series históricas de GA4 en dos. */
+function nombreItem(nombre: string, categoria?: string): string {
+  return (categoria ?? "Bolsos") === "Bolsos" ? `Bolso ${nombre}` : nombre;
+}
+
 function itemDeLinea(l: LineaCarrito): ItemGA4 {
   return {
     // Un id por VARIANTE (bolso × color × tamaño): que dos filas con distinto
     // color no aparezcan como el mismo producto en los reportes de GA4.
     item_id: `${l.slug}|${l.colorId}|${l.tamanoId}`,
-    item_name: `Bolso ${l.nombre}`,
+    item_name: nombreItem(l.nombre, l.categoria),
     item_variant: variantEtiqueta(l.colorNombre, l.tamanoNombre, l.personalizacion),
-    item_category: "Bolsos",
+    item_category: l.categoria ?? "Bolsos",
     // Precio efectivo (base + add-ons de personalización). GA4/Meta reciben
     // lo que el cliente realmente paga por unidad.
     price: l.precioCop + addOnsPorUnidad(l.personalizacion),
@@ -86,6 +99,8 @@ function contentsMeta(items: ItemGA4[]) {
 export function trackViewItem(p: {
   slug: string;
   nombre: string;
+  /** Categoría del catálogo. Ausente = Bolsos. */
+  categoria?: string;
   colorId: string;
   colorNombre: string;
   tamanoId: string;
@@ -94,9 +109,9 @@ export function trackViewItem(p: {
 }): void {
   const item: ItemGA4 = {
     item_id: `${p.slug}|${p.colorId}|${p.tamanoId}`,
-    item_name: `Bolso ${p.nombre}`,
+    item_name: nombreItem(p.nombre, p.categoria),
     item_variant: `${p.colorNombre} · ${p.tamanoNombre}`,
-    item_category: "Bolsos",
+    item_category: p.categoria ?? "Bolsos",
     price: p.precioCop,
     quantity: 1,
   };
@@ -159,15 +174,20 @@ export function trackViewCart(lineas: LineaCarrito[], subtotal: number): void {
 // === Catálogo ===
 
 export function trackViewItemList(
-  productos: Array<{ slug: string; nombre: string; precioDesde: number }>,
+  productos: Array<{
+    slug: string;
+    nombre: string;
+    precioDesde: number;
+    categoria?: string;
+  }>,
   listName = "Colección",
 ): void {
   enviarEvento("view_item_list", {
     item_list_name: listName,
     items: productos.map((p, i) => ({
       item_id: p.slug,
-      item_name: `Bolso ${p.nombre}`,
-      item_category: "Bolsos",
+      item_name: nombreItem(p.nombre, p.categoria),
+      item_category: p.categoria ?? "Bolsos",
       price: p.precioDesde,
       index: i,
     })),
@@ -184,7 +204,7 @@ export function trackViewItemList(
 }
 
 export function trackSelectItem(
-  p: { slug: string; nombre: string; precioDesde: number },
+  p: { slug: string; nombre: string; precioDesde: number; categoria?: string },
   listName = "Colección",
 ): void {
   enviarEvento("select_item", {
@@ -192,8 +212,8 @@ export function trackSelectItem(
     items: [
       {
         item_id: p.slug,
-        item_name: `Bolso ${p.nombre}`,
-        item_category: "Bolsos",
+        item_name: nombreItem(p.nombre, p.categoria),
+        item_category: p.categoria ?? "Bolsos",
         price: p.precioDesde,
       },
     ],
@@ -320,6 +340,8 @@ export function trackPurchase(args: {
 export function trackCustomizeProduct(p: {
   slug: string;
   nombre: string;
+  /** Categoría del catálogo. Ausente = Bolsos. */
+  categoria?: string;
   colorId: string;
   colorNombre: string;
   tamanoId: string;
@@ -328,9 +350,9 @@ export function trackCustomizeProduct(p: {
 }): void {
   const item: ItemGA4 = {
     item_id: `${p.slug}|${p.colorId}|${p.tamanoId}`,
-    item_name: `Bolso ${p.nombre}`,
+    item_name: nombreItem(p.nombre, p.categoria),
     item_variant: `${p.colorNombre} · ${p.tamanoNombre}`,
-    item_category: "Bolsos",
+    item_category: p.categoria ?? "Bolsos",
     price: p.precioCop,
     quantity: 1,
   };
