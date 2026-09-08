@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import GaleriaPieza from "./GaleriaPieza";
-import { coloresConFoto } from "@/lib/productos";
+import { admitePersonalizacion, coloresConFoto } from "@/lib/productos";
 import { enlaceWhatsApp } from "@/lib/site";
 import SelectorColor from "./SelectorColor";
 import {
@@ -81,6 +81,13 @@ export default function ConfiguradorPieza({ producto }: { producto: Producto }) 
   const acabadoSinFotos = !coloresConFoto(producto).some(
     (c) => c.id === color.id,
   );
+
+  /** ¿Esta pieza se puede personalizar?
+   *
+   *  Los cuatro bolsos sí; los accesorios no. Ofrecer "Iniciales grabadas
+   *  +$30.000" sobre un scrunchie de $25.000 no es una opción, es una broma —
+   *  y el add-on costaría más que la pieza. Ver §22 del ESTADO. */
+  const sePersonaliza = admitePersonalizacion(producto);
   const tamano =
     producto.tamanos.find((t) => t.id === tamanoId) ?? producto.tamanos[0];
 
@@ -302,7 +309,10 @@ export default function ConfiguradorPieza({ producto }: { producto: Producto }) 
           </div>
         )}
 
-        {/* ---- Personalización ---- */}
+        {/* ---- Personalización ----
+            Solo en las piezas que la admiten: ver `sePersonaliza` arriba. */}
+        {sePersonaliza && (
+        <>
         <div className={styles.colores}>
           <label className={styles.personalizacionCabecera}>
             <input
@@ -405,6 +415,8 @@ export default function ConfiguradorPieza({ producto }: { producto: Producto }) 
             </div>
           )}
         </div>
+        </>
+        )}
 
         {personalizacionActiva && (
           <p className={styles.avisoLegal}>

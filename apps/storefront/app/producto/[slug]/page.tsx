@@ -8,7 +8,7 @@ import Aparece from "@/components/v2/Aparece";
 import ConfiguradorPieza from "./ConfiguradorPieza";
 import DeslizadorRayosX from "@/components/v2/DeslizadorRayosX";
 import ViewItemTracker from "./ViewItemTracker";
-import { formatCm } from "@/lib/productos";
+import { formatCm, tieneMedidas } from "@/lib/productos";
 import styles from "./producto.module.css";
 import {
   ENVIO_DIAS,
@@ -98,6 +98,8 @@ export default async function ProductoPage({
       : null;
   /** El deslizador necesita las DOS caras: sin el par no se pinta. */
   const hayRayosX = Boolean(producto.fotoRayosX && producto.fotoRayosXBase);
+  // Un accesorio no tiene ficha de medidas: sin esto, encabezado vacío.
+  const hayMedidas = tieneMedidas(producto);
 
   // Datos estructurados del producto. El precio y la disponibilidad son reales;
   // el plazo de fabricación (se hace a pedido) va como handlingTime.
@@ -194,7 +196,12 @@ export default async function ProductoPage({
           mismo, y ademas dejaba la seccion de rayos X en 1476px de alto, mas
           que la propia ficha de compra.
 
-          Sin renders no hay deslizador, y las medidas se quedan solas. */}
+          Sin renders no hay deslizador, y las medidas se quedan solas.
+
+          ⚠️ Y sin medidas NO HAY SECCION. Un accesorio no tiene alto ni fondo,
+          y antes de esta guarda la ficha pintaba un encabezado "Medidas" con
+          nada debajo. Ver §22 del ESTADO. */}
+      {hayMedidas && (
       <section className="seccion-respiro seccion-elevada" aria-labelledby="titular-medidas">
         <div className="contenedor">
           <Aparece>
@@ -238,6 +245,7 @@ export default async function ProductoPage({
           </div>
         </div>
       </section>
+      )}
 
       {/* ---------- Material y cuidado ----------
           Lo que no es una medida. Va aparte porque responde otra pregunta:
