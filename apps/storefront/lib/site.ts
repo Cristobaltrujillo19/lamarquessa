@@ -38,8 +38,24 @@ export const SHIPPING_COP = 16_500;
 
 /** Días hábiles que tarda la transportadora, ya fabricado el bolso. */
 export const ENVIO_DIAS = 2;
-/** Umbral de envío gratis. ⚠️ [PENDIENTE: confirmar] */
-export const ENVIO_GRATIS_DESDE = 350_000;
+/** Umbral de envío gratis, CONFIRMADO por el dueño el 4 de septiembre de 2026.
+ *
+ *  Bajado de 350.000 a 250.000 con un motivo medido: a 350.000 no lo alcanzaba
+ *  ningún bolso solo —el más caro es Mallorca a 255.000— así que el umbral no
+ *  empujaba nada. A 250.000 cada bolso queda a un accesorio de distancia, que
+ *  es el trabajo que hace un accesorio aquí: subir el valor del pedido, no
+ *  venderse suelto con un envío que cuesta dos tercios de su precio.
+ *
+ *  Se compara contra el SUBTOTAL de las piezas, nunca contra el total: si se
+ *  comparara con el total, el propio envío ayudaría a alcanzar el umbral que
+ *  lo elimina, y el cálculo se muerde la cola. */
+export const ENVIO_GRATIS_DESDE = 250_000;
+
+/** Envío de un pedido según su subtotal. UNA sola función: lo que muestra la
+ *  tienda y lo que cobra el checkout no pueden separarse nunca. */
+export function envioCop(subtotalCop: number): number {
+  return subtotalCop >= ENVIO_GRATIS_DESDE ? 0 : SHIPPING_COP;
+}
 
 export function enlaceWhatsApp(mensaje: string): string {
   return `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(mensaje)}`;

@@ -52,12 +52,56 @@ export type Producto = {
   /** Frase corta bajo el H1 (H2 en la ficha). Opcional: productos que aún no
    *  tienen subtitulo renderizan solo el nombre. */
   subtitulo?: string;
+  /** Ficha técnica. Opcionales: un accesorio no las tiene. */
+  altoCm?: number;
+  anchoCm?: number;
+  profundidadCm?: number;
+  material?: string;
   descripcion: string;
   colores: Color[];
   tamanos: Tamano[];
   fotos: string[];
   insignia?: string;
+  /** Categoría del catálogo. Ausente = "Bolsos" (los cuatro originales se
+   *  sembraron antes de que existieran los accesorios). */
+  categoria?: string;
+  /** Días de fabricación de esta pieza. Ausente = el global (2 semanas). */
+  produccionDias?: number;
+  /** ¿Admite iniciales y color a disposición? Ausente = sí. */
+  permitePersonalizacion?: boolean;
 };
+
+/** Categorías del catálogo. Cerradas a propósito: `categoria` es texto libre
+ *  en la base para no exigir migración, pero la tienda y la analítica
+ *  necesitan un conjunto conocido para agrupar y etiquetar. Una categoría
+ *  desconocida cae en "Bolsos", que es lo que había antes. */
+export const CATEGORIAS = ["Bolsos", "Scrunchies", "Charms"] as const;
+export type Categoria = (typeof CATEGORIAS)[number];
+
+export function categoriaDe(p: Pick<Producto, "categoria">): Categoria {
+  const c = p.categoria as Categoria | undefined;
+  return c && CATEGORIAS.includes(c) ? c : "Bolsos";
+}
+
+/** ¿Esta pieza admite personalización? Ausente = sí: es lo que hacían los
+ *  cuatro bolsos antes de que el campo existiera. */
+export function admitePersonalizacion(
+  p: Pick<Producto, "permitePersonalizacion">,
+): boolean {
+  return p.permitePersonalizacion !== false;
+}
+
+/** ¿Hay ficha de medidas que enseñar? Un scrunchie no tiene alto ni ancho, y
+ *  sin esta guarda la ficha pintaba un encabezado "Medidas" vacío. */
+export function tieneMedidas(
+  p: Pick<Producto, "altoCm" | "anchoCm" | "profundidadCm">,
+): boolean {
+  return (
+    typeof p.altoCm === "number" ||
+    typeof p.anchoCm === "number" ||
+    typeof p.profundidadCm === "number"
+  );
+}
 
 /** Envío: tarifa plana nacional.
  *  Alias de SHIPPING_COP para el código que ya lo importaba con este nombre.

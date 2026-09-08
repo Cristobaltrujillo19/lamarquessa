@@ -138,6 +138,23 @@ export default defineSchema({
     anchoCm: v.optional(v.number()),
     profundidadCm: v.optional(v.number()),
     material: v.optional(v.string()),
+
+    // === Campos que aparecieron al dejar de vender solo bolsos (§22) ===
+
+    /** Días de fabricación de ESTA pieza. Ausente = el global de `lib/site.ts`
+     *  (2 semanas), que es lo que tarda un bolso.
+     *
+     *  ⚠️ Un pedido hereda el plazo MAYOR de sus líneas: si el carrito lleva
+     *  un bolso y un charm, sale cuando esté el bolso. Por eso el carrito y
+     *  los correos siguen diciendo UN solo plazo, y sigue siendo cierto. */
+    produccionDias: v.optional(v.number()),
+
+    /** ¿Admite iniciales grabadas y color a disposición? Ausente = sí, que es
+     *  el comportamiento de los cuatro bolsos.
+     *
+     *  Se apaga en accesorios: ofrecer "Iniciales +$30.000" sobre un scrunchie
+     *  de $25.000 no es una opción, es una broma. */
+    permitePersonalizacion: v.optional(v.boolean()),
   })
     .index("by_slug", ["slug"])
     .index("by_activo", ["activo"]),
