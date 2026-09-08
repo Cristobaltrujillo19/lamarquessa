@@ -1318,3 +1318,63 @@ seguir verificando el camino del accesorio sin volver a sembrarlo.
    está desplegada, pero ejecutarla pide el `ADMIN_API_SECRET` rotado, que el
    asistente no tiene. No corre prisa: nacería inactivo igual. Lo natural es
    correrla el día de las fotos y encenderlo en el mismo movimiento.
+
+---
+
+## 24. Cupón de "personalización gratis" (8 de septiembre de 2026)
+
+Los premios de una feria eran **8 personalizaciones gratis** y **3 descuentos
+del 10%**. El 10% cabía en el sistema; la personalización gratis **no**, y no
+había forma de aproximarla sin regalar dinero.
+
+**Por qué un cupón `fijo` no servía:** su tope es el SUBTOTAL ENTERO. Un fijo
+de 90.000 habría descontado 90.000 aunque la clienta no personalizara nada —
+90.000 regalados de un bolso. Y uno de 30.000 no cubría el color, que cuesta
+60.000.
+
+### El tipo nuevo
+
+`personalizacion` descuenta **exactamente los add-ons que hay en el carrito y
+nada más**. Como lo decide el carrito y no el cupón, `valor` se ignora, igual
+que en `envio_gratis`.
+
+El cálculo va en el servidor (`createCheckout`), desde las líneas ya
+revalidadas contra el catálogo: **el navegador no decide cuánto se regala**. La
+vista previa del checkout recibe la misma cifra para que lo que se enseña y lo
+que se cobra no se separen.
+
+`addOnsCop` va **opcional** en `validarCupon` y `evaluarCupon`, para no romper
+a quien llamaba con tres argumentos: sin add-ons el descuento es 0.
+
+Verificado: sin personalizar **0**, con iniciales **30.000**, con iniciales y
+color **90.000**.
+
+### Los once cupones de la feria
+
+Sembrados con `cupones:sembrarCuponesFeria` (idempotente, **no toca `usados`**,
+así que correrla dos veces no reparte premios de más ni revive uno canjeado).
+
+⚠️ **Los códigos llevan sufijo aleatorio de 4 caracteres a propósito.** Sin él,
+`SARA` o `AMALIA` los adivina cualquiera probando nombres comunes, y son ocho
+personalizaciones de hasta 90.000: **720.000 de exposición**. El alfabeto
+excluye O/0 e I/1/L, que se confunden al dictarlos por teléfono.
+
+Uso único y vencimiento a **6 meses (8 de marzo de 2027)**. Un premio sin fecha
+es un pasivo abierto para siempre.
+
+| Código | Persona | Premio |
+|---|---|---|
+| `MARCELAB-2K8G` | Marcela Botero | Personalización |
+| `TEFAM-FY6C` | Tefa Mejía | Personalización |
+| `ALEJAH-RD39` | Aleja Hernández | Personalización |
+| `SARAC-CW59` | Sara Cardona | Personalización |
+| `AMALIAV-Q5D9` | Amalia Villegas | Personalización |
+| `MPAULAM-TEBC` | María Paula Mejía | Personalización |
+| `STEFANYC-FJ7S` | Stefany Castañeda | Personalización |
+| `EMILIANAR-FE7D` | Emiliana Rada | Personalización |
+| `MAPI-NPGW` | Mapi | 10% |
+| `SUSANAR-V9WJ` | Susana Restrepo | 10% |
+| `STEPHANIEA-CZVA` | Stephanie Arango | 10% |
+
+⚠️ **Sembrados en DEV. En PRODUCCIÓN todavía NO**: la mutación está desplegada
+pero ejecutarla pide el `ADMIN_API_SECRET` rotado, que el asistente no tiene.
