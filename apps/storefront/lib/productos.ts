@@ -78,6 +78,21 @@ export type Producto = {
 export const CATEGORIAS = ["Bolsos", "Scrunchies", "Charms"] as const;
 export type Categoria = (typeof CATEGORIAS)[number];
 
+/** Nombre de una pieza para enseñar o para mandar a un tercero.
+ *
+ *  El prefijo "Bolso" estaba escrito a mano en SIETE sitios —título de la
+ *  ficha, alt de la portada, alt del carrito, JSON-LD, GA4, Meta y el correo
+ *  de confirmación— y al ampliar el catálogo (§22 del ESTADO) todos habrían
+ *  dicho "Bolso Múcura". Nunca hubo un helper: por eso se repitió el error
+ *  siete veces en vez de una.
+ *
+ *  Se conserva el prefijo en Bolsos y no se quita de todos: quitarlo
+ *  renombraría los cuatro productos que llevan meses acumulando datos en GA4
+ *  y partiría sus series históricas en dos. */
+export function nombreConTipo(nombre: string, categoria?: string): string {
+  return (categoria ?? "Bolsos") === "Bolsos" ? `Bolso ${nombre}` : nombre;
+}
+
 export function categoriaDe(p: Pick<Producto, "categoria">): Categoria {
   const c = p.categoria as Categoria | undefined;
   return c && CATEGORIAS.includes(c) ? c : "Bolsos";

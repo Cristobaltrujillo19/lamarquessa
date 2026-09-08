@@ -20,6 +20,7 @@
 
 import { enviarEvento, enviarEventoMeta } from "@/components/Analitica";
 import type { LineaCarrito } from "./carrito";
+import { nombreConTipo } from "./productos";
 import { addOnsPorUnidad, type Personalizacion } from "./personalizacion";
 
 const CURRENCY = "COP";
@@ -61,9 +62,7 @@ function variantEtiqueta(
  *  Se conserva el prefijo en Bolsos y no se quita de todos: cambiarlo
  *  renombraría los cuatro productos que llevan meses acumulando datos, y
  *  partiría las series históricas de GA4 en dos. */
-function nombreItem(nombre: string, categoria?: string): string {
-  return (categoria ?? "Bolsos") === "Bolsos" ? `Bolso ${nombre}` : nombre;
-}
+const nombreItem = nombreConTipo;
 
 function itemDeLinea(l: LineaCarrito): ItemGA4 {
   return {
@@ -223,7 +222,7 @@ export function trackSelectItem(
     {
       content_ids: [p.slug],
       content_type: "product",
-      content_name: `Bolso ${p.nombre}`,
+      content_name: nombreConTipo(p.nombre, p.categoria),
       content_category: listName,
     },
     "trackCustom",

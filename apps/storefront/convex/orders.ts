@@ -110,6 +110,7 @@ export const createCheckout = action({
       return {
         slug: p.slug,
         nombre: p.nombre,
+        categoria: p.categoria,
         colorId: color.id,
         colorNombre: color.nombre,
         tamanoId: tamano.id,

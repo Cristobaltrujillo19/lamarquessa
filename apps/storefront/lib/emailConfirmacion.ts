@@ -7,7 +7,7 @@
 // aire, señalética en small-caps. Sin CTA gritón, sin bloques decorativos:
 // el correo es la firma del pedido, no un anuncio.
 
-import { formatCop } from "./productos";
+import { formatCop, nombreConTipo } from "./productos";
 import { addOnsPorUnidad, nombreFuente, type Personalizacion } from "./personalizacion";
 
 const COLOR = {
@@ -24,6 +24,9 @@ const FONT_SANS = "'Helvetica Neue', Helvetica, Arial, sans-serif";
 
 export type ItemConfirmacion = {
   nombre: string;
+  /** Categoría del catálogo. Ausente = Bolsos: los pedidos anteriores a que
+   *  la tienda vendiera otra cosa no la traen. */
+  categoria?: string;
   colorNombre: string;
   tamanoNombre: string;
   cantidad: number;
@@ -102,7 +105,7 @@ function bloqueItem(i: ItemConfirmacion): string {
             ${foto}
             <td style="vertical-align:top">
               <div style="font-family:${FONT_SERIF};font-size:17px;color:${COLOR.cacao};line-height:1.25;letter-spacing:0.01em">
-                ${i.cantidad} &times; Bolso ${i.nombre}
+                ${i.cantidad} &times; ${nombreConTipo(i.nombre, i.categoria)}
               </div>
               <div style="margin-top:6px">${detalleHtml}</div>
             </td>

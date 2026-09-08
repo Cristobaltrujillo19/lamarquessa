@@ -11,6 +11,7 @@ import ViewItemTracker from "./ViewItemTracker";
 import {
   categoriaDe,
   formatCm,
+  nombreConTipo,
   precioDesde,
   tieneMedidas,
 } from "@/lib/productos";
@@ -18,7 +19,8 @@ import styles from "./producto.module.css";
 import {
   ENVIO_DIAS,
   MARCA,
-  PRODUCCION_SEMANAS,
+  PRODUCCION_DIAS,
+  formatPlazo,
   SHIPPING_COP,
   envioCop,
   SITE_URL,
@@ -64,7 +66,7 @@ export async function generateMetadata({
   // 3D, hecho a mano en Colombia"); si el producto todavía no lo tiene, cae al
   // texto genérico que se usó siempre.
   const cola = producto.subtitulo ?? "impreso en 3D y hecho a mano";
-  const titulo = `Bolso ${producto.nombre}: ${cola} | ${MARCA}`;
+  const titulo = `${nombreConTipo(producto.nombre, producto.categoria)}: ${cola} | ${MARCA}`;
   const descripcion =
     META_DESCRIPCION_POR_SLUG[producto.slug] ?? resumen(producto.descripcion);
 
@@ -78,7 +80,12 @@ export async function generateMetadata({
       title: titulo,
       description: descripcion,
       images: producto.fotos[0]
-        ? [{ url: producto.fotos[0], alt: `Bolso ${producto.nombre}` }]
+        ? [
+            {
+              url: producto.fotos[0],
+              alt: nombreConTipo(producto.nombre, producto.categoria),
+            },
+          ]
         : undefined,
     },
   };
@@ -106,6 +113,8 @@ export default async function ProductoPage({
   const hayRayosX = Boolean(producto.fotoRayosX && producto.fotoRayosXBase);
   // Un accesorio no tiene ficha de medidas: sin esto, encabezado vacío.
   const hayMedidas = tieneMedidas(producto);
+  // Plazo de ESTA pieza, no el global del sitio.
+  const plazoPieza = producto.produccionDias ?? PRODUCCION_DIAS;
 
   // Datos estructurados del producto. El precio y la disponibilidad son reales;
   // el plazo de fabricación (se hace a pedido) va como handlingTime.
@@ -114,10 +123,7 @@ export default async function ProductoPage({
     "@type": "Product",
     // El prefijo "Bolso" solo donde es cierto: un scrunchie aparecería en
     // Google como "Bolso Scrunchie".
-    name:
-      categoriaDe(producto) === "Bolsos"
-        ? `Bolso ${producto.nombre}`
-        : producto.nombre,
+    name: nombreConTipo(producto.nombre, producto.categoria),
     description: producto.descripcion.replace(/\s+/g, " ").trim(),
     image: producto.fotos.map((f) => urlAbsoluta(f)),
     sku: producto.slug,
@@ -155,11 +161,12 @@ export default async function ProductoPage({
         },
         deliveryTime: {
           "@type": "ShippingDeliveryTime",
-          // Se fabrica a pedido: 2 semanas de producción...
+          // Se fabrica a pedido. El plazo es el de ESTA pieza: un charm sale
+          // en 4 días y declarar 14 en el resultado de búsqueda seria falso.
           handlingTime: {
             "@type": "QuantitativeValue",
-            minValue: 10,
-            maxValue: PRODUCCION_SEMANAS * 7,
+            minValue: Math.min(10, plazoPieza),
+            maxValue: plazoPieza,
             unitCode: "DAY",
           },
           // ...y después, 2 días hábiles de transportadora.
@@ -283,7 +290,7 @@ export default async function ProductoPage({
             <div className={styles.fila}>
               <dt className={styles.filaClave}>Fabricación</dt>
               <dd className={styles.filaValor}>
-                A pedido, {PRODUCCION_SEMANAS} semanas
+                A pedido, {formatPlazo(plazoPieza)}
               </dd>
             </div>
             <div className={styles.fila}>

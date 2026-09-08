@@ -752,3 +752,66 @@ export const quitarRayaLarga = mutation({
     return { actualizados, conRayaTodavia: restantes };
   },
 });
+
+/**
+ * Siembra el charm Múcura. Idempotente: si ya existe, actualiza sus campos.
+ *
+ * Nace **INACTIVO a propósito**. El campo `fotos` es obligatorio y no hay ni
+ * una foto del charm: una tarjeta sin foto no se puede enseñar. Se enciende
+ * (`activo: true`) desde el panel el día que existan, que es la misma sesión
+ * de fotos del §21 del ESTADO.
+ *
+ * ⚠️ El scrunchie NO se siembra aquí: falta saber de qué color es, y
+ * inventarlo sería exactamente lo que las reglas del proyecto prohíben.
+ */
+export const sembrarMucura = mutation({
+  args: { secret: v.string() },
+  handler: async (ctx, { secret }) => {
+    exigirSecreto(secret);
+
+    // Los dos acabados salen de ACABADOS_MARCA: son los mismos del catálogo,
+    // no unos nuevos. Si algún día se recalibra un hex, el charm cambia con
+    // los bolsos y no se queda desincronizado.
+    const colores = ACABADOS_MARCA.filter(
+      (c) => c.id === "amanecer" || c.id === "manglar",
+    ).map(({ fotoReferencia, ...resto }) => resto);
+
+    const campos = {
+      slug: "mucura",
+      nombre: "Múcura",
+      subtitulo: "Charm de concha impreso en 3D, con anilla de llavero",
+      descripcion:
+        "Múcura es una isla pequeña del Caribe colombiano, y es también la " +
+        "concha que la marca lleva por emblema, hecha objeto.\n\n" +
+        "Se cuelga del asa de un bolso, de unas llaves o de donde quieras: " +
+        "lleva anilla, así que no necesita ser tuyo un La Marquessa para " +
+        "llevarlo puesto.\n\n" +
+        "Como cada pieza de la casa, se imprime en 3D y se termina a mano en " +
+        "Colombia.",
+      categoria: "Charms",
+      colores,
+      tamanos: [{ id: "unica", nombre: "Talla única", precioCop: 28_000 }],
+      // Sin fotos todavía: por eso nace inactivo. Ver el comentario de arriba.
+      fotos: [] as string[],
+      material: "PLA de origen colombiano, impreso en 3D y terminado a mano",
+      // Sale en 4 días, no en las 2 semanas de un bolso.
+      produccionDias: 4,
+      // Un charm de 28.000 no admite iniciales a 30.000.
+      permitePersonalizacion: false,
+      activo: false,
+      orden: 10,
+    };
+
+    const previo = await ctx.db
+      .query("productos")
+      .withIndex("by_slug", (q) => q.eq("slug", "mucura"))
+      .unique();
+
+    if (previo) {
+      await ctx.db.patch(previo._id, campos);
+      return { accion: "actualizado", id: previo._id };
+    }
+    const id = await ctx.db.insert("productos", campos);
+    return { accion: "creado", id };
+  },
+});

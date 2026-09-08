@@ -50,6 +50,13 @@ export const direccionValidator = v.object({
 export const lineaPedidoV = v.object({
   slug: v.string(),
   nombre: v.string(),
+  /** Categoría del catálogo. OPCIONAL: los pedidos anteriores a que la tienda
+   *  vendiera algo distinto de bolsos no la tienen, y no se van a migrar.
+   *  Ausente = "Bolsos", que es lo único que había cuando se guardaron.
+   *
+   *  Viaja hasta aquí para que el CORREO de confirmación no diga
+   *  "1 × Bolso Múcura". Ver §22 del ESTADO. */
+  categoria: v.optional(v.string()),
   colorId: v.string(),
   colorNombre: v.string(),
   tamanoId: v.string(),

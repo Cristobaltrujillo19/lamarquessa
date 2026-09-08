@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef } from "react";
 import Foto from "@/components/Foto";
 import { useCarrito } from "@/lib/carrito";
-import { formatCop } from "@/lib/productos";
+import { formatCop, nombreConTipo } from "@/lib/productos";
 import { trackRemoveFromCart, trackViewCart } from "@/lib/analytics";
 import { addOnsPorUnidad, nombreFuente } from "@/lib/personalizacion";
 import {
@@ -92,7 +92,7 @@ export default function CarritoPage() {
                     <div className={styles.lineaFoto}>
                       <Foto
                         src={l.foto}
-                        alt={`Bolso ${l.nombre}`}
+                        alt={nombreConTipo(l.nombre, l.categoria)}
                         ancho={400}
                         alto={500}
                       />

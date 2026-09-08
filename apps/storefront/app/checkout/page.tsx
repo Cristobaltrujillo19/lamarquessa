@@ -6,7 +6,7 @@ import { registrarCarrito } from "@/app/acciones/carrito";
 import { idDeSesion } from "@/lib/sesionCarrito";
 import { TEXTO_AVISO_DATOS } from "@/lib/consentimiento";
 import { useCarrito } from "@/lib/carrito";
-import { formatCop } from "@/lib/productos";
+import { formatCop, nombreConTipo } from "@/lib/productos";
 import {
   guardarSnapshotCompra,
   trackAddPaymentInfo,
@@ -217,10 +217,7 @@ export default function CheckoutPage() {
             extra.push("Color personalizado");
           return {
             item_id: `${l.slug}|${l.colorId}|${l.tamanoId}`,
-            item_name:
-              (l.categoria ?? "Bolsos") === "Bolsos"
-                ? `Bolso ${l.nombre}`
-                : l.nombre,
+            item_name: nombreConTipo(l.nombre, l.categoria),
             item_variant: [l.colorNombre, l.tamanoNombre, ...extra].join(" · "),
             item_category: l.categoria ?? "Bolsos",
             price: l.precioCop + addOns,
