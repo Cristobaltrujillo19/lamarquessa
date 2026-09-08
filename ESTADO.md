@@ -1292,7 +1292,7 @@ partiría sus series históricas en dos.
 |---|---|---|
 | Título | «Múcura: Charm…» | «**Bolso** Menorca…» sin cambios |
 | Sección Medidas | **no** | sí |
-| Personalización | **no** | sí |
+| Iniciales | **no** | sí |
 | Fabricación | **4 días** | 2 semanas |
 | `handlingTime` | **4-4 días** | 10-14 días |
 
@@ -1321,21 +1321,25 @@ seguir verificando el camino del accesorio sin volver a sembrarlo.
 
 ---
 
-## 24. Cupón de "personalización gratis" (8 de septiembre de 2026)
+## 24. Cupón de "iniciales gratis" (8 de septiembre de 2026)
 
 Los premios de una feria eran **8 personalizaciones gratis** y **3 descuentos
 del 10%**. El 10% cabía en el sistema; la personalización gratis **no**, y no
 había forma de aproximarla sin regalar dinero.
 
-**Por qué un cupón `fijo` no servía:** su tope es el SUBTOTAL ENTERO. Un fijo
-de 90.000 habría descontado 90.000 aunque la clienta no personalizara nada —
-90.000 regalados de un bolso. Y uno de 30.000 no cubría el color, que cuesta
-60.000.
+⚠️ **El premio es SOLO EL GRABADO de iniciales (30.000), no el color a
+disposición (60.000).** La primera versión regalaba los dos: a ocho personas se
+les habría descontado 90.000 en vez de 30.000. Corregido el mismo día.
+
+**Por qué un cupón `fijo` no servía:** su tope es el SUBTOTAL ENTERO. Uno de
+30.000 habría descontado 30.000 aunque la clienta no grabara nada.
 
 ### El tipo nuevo
 
-`personalizacion` descuenta **exactamente los add-ons que hay en el carrito y
-nada más**. Como lo decide el carrito y no el cupón, `valor` se ignora, igual
+`iniciales_gratis` descuenta **exactamente lo que suma el grabado y nada más**.
+Se llama así y no `personalizacion` a propósito: un tipo llamado
+`personalizacion` que solo cubre la mitad de la personalización es una trampa
+para quien lo lea dentro de seis meses. Como lo decide el carrito y no el cupón, `valor` se ignora, igual
 que en `envio_gratis`.
 
 El cálculo va en el servidor (`createCheckout`), desde las líneas ya
@@ -1343,11 +1347,15 @@ revalidadas contra el catálogo: **el navegador no decide cuánto se regala**. L
 vista previa del checkout recibe la misma cifra para que lo que se enseña y lo
 que se cobra no se separen.
 
-`addOnsCop` va **opcional** en `validarCupon` y `evaluarCupon`, para no romper
+`inicialesCop` va **opcional** en `validarCupon` y `evaluarCupon`, para no romper
 a quien llamaba con tres argumentos: sin add-ons el descuento es 0.
 
-Verificado: sin personalizar **0**, con iniciales **30.000**, con iniciales y
-color **90.000**.
+Verificado en los cuatro casos: sin nada **0**, solo grabado **30.000**, SOLO
+color y sin grabado **0** (el color se cobra entero), y grabado + color
+**30.000 y no 90.000** — que era el caso que importaba.
+
+⚠️ `orders.ts` usa `inicialesPorUnidad`, **no** `addOnsPorUnidad`. Ahí estaba
+el error: sumar todos los add-ons era exactamente lo que regalaba el color.
 
 ### Los once cupones de la feria
 
@@ -1364,14 +1372,14 @@ es un pasivo abierto para siempre.
 
 | Código | Persona | Premio |
 |---|---|---|
-| `MARCELAB-2K8G` | Marcela Botero | Personalización |
-| `TEFAM-FY6C` | Tefa Mejía | Personalización |
-| `ALEJAH-RD39` | Aleja Hernández | Personalización |
-| `SARAC-CW59` | Sara Cardona | Personalización |
-| `AMALIAV-Q5D9` | Amalia Villegas | Personalización |
-| `MPAULAM-TEBC` | María Paula Mejía | Personalización |
-| `STEFANYC-FJ7S` | Stefany Castañeda | Personalización |
-| `EMILIANAR-FE7D` | Emiliana Rada | Personalización |
+| `MARCELAB-2K8G` | Marcela Botero | Iniciales |
+| `TEFAM-FY6C` | Tefa Mejía | Iniciales |
+| `ALEJAH-RD39` | Aleja Hernández | Iniciales |
+| `SARAC-CW59` | Sara Cardona | Iniciales |
+| `AMALIAV-Q5D9` | Amalia Villegas | Iniciales |
+| `MPAULAM-TEBC` | María Paula Mejía | Iniciales |
+| `STEFANYC-FJ7S` | Stefany Castañeda | Iniciales |
+| `EMILIANAR-FE7D` | Emiliana Rada | Iniciales |
 | `MAPI-NPGW` | Mapi | 10% |
 | `SUSANAR-V9WJ` | Susana Restrepo | 10% |
 | `STEPHANIEA-CZVA` | Stephanie Arango | 10% |
