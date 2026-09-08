@@ -3,7 +3,7 @@ import { action, internalMutation, internalQuery } from "./_generated/server";
 import { api, internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
 import { direccionValidator, lineaPedidoV } from "./schema";
-import { ENVIO_COP } from "../lib/productos";
+import { envioCop as calcularEnvio } from "../lib/site";
 import {
   addOnsPorUnidad,
   nombreFuente,
@@ -124,7 +124,13 @@ export const createCheckout = action({
       (s, l) => s + (l.precioCop + addOnsPorUnidad(l.personalizacion)) * l.cantidad,
       0,
     );
-    const envioCop = ENVIO_COP;
+    // Envío gratis desde el umbral (§22 del ESTADO). Se calcula SIEMPRE
+    // aquí, nunca se acepta del navegador, igual que los precios.
+    //
+    // Se compara contra el subtotal ANTES del descuento del cupón, a
+    // propósito: cobrarle el envío a alguien por haber usado un cupón es
+    // hostil y no hay forma de explicarlo en una línea del carrito.
+    const envioCop = calcularEnvio(subtotal);
 
     // Cupón: se re-valida en el servidor. El precio final NUNCA lo decide el
     // navegador; si el código ya no vale, se avisa y no se cobra nada.

@@ -8,13 +8,14 @@ import Aparece from "@/components/v2/Aparece";
 import ConfiguradorPieza from "./ConfiguradorPieza";
 import DeslizadorRayosX from "@/components/v2/DeslizadorRayosX";
 import ViewItemTracker from "./ViewItemTracker";
-import { formatCm, tieneMedidas } from "@/lib/productos";
+import { formatCm, precioDesde, tieneMedidas } from "@/lib/productos";
 import styles from "./producto.module.css";
 import {
   ENVIO_DIAS,
   MARCA,
   PRODUCCION_SEMANAS,
   SHIPPING_COP,
+  envioCop,
   SITE_URL,
   urlAbsoluta,
 } from "@/lib/site";
@@ -135,7 +136,11 @@ export default async function ProductoPage({
         },
         shippingRate: {
           "@type": "MonetaryAmount",
-          value: SHIPPING_COP,
+          // El envío de comprar SOLO esta pieza. Con el umbral de envío
+          // gratis, un bolso que ya lo supera declara 0 y no la tarifa plana:
+          // declarar un cobro que no se hace es un dato falso en el
+          // resultado de búsqueda.
+          value: envioCop(precioDesde(producto)),
           currency: "COP",
         },
         deliveryTime: {

@@ -7,7 +7,11 @@ import { useCarrito } from "@/lib/carrito";
 import { formatCop } from "@/lib/productos";
 import { trackRemoveFromCart, trackViewCart } from "@/lib/analytics";
 import { addOnsPorUnidad, nombreFuente } from "@/lib/personalizacion";
-import { PRODUCCION_SEMANAS, SHIPPING_COP } from "@/lib/site";
+import {
+  ENVIO_GRATIS_DESDE,
+  PRODUCCION_SEMANAS,
+  envioCop,
+} from "@/lib/site";
 import styles from "./carrito.module.css";
 
 // Carrito con el lenguaje visual de la interfaz nueva.
@@ -62,7 +66,12 @@ export default function CarritoPage() {
     );
   }
 
-  const total = subtotal + SHIPPING_COP;
+  const envio = envioCop(subtotal);
+  const total = subtotal + envio;
+  /** Cuánto falta para el envío gratis. 0 = ya lo tiene.
+   *  Es la única cifra que convierte un accesorio en un complemento del bolso
+   *  en vez de un pedido suelto con un envío que cuesta más que la pieza. */
+  const faltaParaGratis = Math.max(0, ENVIO_GRATIS_DESDE - subtotal);
 
   return (
     <div>
@@ -150,8 +159,18 @@ export default function CarritoPage() {
               </div>
               <div className={styles.resumenFila}>
                 <span className="texto-suave">Envío</span>
-                <span>{formatCop(SHIPPING_COP)}</span>
+                <span>{envio === 0 ? "Gratis" : formatCop(envio)}</span>
               </div>
+              {/* La cifra que convierte un accesorio en complemento del bolso
+                  en vez de un pedido suelto. Solo aparece cuando falta poco:
+                  decirle a alguien con el carrito vacío que le faltan 250.000
+                  no es un empujón, es un peaje. */}
+              {faltaParaGratis > 0 && subtotal > 0 && (
+                <p className={styles.faltaEnvio} aria-live="polite">
+                  Te faltan <strong>{formatCop(faltaParaGratis)}</strong> para
+                  el envío gratis.
+                </p>
+              )}
               <div className={`${styles.resumenFila} ${styles.resumenTotal}`}>
                 <span className="h3">Total</span>
                 <span className="precio">{formatCop(total)}</span>

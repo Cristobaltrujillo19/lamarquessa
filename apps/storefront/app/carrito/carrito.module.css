@@ -161,3 +161,13 @@
   font-size: 13px;
   line-height: 1.5;
 }
+
+/* Aviso de cuánto falta para el envío gratis. Va en cobre, no en verde de
+   éxito: todavía no lo ha conseguido, y pintarlo de logro confunde. */
+.faltaEnvio {
+  margin: 0;
+  padding: var(--s-2) 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--cobre-texto);
+}

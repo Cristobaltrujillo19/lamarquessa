@@ -18,7 +18,7 @@ import {
   ENVIO_DIAS,
   MENSAJES,
   PRODUCCION_SEMANAS,
-  SHIPPING_COP,
+  envioCop,
   enlaceWhatsApp,
 } from "@/lib/site";
 import { DEPARTAMENTOS } from "@/lib/colombia";
@@ -122,7 +122,7 @@ export default function CheckoutPage() {
     if (beginCheckoutDisparado.current) return;
     if (lineas.length === 0) return;
     beginCheckoutDisparado.current = true;
-    trackBeginCheckout(lineas, subtotal + SHIPPING_COP);
+    trackBeginCheckout(lineas, subtotal + envioCop(subtotal));
   }, [lineas, subtotal]);
 
   if (lineas.length === 0) {
@@ -142,7 +142,9 @@ export default function CheckoutPage() {
     );
   }
 
-  const envio = SHIPPING_COP;
+  // Mismo cálculo que el servidor: lo que se enseña y lo que se cobra no
+  // pueden separarse nunca.
+  const envio = envioCop(subtotal);
   const descuento = cupon?.descuentoCop ?? 0;
   const total = Math.max(0, subtotal + envio - descuento);
 
