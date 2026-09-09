@@ -1,10 +1,5 @@
 import { v } from "convex/values";
-import {
-  internalMutation,
-  internalQuery,
-  mutation,
-  query,
-} from "./_generated/server";
+import { internalMutation, internalQuery, mutation, query, type MutationCtx } from "./_generated/server";
 import type { Doc } from "./_generated/dataModel";
 import { formatCop } from "../lib/productos";
 
@@ -242,65 +237,101 @@ export const eliminarCupon = mutation({
  *
  * Vencen a los 6 meses. Un premio sin fecha es un pasivo abierto para siempre.
  */
+/** 8 de septiembre de 2026 + 6 meses. Un premio sin fecha es un pasivo
+ *  abierto para siempre. */
+const VENCE_FERIA = new Date("2027-03-08T23:59:59-05:00").getTime();
+
+/**
+ * Los once premios de la feria de septiembre de 2026.
+ *
+ * ⚠️ Los códigos llevan sufijo aleatorio de cuatro caracteres A PROPÓSITO. Sin
+ * él, `SARA` o `AMALIA` los adivina cualquiera probando nombres comunes, y son
+ * ocho grabados de 30.000: 240.000 de exposición. El alfabeto del sufijo
+ * excluye O/0 e I/1/L, que se confunden al dictarlos por teléfono.
+ */
+const PREMIOS_FERIA: Array<{
+  codigo: string;
+  persona: string;
+  tipo: "iniciales_gratis" | "porcentaje";
+  valor: number;
+}> = [
+  // --- Iniciales gratis (el grabado, NO el color a disposición) ---
+  { codigo: "MARCELAB-2K8G", persona: "Marcela Botero", tipo: "iniciales_gratis", valor: 0 },
+  { codigo: "TEFAM-FY6C", persona: "Tefa Mejía", tipo: "iniciales_gratis", valor: 0 },
+  { codigo: "ALEJAH-RD39", persona: "Aleja Hernández", tipo: "iniciales_gratis", valor: 0 },
+  { codigo: "SARAC-CW59", persona: "Sara Cardona", tipo: "iniciales_gratis", valor: 0 },
+  { codigo: "AMALIAV-Q5D9", persona: "Amalia Villegas", tipo: "iniciales_gratis", valor: 0 },
+  { codigo: "MPAULAM-TEBC", persona: "María Paula Mejía", tipo: "iniciales_gratis", valor: 0 },
+  { codigo: "STEFANYC-FJ7S", persona: "Stefany Castañeda", tipo: "iniciales_gratis", valor: 0 },
+  { codigo: "EMILIANAR-FE7D", persona: "Emiliana Rada", tipo: "iniciales_gratis", valor: 0 },
+  // --- 10% de descuento ---
+  { codigo: "MAPI-NPGW", persona: "Mapi", tipo: "porcentaje", valor: 10 },
+  { codigo: "SUSANAR-V9WJ", persona: "Susana Restrepo", tipo: "porcentaje", valor: 10 },
+  { codigo: "STEPHANIEA-CZVA", persona: "Stephanie Arango", tipo: "porcentaje", valor: 10 },
+];
+
+/**
+ * Crea o actualiza los once. Idempotente: **NO toca `usados`**, así que
+ * correrla dos veces no reparte premios de más ni revive uno ya canjeado.
+ */
+async function sembrarFeria(ctx: MutationCtx) {
+  const creados: string[] = [];
+  const actualizados: string[] = [];
+
+  for (const p of PREMIOS_FERIA) {
+    const codigo = p.codigo.trim().toUpperCase();
+    const campos = {
+      codigo,
+      tipo: p.tipo,
+      valor: p.valor,
+      activo: true,
+      expiraEn: VENCE_FERIA,
+      // Personal e intransferible: un solo uso.
+      usosMax: 1,
+    };
+
+    const previo = await ctx.db
+      .query("cupones")
+      .withIndex("by_codigo", (q) => q.eq("codigo", codigo))
+      .unique();
+
+    if (previo) {
+      await ctx.db.patch(previo._id, campos);
+      actualizados.push(`${codigo} (${p.persona})`);
+    } else {
+      await ctx.db.insert("cupones", { ...campos, usados: 0 });
+      creados.push(`${codigo} (${p.persona})`);
+    }
+  }
+
+  return { creados, actualizados, vencen: new Date(VENCE_FERIA).toISOString() };
+}
+
+/** Siembra los premios de la feria. Pide el secreto compartido, como el resto
+ *  de mutaciones del panel. */
 export const sembrarCuponesFeria = mutation({
   args: { secret: v.string() },
   handler: async (ctx, { secret }) => {
     exigirSecreto(secret);
-
-    // 8 de septiembre de 2026 + 6 meses.
-    const VENCE = new Date("2027-03-08T23:59:59-05:00").getTime();
-
-    const premios: Array<{
-      codigo: string;
-      persona: string;
-      tipo: "iniciales_gratis" | "porcentaje";
-      valor: number;
-    }> = [
-      // --- Iniciales gratis (el grabado, NO el color a disposición) ---
-      { codigo: "MARCELAB-2K8G", persona: "Marcela Botero", tipo: "iniciales_gratis", valor: 0 },
-      { codigo: "TEFAM-FY6C", persona: "Tefa Mejía", tipo: "iniciales_gratis", valor: 0 },
-      { codigo: "ALEJAH-RD39", persona: "Aleja Hernández", tipo: "iniciales_gratis", valor: 0 },
-      { codigo: "SARAC-CW59", persona: "Sara Cardona", tipo: "iniciales_gratis", valor: 0 },
-      { codigo: "AMALIAV-Q5D9", persona: "Amalia Villegas", tipo: "iniciales_gratis", valor: 0 },
-      { codigo: "MPAULAM-TEBC", persona: "María Paula Mejía", tipo: "iniciales_gratis", valor: 0 },
-      { codigo: "STEFANYC-FJ7S", persona: "Stefany Castañeda", tipo: "iniciales_gratis", valor: 0 },
-      { codigo: "EMILIANAR-FE7D", persona: "Emiliana Rada", tipo: "iniciales_gratis", valor: 0 },
-      // --- 10% de descuento ---
-      { codigo: "MAPI-NPGW", persona: "Mapi", tipo: "porcentaje", valor: 10 },
-      { codigo: "SUSANAR-V9WJ", persona: "Susana Restrepo", tipo: "porcentaje", valor: 10 },
-      { codigo: "STEPHANIEA-CZVA", persona: "Stephanie Arango", tipo: "porcentaje", valor: 10 },
-    ];
-
-    const creados: string[] = [];
-    const actualizados: string[] = [];
-
-    for (const p of premios) {
-      const codigo = p.codigo.trim().toUpperCase();
-      const campos = {
-        codigo,
-        tipo: p.tipo,
-        valor: p.valor,
-        activo: true,
-        expiraEn: VENCE,
-        // Personal e intransferible: un solo uso.
-        usosMax: 1,
-      };
-
-      const previo = await ctx.db
-        .query("cupones")
-        .withIndex("by_codigo", (q) => q.eq("codigo", codigo))
-        .unique();
-
-      if (previo) {
-        // `usados` NO se toca: si alguien ya lo canjeó, se respeta.
-        await ctx.db.patch(previo._id, campos);
-        actualizados.push(`${codigo} (${p.persona})`);
-      } else {
-        await ctx.db.insert("cupones", { ...campos, usados: 0 });
-        creados.push(`${codigo} (${p.persona})`);
-      }
-    }
-
-    return { creados, actualizados, vencen: new Date(VENCE).toISOString() };
+    return await sembrarFeria(ctx);
   },
+});
+
+/**
+ * La MISMA siembra, sin secreto, para poder correrla con el CLI de Convex.
+ *
+ * No es un agujero: una `internalMutation` no se puede llamar desde el
+ * navegador ni desde `fetchMutation`. Solo la alcanza quien ya está
+ * autenticado como administrador del proyecto en Convex — es decir, quien de
+ * todas formas podría editar la tabla a mano desde el panel de Convex.
+ *
+ * Existe porque el `ADMIN_API_SECRET` vive en las variables de entorno del
+ * despliegue, y pedírselo al dueño para pegarlo en una terminal es más
+ * frágil que esto.
+ *
+ *   npx convex run cupones:sembrarCuponesFeriaInterno --prod
+ */
+export const sembrarCuponesFeriaInterno = internalMutation({
+  args: {},
+  handler: async (ctx) => await sembrarFeria(ctx),
 });
