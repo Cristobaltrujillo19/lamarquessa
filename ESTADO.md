@@ -1386,3 +1386,44 @@ es un pasivo abierto para siempre.
 
 ⚠️ **Sembrados en DEV. En PRODUCCIÓN todavía NO**: la mutación está desplegada
 pero ejecutarla pide el `ADMIN_API_SECRET` rotado, que el asistente no tiene.
+
+---
+
+## 25. Las tarjetas de premio, y la trampa de Queen Serif (9 de septiembre de 2026)
+
+Las once tarjetas se generan como PNG con `scripts/tarjetas-premio.py`
+(Pillow). **1080×1350 (4:5)**: la proporción vertical que WhatsApp enseña sin
+recortar en la vista previa del chat — más ancha se corta por los lados y
+cuadrada desperdicia alto en un teléfono.
+
+La salida va a `_tarjetas-feria/`, **ignorada por git**: se regenera con un
+comando y no tiene sentido versionar PNG derivados.
+
+### ⚠️ Queen Serif NO sirve para texto, y el cmap miente
+
+Se intentó usar `queen-serif.otf` —la display real de la marca— y salió mal:
+
+- **Le faltan la coma, el punto y el `%`.** «Ganaste,» se pintaba «Ganaste☒».
+- **Sus vocales acentuadas están en el cmap pero se dibujan VACÍAS.** «María»
+  salía «Maria», sin más aviso.
+
+**La lección es del instrumento, no de la fuente:** se comprobó la cobertura
+con `fontTools.getBestCmap()` y dijo «no falta ninguno». Estar en el cmap NO
+es tener glifo. Y la primera prueba solo miró letras y acentos, no puntuación,
+que es donde estaba el fallo de verdad.
+
+El apunte del §1 («Queen Serif FREE no tiene acentos») era correcto; la
+medición que lo contradijo estaba mal hecha.
+
+**Las tarjetas usan Georgia**, que tiene cobertura completa y cae dentro de la
+familia de respaldos que el propio sitio declara para su display (Iowan Old
+Style, Times New Roman, serif). El día que se licencie una Queens completa, se
+cambia la constante `SERIF` del script y ya.
+
+### El enlace es lo que convierte, no la imagen
+
+Una tarjeta **no se puede tocar**. Por eso cada premio va con un mensaje de
+WhatsApp que lleva el enlace, y el enlace apunta a
+`/tienda?cupon=CODIGO` — nunca a `/checkout`, que con el carrito vacío no
+tiene nada que pagar. `CapturaCupon` guarda el código al entrar y el checkout
+lo recupera, así que ella elige su pieza y el campo llega lleno.
