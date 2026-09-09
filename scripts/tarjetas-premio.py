@@ -57,8 +57,8 @@ PREMIOS = [
 ]
 
 PREMIO = {
-    "iniciales": ["Tus iniciales, grabadas a mano", "sobre la pieza que elijas."],
-    "descuento": ["Un 10 % sobre la pieza", "que elijas."],
+    "iniciales": ["Puedes personalizar la pieza", "que elijas con tus iniciales."],
+    "descuento": ["Un 10% sobre tu pedido."],
 }
 
 
