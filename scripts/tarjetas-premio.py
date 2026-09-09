@@ -27,6 +27,11 @@ SERIF_I = r"C:\Windows\Fonts\georgiai.ttf"
 MONO = r"C:\Windows\Fonts\consola.ttf"
 MONO_B = r"C:\Windows\Fonts\consolab.ttf"
 
+# El logotipo en su version CLARA: esta hecho para fondos oscuros, que es
+# exactamente lo que es la tarjeta. La version cobre desaparece sobre tinta.
+LOGO = os.path.join(RAIZ, r"apps\storefront\public\marca\logo-claro.png")
+INSTAGRAM = "@lamarquessa.co"
+
 W, H = 1080, 1350
 MARGEN = 64
 PAD = 76
@@ -78,9 +83,17 @@ def tarjeta(nombre, codigo, tipo, ruta):
     der = W - MARGEN - PAD
     ancho = der - izq
 
-    # ---------- Sello, arriba ----------
-    f_sello = ImageFont.truetype(MONO, 22)
-    espaciado(d, (izq, MARGEN + PAD), "LA MARQUESSA", f_sello, COBRE, 6.5)
+    # ---------- El logotipo, arriba ----------
+    # Sustituye al nombre escrito en versalitas que habia antes: teniendo la
+    # firma de la marca, escribirla ademas era decir lo mismo dos veces.
+    logo = Image.open(LOGO).convert("RGBA")
+    # 400 y no menos: los filamentos de la L y la M son finisimos, y por debajo
+    # de este tamano se deshacen contra el fondo oscuro.
+    logo_w = 400
+    logo_h = round(logo.height * (logo_w / logo.width))
+    logo = logo.resize((logo_w, logo_h), Image.LANCZOS)
+    y_logo = MARGEN + PAD
+    img.paste(logo, (izq, y_logo), logo)
 
     # ---------- Cierre, abajo (se mide primero para poder centrar lo de enmedio) ----------
     base = H - MARGEN - PAD
@@ -100,6 +113,12 @@ def tarjeta(nombre, codigo, tipo, ruta):
     d.text((izq, y_vig1), "Personal y de un solo uso", font=f_vig, fill=SUAVE)
     d.text((izq, y_vig2), "Hasta el 8 de marzo de 2027", font=f_vig, fill=SUAVE)
 
+    # El @ va a la derecha, alineado al pie: firma la tarjeta sin competir con
+    # el codigo, que es lo unico que ella tiene que leer con atencion.
+    f_ig = ImageFont.truetype(MONO, 23)
+    ancho_ig = d.textlength(INSTAGRAM, font=f_ig)
+    d.text((der - ancho_ig, y_vig2 - 16), INSTAGRAM, font=f_ig, fill=COBRE)
+
     # ---------- Bloque central, centrado entre el sello y el filete ----------
     # El nombre se encoge si no cabe: "María Paula" es el caso largo.
     tam = 124
@@ -118,7 +137,7 @@ def tarjeta(nombre, codigo, tipo, ruta):
     alto_premio = len(lineas) * 56
     alto_total = alto_ganaste + alto_nombre + 34 + alto_premio
 
-    arriba = MARGEN + PAD + 46          # bajo el sello
+    arriba = y_logo + logo_h + 40       # bajo el logotipo
     abajo = y_regla - 46                # sobre el filete
     y = arriba + max(0, (abajo - arriba - alto_total) / 2)
 
