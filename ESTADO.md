@@ -1427,3 +1427,49 @@ WhatsApp que lleva el enlace, y el enlace apunta a
 `/tienda?cupon=CODIGO` — nunca a `/checkout`, que con el carrito vacío no
 tiene nada que pagar. `CapturaCupon` guarda el código al entrar y el checkout
 lo recupera, así que ella elige su pieza y el campo llega lleno.
+
+---
+
+## 26. Bonos de comunidad para influencers (11 de septiembre de 2026)
+
+Tres influencers —**Conchita, Caro y Paula**— reciben pieza de regalo a cambio
+de promoción, y cada una lleva un código del **10 % para su comunidad**:
+`CONCHITA10`, `CARO10`, `PAULA10`. Vigencia **3 meses**, hasta el 11 de
+diciembre de 2026 (`VENCE_INFLUENCERS` en `convex/cupones.ts`).
+
+Sembrados y verificados en producción:
+
+```
+npx convex run cupones:sembrarCuponesInfluencersInterno --prod
+```
+
+`CARO10` sobre un bolso de 210.000 descuenta 21.000, y funciona en minúsculas.
+
+### Son el reverso de los de la feria, a propósito
+
+| | Feria (§24) | Comunidad |
+|---|---|---|
+| Sufijo aleatorio | **sí** | **no** |
+| `usosMax` | 1 | **sin tope** |
+| Cómo llega | mensaje privado | dictado en una story |
+
+- **Sin sufijo** porque están hechos para decirse en voz alta en un video:
+  nadie teclea `CARO-7K2M` desde una story. Que `CARO10` sea adivinable no
+  cuesta nada — da justo lo que ya se está regalando en público.
+- **Sin `usosMax`** porque un cupón de un solo uso repartido a miles de
+  personas es una decepción para todas menos una. `motivoInvalido` trata el
+  `usosMax` ausente como «sin tope».
+- **`usados` es el medidor.** Al cerrar los tres meses, esa columna dice qué
+  colaboración trajo ventas de verdad. Es el único dato que va a haber para
+  decidir si se repite.
+
+### El script de tarjetas ahora es multicampaña
+
+`scripts/tarjetas-premio.py` pasó de tener la lista dentro a una constante
+`CAMPANAS`: cada campaña trae su carpeta, su saludo, su rótulo y su vigencia.
+`python scripts/tarjetas-premio.py influencers` genera solo esas tres. La
+salida `_tarjetas-influencers/` está ignorada, como `_tarjetas-feria/`.
+
+El rótulo dice **«EL CÓDIGO»** y no «TU CÓDIGO»: el código no es de ella,
+es el que ella reparte. Y el saludo es «Para tu comunidad,» en vez de
+«Ganaste,» — no ganó nada, está dando algo.

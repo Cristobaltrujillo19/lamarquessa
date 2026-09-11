@@ -335,3 +335,81 @@ export const sembrarCuponesFeriaInterno = internalMutation({
   args: {},
   handler: async (ctx) => await sembrarFeria(ctx),
 });
+
+/** 11 de septiembre de 2026 + 3 meses. */
+const VENCE_INFLUENCERS = new Date("2026-12-11T23:59:59-05:00").getTime();
+
+/**
+ * Códigos de las influencers a las que se les regaló pieza para promoción.
+ * Cada una comparte el suyo con su comunidad.
+ *
+ * ⚠️ ESTOS NO LLEVAN SUFIJO ALEATORIO, al revés que los de la feria (§24), y
+ * es deliberado: están hechos para decirse en voz alta en una story. Nadie
+ * teclea `CARO-7K2M` desde un video. Aquí la facilidad de dictado vale más que
+ * la imposibilidad de adivinarlos — y adivinar `CARO10` no da nada que no se
+ * esté regalando de todas formas.
+ *
+ * ⚠️ Y NO llevan `usosMax`: sin tope, que es lo que hace cierto "para tu
+ * comunidad". Un cupón de un solo uso repartido a miles de personas sería una
+ * decepción para todas menos una.
+ *
+ * `usados` sirve de medidor: dice qué influencer trajo ventas de verdad.
+ */
+const CUPONES_INFLUENCERS: Array<{ codigo: string; persona: string }> = [
+  { codigo: "CONCHITA10", persona: "Conchita" },
+  { codigo: "CARO10", persona: "Caro" },
+  { codigo: "PAULA10", persona: "Paula" },
+];
+
+async function sembrarInfluencers(ctx: MutationCtx) {
+  const creados: string[] = [];
+  const actualizados: string[] = [];
+
+  for (const c of CUPONES_INFLUENCERS) {
+    const codigo = c.codigo.trim().toUpperCase();
+    const campos = {
+      codigo,
+      tipo: "porcentaje" as const,
+      valor: 10,
+      activo: true,
+      expiraEn: VENCE_INFLUENCERS,
+      // Sin usosMax: ilimitado dentro de los 3 meses. Ver el comentario de
+      // arriba — `motivoInvalido` trata `undefined` como sin tope.
+    };
+
+    const previo = await ctx.db
+      .query("cupones")
+      .withIndex("by_codigo", (q) => q.eq("codigo", codigo))
+      .unique();
+
+    if (previo) {
+      // `usados` no se toca: es el medidor de cada influencer.
+      await ctx.db.patch(previo._id, campos);
+      actualizados.push(`${codigo} (${c.persona})`);
+    } else {
+      await ctx.db.insert("cupones", { ...campos, usados: 0 });
+      creados.push(`${codigo} (${c.persona})`);
+    }
+  }
+
+  return {
+    creados,
+    actualizados,
+    vencen: new Date(VENCE_INFLUENCERS).toISOString(),
+  };
+}
+
+export const sembrarCuponesInfluencers = mutation({
+  args: { secret: v.string() },
+  handler: async (ctx, { secret }) => {
+    exigirSecreto(secret);
+    return await sembrarInfluencers(ctx);
+  },
+});
+
+/** La misma siembra sin secreto, para el CLI. Ver la nota de
+ *  `sembrarCuponesFeriaInterno`. */
+export const sembrarCuponesInfluencersInterno = internalMutation({
+  args: {},
+  handler: async (ctx) => await sembrarInfluencers(ctx),
+});

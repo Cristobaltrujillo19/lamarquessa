@@ -24,3 +24,4 @@ _backup-fotos-*/
 
 # PNG de las tarjetas de premio: se regeneran con scripts/tarjetas-premio.py
 _tarjetas-feria/
+_tarjetas-influencers/
