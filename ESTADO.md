@@ -1463,12 +1463,41 @@ npx convex run cupones:sembrarCuponesInfluencersInterno --prod
   colaboración trajo ventas de verdad. Es el único dato que va a haber para
   decidir si se repite.
 
+### La tarjeta se entrega EN MANO, no se manda
+
+Se entrega impresa junto con la pieza. Eso no es un detalle de formato: un
+papel **no se puede tocar**, así que desaparece el enlace, que era todo el
+mecanismo de canje de la feria (§25). Por eso el frente impreso lleva
+`lamarquessa.co` junto al código — sin la dirección, un 10 % no le sirve a
+nadie.
+
+El lienzo `impresion` del script: **10 × 15 cm a 300 dpi, con 3 mm de sangrado
+por lado** (el archivo sale 1251 × 1842), más un **dorso** común a las tres.
+
+⚠️ **Los tamaños de letra de impresión NO son los de pantalla escalados.** A
+300 dpi, 1 pt = 4,17 px: la vigencia de 21 px que se ve bien en WhatsApp serían
+5,5 pt en papel, ilegible. En `impresion` los tamaños chicos están puestos en
+puntos reales — 8 pt la vigencia, 7 pt el rótulo.
+
+⚠️ **El filete va a 10 mm del corte, no a 6 % como en pantalla.** Un marco fino
+cerca del borde es justo lo que delata una guillotina desviada medio
+milímetro: queda torcido y se ve barato.
+
+Para la litografía: mate o algodón de 300–350 g —nunca brillante, que un fondo
+café oscuro marca cada huella— y **prueba de color antes de tirar las tres**:
+el archivo va en RGB y los cafés oscuros son donde la conversión a CMYK se va
+a barro.
+
+El lienzo `wpp` se conserva para las mismas tres: sirve para que ella reenvíe
+la imagen a su comunidad después, y ahí el enlace sí va en el mensaje.
+
 ### El script de tarjetas ahora es multicampaña
 
 `scripts/tarjetas-premio.py` pasó de tener la lista dentro a una constante
 `CAMPANAS`: cada campaña trae su carpeta, su saludo, su rótulo y su vigencia.
-`python scripts/tarjetas-premio.py influencers` genera solo esas tres. La
-salida `_tarjetas-influencers/` está ignorada, como `_tarjetas-feria/`.
+`python scripts/tarjetas-premio.py influencers` genera solo esa campaña, y
+un segundo argumento la limita a un lienzo (`... influencers wpp`). La salida
+`_tarjetas-influencers/` está ignorada, como `_tarjetas-feria/`.
 
 El rótulo dice **«EL CÓDIGO»** y no «TU CÓDIGO»: el código no es de ella,
 es el que ella reparte. Y el saludo es «Para tu comunidad,» en vez de
