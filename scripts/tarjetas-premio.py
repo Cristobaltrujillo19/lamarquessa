@@ -125,24 +125,33 @@ CAMPANAS = {
     # comunidad, asi que la tarjeta NO habla de un premio ganado: habla de algo
     # que ella reparte.
     #
-    # ⚠️ Esta tarjeta SE ENTREGA EN MANO, junto con el bolso. No se manda por
-    # WhatsApp. Por eso su lienzo es `impresion` — pero se deja también el de
-    # pantalla, que sirve para que ella lo reenvíe a su comunidad después.
+    # ⚠️ Esta tarjeta SE ENTREGA EN MANO, junto con el bolso, y TODO lo que se
+    # le quiere decir tiene que estar escrito en ella: no hay mensaje aparte ni
+    # discurso al entregarla. Por eso es una `carta` — el nombre abre el texto
+    # como un saludo y el párrafo va completo, en palabras del dueño — y por
+    # eso solo existe en `impresion`.
     "influencers": {
         "carpeta": "_tarjetas-influencers",
         "prefijo": "bono",
-        "lienzos": ["impresion", "wpp"],
-        "saludo": "Para tu comunidad,",
-        # "EL" y no "TU": el codigo no es suyo, es el que ella regala.
-        "rotulo": "EL CÓDIGO",
-        "vigencia": ["Para compartir, sin límite de usos", "Hasta el 11 de diciembre de 2026"],
+        "lienzos": ["impresion"],
+        "saludo": None,
+        # Sin rótulo: la carta ya termina en "este es el código:", y un
+        # "EL CÓDIGO" debajo diría lo mismo dos veces.
+        "rotulo": None,
+        "carta": True,
+        "vigencia": ["Sin límite de usos", "Hasta el 11 de diciembre de 2026"],
         "gente": [
             ("Conchita", "CONCHITA10", "comunidad"),
             ("Caro",     "CARO10",     "comunidad"),
             ("Paula",    "PAULA10",    "comunidad"),
         ],
+        # Párrafos, no líneas: en modo carta el script parte el texto al ancho.
         "textos": {
-            "comunidad": ["Un 10% en toda la tienda,", "para quien tú quieras."],
+            "comunidad": [
+                "te amamos y queremos regalarle a tu comunidad un 10% de "
+                "descuento en nuestra tienda.",
+                "Si quieres compartir esta experiencia, este es el código:",
+            ],
         },
     },
 }
@@ -159,6 +168,21 @@ def espaciado(d, xy, texto, fuente, fill, tracking):
 
 def ancho_espaciado(d, texto, fuente, tracking):
     return sum(d.textlength(c, font=fuente) + tracking for c in texto) - tracking
+
+
+def partir(d, texto, fuente, ancho):
+    """Parte un párrafo en líneas que quepan en `ancho`. Pillow no lo hace."""
+    lineas, actual = [], ""
+    for palabra in texto.split():
+        prueba = (actual + " " + palabra).strip()
+        if d.textlength(prueba, font=fuente) <= ancho or not actual:
+            actual = prueba
+        else:
+            lineas.append(actual)
+            actual = palabra
+    if actual:
+        lineas.append(actual)
+    return lineas
 
 
 def logotipo(ancho):
@@ -205,11 +229,15 @@ def tarjeta(campana, nombre, codigo, tipo, ruta, L):
     y_vig2 = base - f["vigencia"]
     y_vig1 = y_vig2 - round(f["vigencia"] * 1.52)
     y_cod = y_vig1 - round(f["codigo"] * 1.72)
-    y_rot = y_cod - round(f["rotulo"] * 2.1)
-    y_regla = y_rot - round(f["rotulo"] * 1.9)
+    if campana["rotulo"]:
+        y_rot = y_cod - round(f["rotulo"] * 2.1)
+        y_regla = y_rot - round(f["rotulo"] * 1.9)
+    else:
+        y_regla = y_cod - round(f["codigo"] * 1.3)
 
     d.line([izq, y_regla, der, y_regla], fill=FILETE, width=2)
-    espaciado(d, (izq, y_rot), campana["rotulo"], f_rot, SUAVE, f["rotulo"] * 0.24)
+    if campana["rotulo"]:
+        espaciado(d, (izq, y_rot), campana["rotulo"], f_rot, SUAVE, f["rotulo"] * 0.24)
     d.text((izq, y_cod), codigo, font=f_cod, fill=COBRE)
     d.text((izq, y_vig1), campana["vigencia"][0], font=f_vig, fill=SUAVE)
     d.text((izq, y_vig2), campana["vigencia"][1], font=f_vig, fill=SUAVE)
@@ -233,18 +261,44 @@ def tarjeta(campana, nombre, codigo, tipo, ruta, L):
     # El nombre se encoge si no cabe: "María Paula" es el caso largo.
     tam = f["nombre"]
     while tam > f["nombre_min"]:
-        if d.textlength(nombre, font=ImageFont.truetype(SERIF, tam)) <= ancho:
+        if d.textlength(nombre + ",", font=ImageFont.truetype(SERIF, tam)) <= ancho:
             break
         tam -= 3
     f_nombre = ImageFont.truetype(SERIF, tam)
     f_saludo = ImageFont.truetype(SERIF_I, f["saludo"])
     f_texto = ImageFont.truetype(SERIF, f["texto"])
 
+    arriba = y_logo + logo_h + 40
+
+    if campana.get("carta"):
+        # El nombre abre la carta con su coma, como un saludo escrito a mano.
+        encabezado = nombre + ","
+        parrafos = [partir(d, p, f_texto, ancho) for p in campana["textos"][tipo]]
+        entre = round(L["salto_texto"] * 0.55)
+        alto_total = (tam * 1.16 + 30
+                      + sum(len(p) for p in parrafos) * L["salto_texto"]
+                      + entre * (len(parrafos) - 1))
+        # Pegada ABAJO, no centrada: la carta termina en "este es el código:",
+        # y centrada dejaba esos dos puntos apuntando a un hueco. Abajo llevan
+        # derecho al código, y el aire queda bajo el logotipo, donde no estorba.
+        y = max(arriba, y_regla - 64 - alto_total)
+
+        d.text((izq, y), encabezado, font=f_nombre, fill=TEXTO)
+        y += tam * 1.16 + 30
+        for i, lineas_p in enumerate(parrafos):
+            if i:
+                y += entre
+            for ln in lineas_p:
+                d.text((izq, y), ln, font=f_texto, fill=TEXTO)
+                y += L["salto_texto"]
+
+        img.save(ruta, "PNG", optimize=True, dpi=(L["dpi"], L["dpi"]))
+        return
+
     lineas = campana["textos"][tipo]
     alto_total = (L["alto_saludo"] + tam * 1.16 + 34
                   + len(lineas) * L["salto_texto"])
 
-    arriba = y_logo + logo_h + 40
     y = arriba + max(0, (y_regla - 46 - arriba - alto_total) / 2)
 
     d.text((izq, y), campana["saludo"], font=f_saludo, fill=SUAVE)

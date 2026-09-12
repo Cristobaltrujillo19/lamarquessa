@@ -1488,8 +1488,17 @@ café oscuro marca cada huella— y **prueba de color antes de tirar las tres**:
 el archivo va en RGB y los cafés oscuros son donde la conversión a CMYK se va
 a barro.
 
-El lienzo `wpp` se conserva para las mismas tres: sirve para que ella reenvíe
-la imagen a su comunidad después, y ahí el enlace sí va en el mensaje.
+**Todo lo que se les quiere decir va escrito en la tarjeta** (decisión del
+dueño, 12 sept). No hay mensaje de WhatsApp aparte ni nada que decir al
+entregarla, así que la tarjeta de influencers es una **carta**: el nombre abre
+con su coma («Conchita,») y sigue el texto del dueño entero — «te amamos y
+queremos regalarle a tu comunidad un 10% de descuento en nuestra tienda. Si
+quieres compartir esta experiencia, este es el código:». Sin rótulo «EL
+CÓDIGO», que repetiría esos dos puntos. Solo existe en `impresion`.
+
+⚠️ **La carta va pegada ABAJO, no centrada.** Centrada, «este es el código:»
+quedaba apuntando a un hueco y el código lejos. Abajo los dos puntos llevan
+derecho al código, y el aire queda bajo el logotipo.
 
 ### El script de tarjetas ahora es multicampaña
 
