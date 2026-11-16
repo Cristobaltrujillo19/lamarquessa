@@ -1582,19 +1582,70 @@ reforzado, los demás de 3.15:1 a 15.04:1, Manglar 1.32:1 contra `--tinta`) se
 movieron a `SelectorColor.tsx`, junto a la línea que decide el borde — no se
 perdieron.
 
-### ⚠️ El despliegue falló una vez, y no por esto
+---
 
-El primer build en Vercel del commit de Marea murió con 20 errores de
-`next/font/google`: «Module not found: `@vercel/turbopack-next/internal/font/
-google/font`» · «next/font/google queries have exactly one entry», apuntando a
-Cormorant Garamond en `layout.tsx`.
+## 28. ⚠️ Los builds en frío de Vercel fallan por `next/font/google` (16 nov 2026)
 
-**No era el cambio.** El commit no toca `layout.tsx` ni ninguna fuente, y el
-build local pasa limpio incluso borrando `.next`, `node_modules/.cache` y
-`.turbo`. El log decía `Previous build caches not available`, y **el mismo
-commit redesplegado pasó a la primera**. Transitorio: Turbopack resolviendo
-las fuentes de Google en frío.
+**Dos de los tres últimos pushes no desplegaron.** No por el código: el mismo
+commit, redesplegado con `vercel redeploy`, pasa a la primera. Es la cura
+provisional mientras esto siga abierto:
 
-Queda como riesgo latente: puede repetirse en cualquier build sin caché. Si
-vuelve, la cura de fondo es auto-hospedar las fuentes en vez de traerlas con
-`next/font/google` en tiempo de build.
+```
+npx vercel redeploy <url-del-despliegue-fallido>
+```
+
+### El síntoma, y por qué despista
+
+En Vercel (Turbopack) el error es:
+
+```
+Module not found: Can't resolve '@vercel/turbopack-next/internal/font/google/font'
+next/font/google queries have exactly one entry
+```
+
+Señala `Cormorant Garamond` y `layout.tsx`, y el número de errores **cambia
+entre intentos** (20 la primera vez, 12 la segunda). Eso ya dice que no es el
+código: un fallo de compilación determinista no cambia de tamaño.
+
+### La causa de verdad
+
+Compilando con `--webpack` en local el fallo se ve sin el disfraz:
+
+```
+TypeError: Cannot read properties of null (reading '1')
+  .../@next/font/dist/google/loader.js:122
+```
+
+Esa línea es:
+
+```js
+const ext = /\.(woff|woff2|eot|ttf|otf)$/.exec(googleFontFileUrl)[1];
+```
+
+El `exec` devuelve `null` y el `[1]` revienta. **Next da por hecho que toda
+URL que saca del CSS de Google termina en la extensión, y no comprueba.**
+Cuando Google responde algo distinto de lo esperado, en vez de un error
+legible sale un `TypeError` a cinco niveles de profundidad.
+
+Comprobado: el regex es **idéntico en 16.3.8**, así que subir de versión no lo
+arregla. Y pedir el CSS a mano desde aquí devuelve siempre URLs correctas, en
+las cinco familias.
+
+### Por qué le pasa a Vercel y casi nunca aquí
+
+Es **intermitente y depende de la red**. Un build en frío pide de golpe los
+~20 ficheros de las cinco familias desde una IP de datacenter compartida, que
+es justo lo que Google Fonts limita. Un `redeploy` reusa la caché y no pide
+nada — por eso siempre pasa. En local falló una vez con `--webpack` y no se
+volvió a reproducir ni instrumentando el cargador.
+
+### La cura de fondo: auto-hospedar las fuentes
+
+Mientras el build dependa de una llamada a Google, el despliegue depende de
+que a Google le parezca bien ese día. Bajar los `.woff2` a `public/` y
+declararlos con `next/font/local` quita la llamada entera. Encaja además con
+lo que §1 ya tenía pendiente para Queens.
+
+Son cinco familias, y **tres de ellas (Jost, Cormorant, Pinyon) no las pinta
+ninguna página pública** (§15): solo el panel y la vista previa de iniciales.
+Esas tres son el primer recorte obvio.
