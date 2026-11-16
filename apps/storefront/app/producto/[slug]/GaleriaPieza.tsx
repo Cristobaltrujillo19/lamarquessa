@@ -195,8 +195,8 @@ export default function GaleriaPieza({
                 tallas="(max-width: 960px) 100vw, 685px"
               />
               {/* Marca de agua: dice el color QUE ENSEÑA ESTA FOTO, no el que
-                  esté seleccionado. Si siguiera al selector, elegir Marea
-                  estamparía "Marea" sobre un bolso beige. Va en CSS sobre la
+                  esté seleccionado. Si siguiera al selector, elegir Manglar
+                  estamparía "Manglar" sobre un bolso beige. Va en CSS sobre la
                   imagen, nunca quemada en el JPG: se corrige, se traduce y no
                   toca los originales. */}
               <span className={styles.marcaAgua} aria-hidden="true">

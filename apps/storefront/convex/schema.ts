@@ -109,13 +109,13 @@ export default defineSchema({
 
     // Qué color enseña cada foto, indexado por su ruta. NO es el color que el
     // visitante tenga seleccionado: si la marca de agua siguiera al selector,
-    // elegir Marea estamparía "Marea" sobre un bolso beige.
+    // elegir Manglar estamparía "Manglar" sobre un bolso beige.
     //
     // Sirve a tres sitios: la marca de agua de la ficha, el rótulo de la
     // tarjeta de colección, y el filtro por color —que filtra por colores de
     // los que EXISTE foto, no por colores que la pieza "sea": las cuatro se
-    // fabrican en los cinco, así que filtrar por pertenencia devolvía o todo
-    // o nada.
+    // fabrican en todos, así que filtrar por pertenencia devolvía o todo o
+    // nada.
     //
     // Una ruta ausente del mapa significa "color no identificado", y se
     // rotula como pendiente antes que atribuirle un nombre que no le toca.

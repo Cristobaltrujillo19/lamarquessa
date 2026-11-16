@@ -74,9 +74,9 @@ export default function ConfiguradorPieza({ producto }: { producto: Producto }) 
 
   /** ¿El acabado elegido tiene alguna foto de ESTA pieza?
    *
-   *  Medido el 4 de septiembre de 2026 (§20 del ESTADO): Manglar y Marea no
-   *  tienen ni una sola toma en todo el catálogo. Quien los elige ve las fotos
-   *  en Amanecer con su marca de agua, que dice la verdad pero se lee como una
+   *  Medido el 4 de septiembre de 2026 (§20 del ESTADO): Manglar no tiene ni
+   *  una sola toma en todo el catálogo. Quien lo elige ve las fotos en
+   *  Amanecer con su marca de agua, que dice la verdad pero se lee como una
    *  etiqueta, no como un aviso.
    *
    *  El selector ya avisaba, pero solo en el panel que se asoma al pasar el

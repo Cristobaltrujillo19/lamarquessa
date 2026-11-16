@@ -1511,3 +1511,59 @@ un segundo argumento la limita a un lienzo (`... influencers wpp`). La salida
 El rótulo dice **«EL CÓDIGO»** y no «TU CÓDIGO»: el código no es de ella,
 es el que ella reparte. Y el saludo es «Para tu comunidad,» en vez de
 «Ganaste,» — no ganó nada, está dando algo.
+
+---
+
+## 27. Marea se retiró del catálogo (16 de noviembre de 2026)
+
+Decisión del dueño: **el azul marino Marea ya no se ofrece.** Quedan cuatro
+acabados — Amanecer, Manglar, Horizonte y Caribe.
+
+Era uno de los dos acabados con **cero fotografías** (§20): quien lo elegía
+veía fotos en Amanecer con marca de agua y tenía que pagar $195.000–$255.000
+confiando. Retirarlo cierra la mitad de ese problema. **Manglar sigue abierto**
+y sigue siendo el mismo riesgo.
+
+### Quitarlo de la lista NO basta
+
+`ACABADOS_MARCA` en `convex/productos.ts` es la fuente de verdad, pero los
+colores viven **copiados dentro de cada documento** de `productos`. Borrar la
+entrada solo cambia lo que se sembraría de cero; el catálogo en producción se
+queda igual hasta que se corre la sincronización:
+
+```
+npx convex deploy
+npx convex run productos:actualizarColoresDeCatalogoInterno --prod
+```
+
+Hecho el 16 de noviembre: los cuatro bolsos actualizados, `totalAcabados: 4`,
+verificado leyendo `productos:catalogo` en prod. Se añadió
+`actualizarColoresDeCatalogoInterno` (variante sin secreto para el CLI, mismo
+patrón que `cupones:sembrarCuponesFeriaInterno`).
+
+### No hubo nada que migrar
+
+Comprobado en producción **antes** de tocar nada: ni `inventario`, ni
+`carritos`, ni `pedidos` tenían una sola fila con `colorId: "marea"`. Por eso
+la retirada fue limpia y no hizo falta decidir qué hacer con un pedido vivo.
+
+Si lo hubiera habido, el histórico igual no se toca: los pedidos guardan
+`colorNombre` congelado al momento de la venta. Y un carrito viejo que
+apuntara a un color retirado no revienta — `orders.ts:88` lanza «Ese acabado
+ya no está disponible para …», que es un aviso legible y no un error.
+
+### Lo que se tocó en el código
+
+`ACABADOS_MARCA` · el token `--prod-marea` de `globals-v2.css` · la regla
+`.muestraMarea` · y los comentarios que usaban Marea como ejemplo
+(`SelectorColor`, `GaleriaPieza`, `ConfiguradorPieza`, `schema.ts`).
+
+El comentario de la rejilla del selector decía «Cinco colores, no cuatro».
+Ahora el número ya cambió en los dos sentidos, así que se reescribió para
+explicar por qué es `auto-fit` y **no** un `repeat(N, 1fr)`: para que el
+próximo cambio de catálogo no obligue a acordarse de ese archivo.
+
+⚠️ **Hallazgo aparte:** las reglas `.muestraAmanecer`/`.muestraManglar`/… y
+los tokens `--prod-*` **no los usa nadie**. El selector pinta la muestra con
+`muestraColor(c)` en línea, desde el hex del producto. Es código muerto, pero
+borrarlo entero excede esta tarea.

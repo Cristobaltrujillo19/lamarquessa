@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { mutation, query, internalMutation, type MutationCtx } from "./_generated/server";
 
 const colorV = v.object({
   id: v.string(),
@@ -17,7 +17,7 @@ function exigirSecreto(secret: string) {
   if (!esperado || secret !== esperado) throw new Error("No autorizado");
 }
 
-/** Los 5 acabados en que se fabrica cada pieza. Fuente de verdad única: la
+/** Los 4 acabados en que se fabrica cada pieza. Fuente de verdad única: la
  *  usan tanto la semilla como la mutación de actualización, para que no
  *  puedan divergir.
  *
@@ -29,9 +29,15 @@ function exigirSecreto(secret: string) {
  *  `globals.css` del mockup aprobado. Recalibrar contra tomas de estudio
  *  antes de usarlos en material impreso.
  *
- *  ⚠️ Manglar y Marea no tienen ni una sola fotografía todavía. Se pueden
- *  comprar; el configurador avisa de que la referencia está pendiente y la
- *  galería enseña las fotos que existen con su color real estampado. */
+ *  ⚠️ Manglar no tiene ni una sola fotografía todavía. Se puede comprar; el
+ *  configurador avisa de que la referencia está pendiente y la galería enseña
+ *  las fotos que existen con su color real estampado.
+ *
+ *  ⚠️ MAREA SE RETIRÓ el 16 de noviembre de 2026, por decisión del dueño.
+ *  Quitarlo de esta lista NO basta: los colores viven copiados en cada
+ *  documento de `productos`, así que hay que correr después
+ *  `actualizarColoresDeCatalogoInterno`. El histórico no se toca — los
+ *  pedidos guardan su `colorNombre` congelado. */
 const ACABADOS_MARCA = [
   {
     id: "amanecer",
@@ -62,12 +68,6 @@ const ACABADOS_MARCA = [
     hex: "#2C8CA8",
     descripcion: "Azul de agua clara, el que solo se ve a poca profundidad.",
     fotoReferencia: "/assets/colores/caribe.jpg",
-  },
-  {
-    id: "marea",
-    nombre: "Marea",
-    hex: "#1E2C4A",
-    descripcion: "Azul marino. El mar cuando ya no se le alcanza el fondo.",
   },
 ];
 
@@ -366,46 +366,62 @@ export const actualizarColoresDeCatalogo = mutation({
   args: { secret: v.string() },
   handler: async (ctx, { secret }) => {
     exigirSecreto(secret);
-
-    // Comparación campo a campo, no JSON.stringify: Convex no garantiza el
-    // orden de las claves al leer un documento, así que stringify daba falsos
-    // negativos y la mutación reescribía siempre.
-    // El tipo va explícito y laxo: `typeof ACABADOS_MARCA` infiere una unión
-    // estricta (una forma con hex2, otra sin él) que no encaja con lo que
-    // devuelve la base, donde hex2 y descripcion son simplemente opcionales.
-    type ColorGuardado = {
-      id: string;
-      nombre: string;
-      hex: string;
-      hex2?: string;
-      descripcion?: string;
-      fotoReferencia?: string;
-    };
-    const yaCoincide = (guardados: ColorGuardado[]) =>
-      guardados.length === ACABADOS_MARCA.length &&
-      ACABADOS_MARCA.every((esperado, i) => {
-        const actual = guardados[i];
-        return (
-          actual?.id === esperado.id &&
-          actual?.nombre === esperado.nombre &&
-          actual?.hex === esperado.hex &&
-          actual?.hex2 === esperado.hex2 &&
-          actual?.descripcion === esperado.descripcion &&
-          actual?.fotoReferencia === esperado.fotoReferencia
-        );
-      });
-
-    const productos = await ctx.db.query("productos").collect();
-    const actualizados: string[] = [];
-
-    for (const p of productos) {
-      if (yaCoincide(p.colores)) continue;
-      await ctx.db.patch(p._id, { colores: ACABADOS_MARCA });
-      actualizados.push(p.slug);
-    }
-
-    return { actualizados, totalAcabados: ACABADOS_MARCA.length };
+    return await sincronizarColores(ctx);
   },
+});
+
+async function sincronizarColores(ctx: MutationCtx) {
+  // Comparación campo a campo, no JSON.stringify: Convex no garantiza el
+  // orden de las claves al leer un documento, así que stringify daba falsos
+  // negativos y la mutación reescribía siempre.
+  // El tipo va explícito y laxo: `typeof ACABADOS_MARCA` infiere una unión
+  // estricta (una forma con hex2, otra sin él) que no encaja con lo que
+  // devuelve la base, donde hex2 y descripcion son simplemente opcionales.
+  type ColorGuardado = {
+    id: string;
+    nombre: string;
+    hex: string;
+    hex2?: string;
+    descripcion?: string;
+    fotoReferencia?: string;
+  };
+  const yaCoincide = (guardados: ColorGuardado[]) =>
+    guardados.length === ACABADOS_MARCA.length &&
+    ACABADOS_MARCA.every((esperado, i) => {
+      const actual = guardados[i];
+      return (
+        actual?.id === esperado.id &&
+        actual?.nombre === esperado.nombre &&
+        actual?.hex === esperado.hex &&
+        actual?.hex2 === esperado.hex2 &&
+        actual?.descripcion === esperado.descripcion &&
+        actual?.fotoReferencia === esperado.fotoReferencia
+      );
+    });
+
+  const productos = await ctx.db.query("productos").collect();
+  const actualizados: string[] = [];
+
+  for (const p of productos) {
+    if (yaCoincide(p.colores)) continue;
+    await ctx.db.patch(p._id, { colores: ACABADOS_MARCA });
+    actualizados.push(p.slug);
+  }
+
+  return { actualizados, totalAcabados: ACABADOS_MARCA.length };
+}
+
+/**
+ * La MISMA sincronización, sin secreto, para correrla con el CLI de Convex.
+ * Ver la nota de `cupones:sembrarCuponesFeriaInterno`: una `internalMutation`
+ * no se alcanza desde el navegador ni con `fetchMutation`, solo desde una
+ * sesión ya autenticada como administradora del proyecto.
+ *
+ *   npx convex run productos:actualizarColoresDeCatalogoInterno --prod
+ */
+export const actualizarColoresDeCatalogoInterno = internalMutation({
+  args: {},
+  handler: async (ctx) => await sincronizarColores(ctx),
 });
 
 // Declara qué color enseña cada foto del catálogo.

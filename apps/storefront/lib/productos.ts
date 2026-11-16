@@ -137,8 +137,8 @@ export function colorDeFoto(p: Producto, src: string): Color | null {
  *
  *  Es lo que alimenta el filtro de la colección. Se filtra por colores
  *  FOTOGRAFIADOS, no por colores en los que la pieza se fabrica: las cuatro
- *  se hacen en los cinco, así que filtrar por pertenencia devolvería o todo
- *  o nada, y el filtro no diría nada. */
+ *  se hacen en todos los acabados, así que filtrar por pertenencia devolvería
+ *  o todo o nada, y el filtro no diría nada. */
 export function coloresConFoto(p: Producto): Color[] {
   const ids = new Set(Object.values(p.fotoColores ?? {}));
   return p.colores.filter((c) => ids.has(c.id));

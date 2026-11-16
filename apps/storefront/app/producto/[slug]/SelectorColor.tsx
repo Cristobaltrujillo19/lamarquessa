@@ -6,12 +6,12 @@ import { type Color, type Producto, coloresConFoto, muestraColor } from "@/lib/p
 import styles from "./ConfiguradorPieza.module.css";
 
 /**
- * Selector de acabado: radiogroup de cinco colores con navegación por flechas
+ * Selector de acabado: radiogroup de colores con navegación por flechas
  * y un panel de referencia que se asoma al pasar el cursor, al recibir foco o
  * al tocar una muestra.
  *
  * EL ACABADO Y EL COLOR SON COSAS DISTINTAS. El acabado es el relieve Nácar,
- * común a las cinco variantes y a todas las piezas. El color es lo que se
+ * común a todas las variantes y a todas las piezas. El color es lo que se
  * elige aquí. Hasta agosto de 2026 el código llamaba "acabado" al color y era
  * una confusión de raíz: no reintroducirla.
  *
@@ -31,7 +31,7 @@ export default function SelectorColor({
   onElegir: (c: Color) => void;
 }) {
   // Color que el visitante está "asomando". Es independiente del elegido: se
-  // puede mirar Marea sin dejar de tener Amanecer seleccionado.
+  // puede mirar Caribe sin dejar de tener Amanecer seleccionado.
   const [asomado, setAsomado] = useState<string | null>(null);
   const bloqueColores = useRef<HTMLDivElement | null>(null);
   const contenedorOpciones = useRef<HTMLDivElement | null>(null);
@@ -136,8 +136,8 @@ export default function SelectorColor({
                 className={`${styles.opcion} ${activo ? styles.opcionActiva : ""}`}
               >
                 {/* Amanecer mide 1.35:1 contra la superficie y sin contorno
-                    reforzado desaparece. Los otros cuatro van de 3.15:1 a
-                    15.04:1 y no lo necesitan. */}
+                    reforzado desaparece. Los demás van de 3.15:1 a 15.04:1 y
+                    no lo necesitan. */}
                 <span
                   className={styles.muestra}
                   aria-hidden="true"
