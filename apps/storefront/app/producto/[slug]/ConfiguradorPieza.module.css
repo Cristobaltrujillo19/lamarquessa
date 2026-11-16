@@ -184,34 +184,15 @@
   border: 1px solid var(--tinta-12);
   flex-shrink: 0;
 }
-/* Muestras: el COLOR REAL de la pieza, no un token del sistema.
-   Antes usaban --cobre/--crema/--profundo/--espuma, que valía cuando este
-   eje describía texturas abstractas. Como color de producto sería mentir.
+/* El RELLENO de la muestra no se pinta aquí. Hubo una clase por acabado
+   (.muestraAmanecer, .muestraManglar…) y era código muerto: el selector lo
+   pone en línea con `muestraColor(c)`, desde el hex del producto. Una clase
+   por color obliga a tocar el CSS cada vez que cambia el catálogo — y ya pasó
+   dos veces. El bicolor también sale de ahí: `muestraColor` devuelve el mismo
+   corte duro a 45° cuando el acabado trae `hex2`.
 
-   Medido cada relleno contra --crema (la superficie donde vive el selector):
-   Manglar 9.71:1 · Horizonte 6.74:1 y 15.04:1 · Caribe
-   3.15:1 — todos se sostienen solos con el borde decorativo de --tinta-12.
-   El único que falla es Amanecer: 1.35:1, prácticamente invisible sobre
-   crema. Solo a ese se le sube el borde a --tinta-70, que mide 5.30:1
-   contra la superficie y le devuelve un contorno legible.
-
-   (Manglar sí choca con el interfaz, pero en otro sitio: contra --tinta
-   mide 1.32:1. No afecta aquí porque el selector nunca vive sobre --tinta;
-   si algún día se mueve a .seccion-tinta, hay que darle contorno claro.)
-   Los valores viven en globals.css. */
-.muestraAmanecer  { background: var(--prod-amanecer); border-color: var(--tinta-70); }
-.muestraManglar   { background: var(--prod-manglar); }
-.muestraCaribe    { background: var(--prod-caribe); }
-
-/* Horizonte es rojo CON negro: dos colores, no uno. Corte duro a 45° —
-   el degradado suave inventaría tonos intermedios que la pieza no tiene. */
-.muestraHorizonte {
-  background: linear-gradient(
-    135deg,
-    var(--prod-horizonte) 0 50%,
-    var(--prod-horizonte-2) 50% 100%
-  );
-}
+   Lo único que sigue dependiendo del color es el BORDE de Amanecer, y vive
+   junto a la decisión, en SelectorColor.tsx. */
 
 /* ---------------- Marca de agua de color ----------------
    Dice el color que enseña ESA foto. Va sobre la imagen por CSS, nunca

@@ -125,26 +125,13 @@
   --tinta-12: rgba(47, 32, 22, 0.12);
   --tinta-06: rgba(47, 32, 22, 0.06);
 
-  /* -------- Colores de PRODUCTO — no son del sistema --------
-     Los cinco colores en que se fabrica cada bolso. Viven aquí porque este
-     archivo prohíbe hexes sueltos fuera de él, pero NO forman parte del
-     sistema de diseño: no se usan para superficies, texto ni estados.
-     Su único destino son las muestras del selector de color y del filtro
-     de colección.
-
-     Son APROXIMACIONES tomadas de la descripción verbal del cliente
-     (beige, chocolate, rojo con negro, azul, azul marino). Nadie ha medido
-     todavía una pieza real. Cuando lleguen las fotos definitivas, calibrar
-     estos cinco valores contra el producto físico antes de dar el sitio
-     por bueno: una muestra que miente es peor que no tener muestra.
-
-     Horizonte son DOS colores (rojo sobre negro), así que su muestra es un
-     degradado duro a 45°, no un plano. */
-  --prod-amanecer:      #D9C7A8; /* Beige cálido */
-  --prod-manglar:       #4B3122; /* Chocolate */
-  --prod-horizonte:     #8F2B23; /* Rojo — mitad superior de la muestra */
-  --prod-horizonte-2:   #171310; /* Negro — mitad inferior */
-  --prod-caribe:        #2C8CA8; /* Azul de agua clara */
+  /* NO hay tokens --prod-* de color de producto, y no hay que volver a
+     ponerlos. Los hubo, y eran mentira: duplicaban en CSS unos hexes cuya
+     fuente de verdad es `ACABADOS_MARCA` en convex/productos.ts, de donde
+     cada producto se lleva su copia. El selector pinta la muestra con
+     `muestraColor(c)` (lib/productos.ts) desde el hex del propio producto,
+     así que un token aquí solo podría desincronizarse del catálogo.
+     Un acabado nuevo, o un hex recalibrado, no toca este archivo. */
 
   /* -------- Tipografía — dos familias, no tres --------
      Queens es la display del sitio; Archivo el texto. Fraunces aparece en

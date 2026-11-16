@@ -1563,7 +1563,38 @@ Ahora el número ya cambió en los dos sentidos, así que se reescribió para
 explicar por qué es `auto-fit` y **no** un `repeat(N, 1fr)`: para que el
 próximo cambio de catálogo no obligue a acordarse de ese archivo.
 
-⚠️ **Hallazgo aparte:** las reglas `.muestraAmanecer`/`.muestraManglar`/… y
-los tokens `--prod-*` **no los usa nadie**. El selector pinta la muestra con
-`muestraColor(c)` en línea, desde el hex del producto. Es código muerto, pero
-borrarlo entero excede esta tarea.
+### Los tokens `--prod-*` se fueron con él
+
+Al quitar `--prod-marea` saltó que **ninguno** de esos tokens se usaba, ni las
+reglas `.muestraAmanecer`/`.muestraManglar`/`.muestraCaribe`/`.muestraHorizonte`
+que los consumían. El selector pinta la muestra con `muestraColor(c)` en línea,
+desde el hex del propio producto. Comprobado antes de borrar que no hubiera
+referencias dinámicas (`styles['muestra' + …]`) ni uso en el panel, que usa
+`<input type="color">` sobre `c.hex`.
+
+Eran una **segunda copia** de unos hexes cuya fuente de verdad es
+`ACABADOS_MARCA`. Por eso retirar Marea obligaba a tocar tres archivos en vez
+de uno, y por eso el comentario de la rejilla llevaba un número quemado. Ya
+borrados: un acabado nuevo o un hex recalibrado no vuelve a tocar el CSS.
+
+Las medidas de contraste contra `--crema` (Amanecer 1.35:1 y su borde
+reforzado, los demás de 3.15:1 a 15.04:1, Manglar 1.32:1 contra `--tinta`) se
+movieron a `SelectorColor.tsx`, junto a la línea que decide el borde — no se
+perdieron.
+
+### ⚠️ El despliegue falló una vez, y no por esto
+
+El primer build en Vercel del commit de Marea murió con 20 errores de
+`next/font/google`: «Module not found: `@vercel/turbopack-next/internal/font/
+google/font`» · «next/font/google queries have exactly one entry», apuntando a
+Cormorant Garamond en `layout.tsx`.
+
+**No era el cambio.** El commit no toca `layout.tsx` ni ninguna fuente, y el
+build local pasa limpio incluso borrando `.next`, `node_modules/.cache` y
+`.turbo`. El log decía `Previous build caches not available`, y **el mismo
+commit redesplegado pasó a la primera**. Transitorio: Turbopack resolviendo
+las fuentes de Google en frío.
+
+Queda como riesgo latente: puede repetirse en cualquier build sin caché. Si
+vuelve, la cura de fondo es auto-hospedar las fuentes en vez de traerlas con
+`next/font/google` en tiempo de build.

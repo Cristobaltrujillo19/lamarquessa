@@ -135,9 +135,22 @@ export default function SelectorColor({
                 aria-describedby={asomado === c.id ? "vista-color" : undefined}
                 className={`${styles.opcion} ${activo ? styles.opcionActiva : ""}`}
               >
-                {/* Amanecer mide 1.35:1 contra la superficie y sin contorno
-                    reforzado desaparece. Los demás van de 3.15:1 a 15.04:1 y
-                    no lo necesitan. */}
+                {/* El relleno sale del hex del producto, nunca de un token
+                    de CSS: la fuente de verdad es ACABADOS_MARCA en Convex y
+                    duplicarla en la hoja de estilos solo la desincroniza.
+
+                    Medido cada relleno contra --crema, la superficie donde
+                    vive el selector: Manglar 9.71:1 · Horizonte 6.74:1 y
+                    15.04:1 · Caribe 3.15:1 — todos se sostienen con el borde
+                    decorativo de --tinta-12. El único que falla es Amanecer,
+                    1.35:1, prácticamente invisible sobre crema; solo a ese se
+                    le sube el borde a --tinta-70, que mide 5.30:1 y le
+                    devuelve un contorno legible.
+
+                    (Manglar sí choca, pero en otro sitio: contra --tinta mide
+                    1.32:1. Da igual aquí porque el selector nunca vive sobre
+                    --tinta; si algún día se mueve a .seccion-tinta, hay que
+                    darle contorno claro.) */}
                 <span
                   className={styles.muestra}
                   aria-hidden="true"
