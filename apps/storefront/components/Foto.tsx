@@ -1,4 +1,5 @@
 import { ANCHOS_FOTO } from "@/lib/fotos-anchos";
+import { encuadreDeFoto } from "@/lib/fotos-encuadre";
 
 // Imagen de producto: sirve AVIF a quien lo soporte y JPEG al resto, en varias
 // tallas para que un teléfono no baje la foto de 1600 px.
@@ -40,6 +41,12 @@ export default function Foto({
    *  sitio de uso debería pasar el suyo. */
   tallas?: string;
 }) {
+  // El encuadre se resuelve AQUÍ y no en cada sitio de uso: así una foto nueva
+  // descentrada se corrige en un solo archivo y queda bien en la ficha, en la
+  // tarjeta de colección y en el carrito a la vez. Donde el marco no recorta
+  // (el lightbox, que usa `contain`) no estorba: object-position sin recorte
+  // no mueve nada.
+  const encuadre = encuadreDeFoto(src);
   const avif = src.replace(/\.(jpe?g|png)$/i, ".avif");
   const setAvif = srcSet(src, "avif");
   const setJpg = srcSet(src, "jpg");
@@ -60,6 +67,7 @@ export default function Foto({
         sizes={setJpg ? tallas : undefined}
         alt={alt}
         className={className}
+        style={encuadre ? { objectPosition: encuadre } : undefined}
         width={ancho}
         height={alto}
         loading={prioridad ? "eager" : "lazy"}

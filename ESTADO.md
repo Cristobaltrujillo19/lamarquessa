@@ -1785,3 +1785,48 @@ desbordaban 109 px y las apaisadas dejaban 45 px de hueco.
 
 **Sin revisar:** el carrito y los rayos X se arreglaron por ser el mismo
 patrón, pero no se miraron con fotos reales en pantalla.
+
+---
+
+## 31. Encuadre foto a foto, y la auditoría que faltaba (19 de noviembre de 2026)
+
+Arreglado el §30, quedaba la pregunta de verdad: **¿hay alguna otra foto con
+el bolso cortado?** Se revisaron **las 17** de una vez.
+
+### La herramienta: `scripts/revisar-encuadres.py`
+
+Simula el recorte del navegador (`cover` + el `object-position` que declare
+`lib/fotos-encuadre.ts`, leído del propio TS para que la hoja no pueda mentir)
+y pinta las 17 juntas con cuánto se pierde en cada una.
+
+Existe porque el §30 pasó meses sin verse: mirar foto por foto es lento, y
+**las cuadradas salían bien por casualidad y tapaban que las demás no.**
+⚠️ Correrlo al añadir o cambiar una foto de bolso.
+
+### El resultado
+
+8 de 17 son 1:1 y no se recortan. De las 9 que sí, **cuatro perdían el bolso**:
+
+| foto | dónde está el bolso | centrado hacía |
+|---|---|---|
+| `mallorca-en-uso` | en alto, sobre la cabeza | le cortaba el asa |
+| `kruta-en-uso` | abajo a la izquierda, pequeño | **lo quitaba casi entero** |
+| `montt-en-uso` | colgando, abajo a la derecha | le cortaba los flecos |
+| `montt-ambiente` | asa alta | la dejaba pegada al borde |
+
+La peor con diferencia era `kruta-en-uso`: el visitante veía una foto de
+piscina **sin producto**.
+
+### El arreglo: `lib/fotos-encuadre.ts`
+
+Un mapa de ruta → segundo valor de `object-position`: `0%` ancla arriba,
+`100%` abajo. Lo resuelve **`components/Foto.tsx`**, no cada sitio de uso: así
+una foto descentrada se corrige en un archivo y queda bien en la ficha, en la
+tarjeta de colección y en el carrito a la vez. En el lightbox (`contain`) no
+estorba, porque sin recorte `object-position` no mueve nada.
+
+⚠️ **La cura NO es recortar el JPG.** El original sirve para el lightbox y
+para futuros marcos; lo que cambia es por dónde se mira.
+
+Las otras cinco recortadas se revisaron y están bien: el bolso queda entero.
+Verificado en el navegador que el `object-position` calculado es el del mapa.
