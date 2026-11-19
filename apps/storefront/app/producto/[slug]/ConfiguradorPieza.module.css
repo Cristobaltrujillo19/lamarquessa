@@ -45,7 +45,17 @@
   background: var(--tinta-06);
 }
 
-.marcoFoto img { object-fit: cover; }
+/* ⚠️ `width`/`height` al 100% NO sobran: sin ellos la <img> se pinta a su
+   proporción NATURAL y `object-fit` no tiene nada que hacer — la caja del
+   elemento ya coincide con la del contenido. El marco se queda en su
+   aspect-ratio, la foto desborda por abajo (y `overflow:hidden` se la come) o
+   deja una banda gris. Es la misma trampa que ya está anotada en
+   home.module.css y en nosotros.module.css. */
+.marcoFoto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
 /* La foto es interactiva: abre el lightbox. El botón hereda el marco
    pero elimina padding/borde nativos y añade un leve zoom en hover. */
@@ -265,7 +275,14 @@
   aspect-ratio: 16 / 8;
   background: var(--tinta-06);
 }
-.vistaMarco :global(img) { object-fit: contain; }
+/* `contain` y no `cover`: esta es la foto de REFERENCIA del color, y
+   recortarla para llenar el marco escondería justo lo que se viene a mirar.
+   Necesita el 100% igual que las de arriba, por el mismo motivo. */
+.vistaMarco :global(img) {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
 
 .vistaNombre {
   margin: var(--s-2) 0 0;

@@ -144,7 +144,17 @@
   background: var(--tinta-06);
 }
 
-.pasoMarco img { object-fit: cover; }
+/* ⚠️ `width`/`height` al 100% NO sobran: sin ellos la <img> se pinta a su
+   proporción NATURAL y `object-fit` no tiene nada que hacer — la caja del
+   elemento ya coincide con la del contenido. El marco se queda en su
+   aspect-ratio, la foto desborda por abajo (y `overflow:hidden` se la come) o
+   deja una banda gris. Es la misma trampa que ya está anotada en
+   home.module.css y en nosotros.module.css. */
+.pasoMarco img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
 .pasoNumero {
   margin-top: var(--s-3);

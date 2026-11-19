@@ -1720,3 +1720,68 @@ clic, y no se llegó a ver renderizado en el navegador.
 2. **Borrar un pedido no devuelve el stock.** Cancelar tampoco lo hacía, así
    que no es nuevo, pero ahora se puede borrar un `enviado` —que sí descontó
    inventario— y ese descuento se queda.
+
+---
+
+## 30. Las fotos estaban mal encuadradas: `object-fit` no hacía nada (19 nov 2026)
+
+Lo notó el dueño en móvil. No era culpa de las fotos.
+
+### El fallo
+
+Los marcos de foto se montan igual en cuatro sitios: un contenedor con
+`aspect-ratio` + `overflow: hidden`, y dentro una `<img>` con
+`object-fit: cover`. Pero a la imagen **le faltaban `width` y `height` al
+100%**, y sin eso `object-fit` no tiene nada que hacer: la caja del elemento
+ya coincide con la del contenido, así que la foto se pinta a su proporción
+natural y el marco la recorta por donde caiga.
+
+Medido en producción sobre la ficha de Menorca, con el marco a 327×327:
+
+| foto | proporción | se pintaba | resultado |
+|---|---|---|---|
+| frente | 1:1 | 327×327 | bien, por casualidad |
+| **en uso** | 0.75 | 327×436 | **109 px cortados por abajo** |
+| ángulo | 1:1 | 327×327 | bien, por casualidad |
+| **ambiente** | 1.38 | 327×237 | **45 px de banda gris** |
+
+Las verticales se anclaban arriba, así que lo que se perdía era **el bolso**:
+en una foto «en uso» el bolso va a la altura de la mano, abajo. Se veía la
+cabeza y se cortaba el producto.
+
+⚠️ **Solo coincidían las cuadradas.** Por eso parecía que «algunas» fotos
+estaban mal: las de estudio son 1:1 y se salvaban solas; las de ambiente y las
+de uso no.
+
+### Por qué se notaba en móvil
+
+El marco es `1/1` en todos los anchos, no hay media query. El fallo estaba
+también en escritorio, pero ahí la galería es una columna de ~685 px al lado
+del texto; en móvil ocupa el ancho entero y el recorte salta a la vista.
+
+### El arreglo
+
+`width: 100%; height: 100%` junto al `object-fit` en los cuatro marcos:
+
+- `.marcoFoto` — galería de la ficha (el que se veía)
+- `.pasoMarco` — rayos X de la ficha
+- `.lineaFoto` — líneas del carrito
+- `.vistaMarco` — vista previa del color (ahí es `contain`, mismo problema)
+
+⚠️ **Esta trampa ya estaba documentada** en `home.module.css` y
+`nosotros.module.css`, con el comentario escrito. Se arregló donde se vio y no
+se buscó el resto del patrón. El comentario nuevo lo dice en los cuatro.
+
+Con `cover` centrado, una vertical 3:4 pierde un 12,5 % arriba y otro abajo en
+vez de un 25 % de golpe por abajo. Si alguna foto concreta quedara mal, el
+mando fino es `object-position` (p. ej. `50% 35%`), no volver a quitar el
+`height`.
+
+### Verificado
+
+En local a 375 px, los cuatro bolsos: **todos los marcos 327×327 con la imagen
+exactamente a 327×327**, desborde 0. Antes, en producción, las verticales
+desbordaban 109 px y las apaisadas dejaban 45 px de hueco.
+
+**Sin revisar:** el carrito y los rayos X se arreglaron por ser el mismo
+patrón, pero no se miraron con fotos reales en pantalla.
