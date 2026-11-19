@@ -17,9 +17,13 @@ import {
   secreto,
   verifyPassword,
 } from "./lib/auth";
-import { puedeVerCuentas } from "./lib/permisos";
+import { puedeBorrarPedidos, puedeVerCuentas } from "./lib/permisos";
 
 export type FormState = { error?: string } | undefined;
+
+/** Como FormState pero con acuse de recibo: hay formularios que no navegan a
+ *  ningún sitio al terminar, y sin una señal el usuario no sabe si pasó algo. */
+export type FormStateOk = { error?: string; ok?: string } | undefined;
 
 type MetodoPago = "efectivo" | "transferencia" | "tarjeta_mp" | "qr_bancolombia";
 
@@ -102,14 +106,29 @@ export async function cancelarPedidoAction(formData: FormData): Promise<void> {
   revalidatePath(`/panel/pedido/${pedidoId}`);
 }
 
-/** Borra permanentemente el pedido y vuelve a la lista. El server-side de
- *  Convex ya bloquea eliminar cualquier estado que no sea "cancelado". */
+/** Borra permanentemente el pedido y vuelve a su lista.
+ *
+ *  Quién decide si se puede borrar un pedido NO cancelado es esta función, no
+ *  el navegador: Convex solo ve el secreto compartido y no sabe quién inició
+ *  sesión. Aquí se resuelve `puedeBorrarPedidos` contra la cookie firmada y
+ *  solo entonces se manda `forzar`. Sin el permiso, Convex sigue rechazando
+ *  cualquier estado que no sea "cancelado", así que un formulario falsificado
+ *  no consigue nada.
+ *
+ *  La vuelta usa el estado que devuelve la mutación y no uno fijo: borrando un
+ *  pedido pagado, volver a la lista de cancelados dejaba al usuario mirando
+ *  una lista donde su pedido nunca estuvo. */
 export async function eliminarPedidoAction(formData: FormData): Promise<void> {
-  await requireAuth();
+  const sesion = await requireAuth();
   const pedidoId = String(formData.get("pedidoId")) as Id<"pedidos">;
-  await fetchMutation(api.admin.eliminarPedido, { secret: secret(), pedidoId });
+  const forzar = await puedeBorrarPedidos(sesion.uid);
+  const { estado } = await fetchMutation(api.admin.eliminarPedido, {
+    secret: secret(),
+    pedidoId,
+    forzar,
+  });
   revalidatePath("/panel");
-  redirect("/panel?estado=cancelado");
+  redirect(`/panel?estado=${estado}`);
 }
 
 /** Limpieza masiva de todos los pedidos en estado "cancelado". */
@@ -248,6 +267,45 @@ export async function crearUsuarioAction(
   redirect("/panel/equipo");
 }
 
+/** Restablece la contraseña de otra persona del equipo.
+ *
+ *  Solo Administración. No es "cambiar mi clave" —no pide la anterior—, es el
+ *  restablecimiento para cuando alguien la olvidó; dejarlo en manos de
+ *  cualquiera con sesión permitiría echar del panel a quien fuera.
+ *
+ *  La clave en claro no sale de aquí: se convierte en hash+salt con scrypt
+ *  antes de tocar Convex, igual que al crear la persona. Y no se devuelve en
+ *  el acuse: quien la escribió ya la tiene, y repetirla la dejaría en el HTML.
+ */
+export async function cambiarClaveAction(
+  _prev: FormStateOk,
+  formData: FormData,
+): Promise<FormStateOk> {
+  const sesion = await requireAuth();
+  if (sesion.uid !== "master") return { error: "Solo Administración puede." };
+  const usuarioId = String(formData.get("usuarioId") ?? "") as Id<"usuarios">;
+  const password = String(formData.get("password") ?? "");
+  if (!usuarioId) return { error: "Falta la persona." };
+  if (password.length < 4) {
+    return { error: "La clave debe tener al menos 4 caracteres." };
+  }
+  const { hash, salt } = hashPassword(password);
+  try {
+    const { nombre } = await fetchMutation(api.admin.setPasswordUsuario, {
+      secret: secret(),
+      usuarioId,
+      hash,
+      salt,
+    });
+    revalidatePath("/panel/equipo");
+    return { ok: `Clave nueva guardada para ${nombre}.` };
+  } catch (e) {
+    return {
+      error: e instanceof Error ? e.message : "No se pudo cambiar la clave.",
+    };
+  }
+}
+
 export async function setUsuarioActivoAction(formData: FormData): Promise<void> {
   await requireAuth();
   const usuarioId = String(formData.get("usuarioId") ?? "") as Id<"usuarios">;
@@ -268,6 +326,24 @@ export async function setPermisoCuentasAction(formData: FormData): Promise<void>
   const puede = formData.get("puede") === "true";
   if (!usuarioId) return;
   await fetchMutation(api.admin.setPermisoCuentas, {
+    secret: secret(),
+    usuarioId,
+    puede,
+  });
+  revalidatePath("/panel/equipo");
+}
+
+// Permiso para borrar pedidos en cualquier estado. Como el de Finanzas, solo
+// lo asigna Administración.
+export async function setPermisoBorrarPedidosAction(
+  formData: FormData,
+): Promise<void> {
+  const sesion = await requireAuth();
+  if (sesion.uid !== "master") return;
+  const usuarioId = String(formData.get("usuarioId") ?? "") as Id<"usuarios">;
+  const puede = formData.get("puede") === "true";
+  if (!usuarioId) return;
+  await fetchMutation(api.admin.setPermisoBorrarPedidos, {
     secret: secret(),
     usuarioId,
     puede,

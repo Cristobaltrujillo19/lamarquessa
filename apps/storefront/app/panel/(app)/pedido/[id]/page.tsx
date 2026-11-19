@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import { fetchQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
-import { secreto } from "@/app/panel/lib/auth";
+import { requireAuth, secreto } from "@/app/panel/lib/auth";
+import { puedeBorrarPedidos } from "@/app/panel/lib/permisos";
 import { marcarEnviadoAction, marcarEntregadoAction } from "@/app/panel/actions";
 import { BotonCancelarPedido } from "./BotonCancelarPedido";
 import { BotonEliminarPedido } from "./BotonEliminarPedido";
@@ -30,6 +31,7 @@ export default async function PedidoDetalle({
   params: Promise<{ id: string }>;
   searchParams: Promise<{ nueva?: string }>;
 }) {
+  const sesion = await requireAuth();
   const { id } = await params;
   const { nueva } = await searchParams;
   const pedido = await fetchQuery(api.admin.detallePedido, {
@@ -37,6 +39,10 @@ export default async function PedidoDetalle({
     pedidoId: id as Id<"pedidos">,
   });
   if (!pedido) notFound();
+
+  // Con el permiso, el botón de borrar aparece en cualquier estado; sin él,
+  // solo sobre un pedido ya cancelado, que es la regla de siempre.
+  const borraCualquiera = await puedeBorrarPedidos(sesion.uid);
 
   const e = ESTADOS[pedido.estado];
   const wa = whatsappLink(pedido.cliente?.whatsapp);
@@ -235,8 +241,8 @@ export default async function PedidoDetalle({
       {pedido.estado !== "entregado" && pedido.estado !== "cancelado" && (
         <BotonCancelarPedido pedidoId={pedido._id} />
       )}
-      {pedido.estado === "cancelado" && (
-        <BotonEliminarPedido pedidoId={pedido._id} />
+      {(pedido.estado === "cancelado" || borraCualquiera) && (
+        <BotonEliminarPedido pedidoId={pedido._id} estado={pedido.estado} />
       )}
     </div>
   );

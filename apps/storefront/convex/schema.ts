@@ -182,6 +182,10 @@ export default defineSchema({
     activo: v.boolean(),
     // Permiso para ver Finanzas. El master (Administración) siempre puede.
     puedeVerCuentas: v.optional(v.boolean()),
+    // Permiso para borrar un pedido SIN cancelarlo antes — incluidos pagados,
+    // enviados y entregados. El master siempre puede. Ausente = no puede, que
+    // es lo que corresponde a quien se creó antes de que el permiso existiera.
+    puedeBorrarPedidos: v.optional(v.boolean()),
   }).index("by_usuario", ["usuario"]),
 
   pedidos: defineTable({

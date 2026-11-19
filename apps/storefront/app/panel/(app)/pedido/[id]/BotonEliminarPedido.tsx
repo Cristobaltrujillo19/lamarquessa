@@ -2,12 +2,40 @@
 
 import { useState } from "react";
 import { eliminarPedidoAction } from "@/app/panel/actions";
+import { ESTADOS, type EstadoPedido } from "@/app/panel/lib/ui";
 
-// Borra el pedido de la base con confirmación en dos pasos. Server-side ya
-// bloquea si el estado no es "cancelado", pero el componente solo se debe
-// renderizar cuando lo esté — el guardarraíl vive en la página que lo usa.
-export function BotonEliminarPedido({ pedidoId }: { pedidoId: string }) {
+// Estados que el reporte de Finanzas suma como venta efectiva. Tiene que
+// coincidir con ESTADOS_VENTA de convex/cuentas.ts: si allá cambia, aquí
+// también, porque es lo que decide si el aviso habla de plata o no.
+const CUENTAN_COMO_VENTA: readonly EstadoPedido[] = [
+  "pagado",
+  "enviado",
+  "entregado",
+];
+
+/**
+ * Borra el pedido de la base, con confirmación en dos pasos.
+ *
+ * Quién puede verlo sobre un pedido NO cancelado lo decide la página, y quién
+ * puede ejecutarlo lo decide el servidor (`puedeBorrarPedidos`). Este
+ * componente no es un guardarraíl: es el aviso.
+ *
+ * Y el aviso cambia con el estado a propósito. Borrar un cancelado no cuesta
+ * nada; borrar un pagado, un enviado o un entregado le quita esa venta al
+ * reporte de Finanzas para siempre, y eso hay que decirlo con el número
+ * delante, no con un "¿estás seguro?" genérico que ya nadie lee.
+ */
+export function BotonEliminarPedido({
+  pedidoId,
+  estado,
+}: {
+  pedidoId: string;
+  estado: EstadoPedido;
+}) {
   const [confirmando, setConfirmando] = useState(false);
+
+  const eraVenta = CUENTAN_COMO_VENTA.includes(estado);
+  const etiqueta = ESTADOS[estado].label.toLowerCase();
 
   if (!confirmando) {
     return (
@@ -22,11 +50,21 @@ export function BotonEliminarPedido({ pedidoId }: { pedidoId: string }) {
   }
 
   return (
-    <div className="mt-3 flex flex-col items-center gap-2 rounded-sm border border-red-300 bg-red-50 p-4 text-sm">
-      <span className="font-medium text-red-800">
-        Esto borra el pedido para siempre. ¿Continuar?
-      </span>
-      <div className="flex w-full items-center gap-2">
+    <div className="mt-3 flex flex-col gap-2 rounded-sm border border-red-300 bg-red-50 p-4 text-sm">
+      <p className="font-medium text-red-800">
+        Esto borra el pedido para siempre. No hay papelera.
+      </p>
+
+      {eraVenta && (
+        <p className="text-red-800">
+          Está <strong>{etiqueta}</strong>, así que hoy cuenta como venta:
+          Finanzas <strong>dejará de sumarlo</strong> y los ingresos de ese mes
+          van a bajar. Si lo que quieres es anularlo sin perder el registro,
+          vuelve y <strong>cancélalo</strong>.
+        </p>
+      )}
+
+      <div className="mt-1 flex w-full items-center gap-2">
         <button
           type="button"
           onClick={() => setConfirmando(false)}

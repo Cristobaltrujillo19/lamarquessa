@@ -126,22 +126,38 @@ export const cancelarPedido = mutation({
   },
 });
 
-/** Borra permanentemente un pedido. Solo permite eliminar los que estén en
- *  estado "cancelado": para borrar un pagado/enviado/entregado hay que
- *  cancelarlo antes (dos pasos deliberados, para no perder registro contable
- *  por accidente). El pedido desaparece de la base — no hay "papelera". */
+/** Borra permanentemente un pedido. El pedido desaparece de la base — no hay
+ *  "papelera".
+ *
+ *  Por defecto solo deja borrar los que estén en estado "cancelado": para un
+ *  pagado/enviado/entregado hay que cancelarlo antes. Son dos pasos
+ *  deliberados, para no perder registro contable por accidente.
+ *
+ *  `forzar` levanta esa regla y permite cualquier estado. ⚠️ NO es un permiso:
+ *  es la CONSECUENCIA de uno. Convex solo conoce el secreto compartido, no sabe
+ *  quién inició sesión; quien sí lo sabe es el servidor de Next, que consulta
+ *  `puedeBorrarPedidos` de la sesión y solo entonces manda `forzar: true`. Si
+ *  algún día se llama a esta mutación desde otro sitio, ese otro sitio tiene la
+ *  misma obligación.
+ *
+ *  Devuelve el estado que tenía, para que el panel sepa a qué lista volver. */
 export const eliminarPedido = mutation({
-  args: { secret: v.string(), pedidoId: v.id("pedidos") },
-  handler: async (ctx, { secret, pedidoId }) => {
+  args: {
+    secret: v.string(),
+    pedidoId: v.id("pedidos"),
+    forzar: v.optional(v.boolean()),
+  },
+  handler: async (ctx, { secret, pedidoId, forzar }) => {
     exigirSecreto(secret);
     const pedido = await ctx.db.get(pedidoId);
     if (!pedido) throw new Error("El pedido no existe");
-    if (pedido.estado !== "cancelado") {
+    if (pedido.estado !== "cancelado" && !forzar) {
       throw new Error(
         "Solo se pueden eliminar pedidos cancelados. Cancela primero.",
       );
     }
     await ctx.db.delete(pedidoId);
+    return { estado: pedido.estado };
   },
 });
 
@@ -372,6 +388,7 @@ export const listarUsuarios = query({
       nombre: u.nombre,
       activo: u.activo,
       puedeVerCuentas: u.puedeVerCuentas ?? false,
+      puedeBorrarPedidos: u.puedeBorrarPedidos ?? false,
     }));
   },
 });
@@ -396,6 +413,31 @@ export const setUsuarioActivo = mutation({
   },
 });
 
+/** Cambia la contraseña de una persona del equipo.
+ *
+ *  ⚠️ Recibe el hash y el salt YA CALCULADOS, nunca la clave en claro: el
+ *  scrypt se hace en el servidor de Next (`hashPassword`), que es donde vive
+ *  la clave un instante. Convex no la ve ni la registra.
+ *
+ *  No pide la clave anterior a propósito: esto es el restablecimiento que hace
+ *  Administración cuando alguien la olvidó, no un "cambiar mi clave". Por eso
+ *  la acción de Next lo limita al master. */
+export const setPasswordUsuario = mutation({
+  args: {
+    secret: v.string(),
+    usuarioId: v.id("usuarios"),
+    hash: v.string(),
+    salt: v.string(),
+  },
+  handler: async (ctx, { secret, usuarioId, hash, salt }) => {
+    exigirSecreto(secret);
+    const u = await ctx.db.get(usuarioId);
+    if (!u) throw new Error("Esa persona ya no existe");
+    await ctx.db.patch(usuarioId, { hash, salt });
+    return { nombre: u.nombre };
+  },
+});
+
 // Permiso para ver Finanzas. El master (Administración) siempre puede.
 export const setPermisoCuentas = mutation({
   args: { secret: v.string(), usuarioId: v.id("usuarios"), puede: v.boolean() },
@@ -405,8 +447,17 @@ export const setPermisoCuentas = mutation({
   },
 });
 
-// Un usuario por id (sin hash/salt). El panel lo usa para saber si puede ver
-// Finanzas.
+// Permiso para borrar pedidos en cualquier estado, sin cancelarlos antes.
+// El master siempre puede.
+export const setPermisoBorrarPedidos = mutation({
+  args: { secret: v.string(), usuarioId: v.id("usuarios"), puede: v.boolean() },
+  handler: async (ctx, { secret, usuarioId, puede }) => {
+    exigirSecreto(secret);
+    await ctx.db.patch(usuarioId, { puedeBorrarPedidos: puede });
+  },
+});
+
+// Un usuario por id (sin hash/salt). El panel lo usa para resolver permisos.
 export const usuarioPorId = query({
   args: { secret: v.string(), usuarioId: v.id("usuarios") },
   handler: async (ctx, { secret, usuarioId }) => {
@@ -419,6 +470,7 @@ export const usuarioPorId = query({
       nombre: u.nombre,
       activo: u.activo,
       puedeVerCuentas: u.puedeVerCuentas ?? false,
+      puedeBorrarPedidos: u.puedeBorrarPedidos ?? false,
     };
   },
 });

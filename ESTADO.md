@@ -1649,3 +1649,74 @@ lo que §1 ya tenía pendiente para Queens.
 Son cinco familias, y **tres de ellas (Jost, Cormorant, Pinyon) no las pinta
 ninguna página pública** (§15): solo el panel y la vista previa de iniciales.
 Esas tres son el primer recorte obvio.
+
+---
+
+## 29. Permisos del panel: borrar pedidos y cambiar claves (19 de noviembre de 2026)
+
+Dos capacidades nuevas para Administración, pedidas por el dueño. Manuela
+(`manu`) ya tiene el permiso de borrado activo en producción.
+
+### El permiso `puedeBorrarPedidos`
+
+Hasta ahora `eliminarPedido` solo dejaba borrar los **cancelados**: para
+quitar un pagado había que cancelarlo primero. Eso sigue siendo lo que pasa
+por defecto; el permiso levanta la regla y deja borrar en cualquier estado.
+
+Es un flag aparte de `puedeVerCuentas` **a propósito**: ver la plata y borrar
+el registro de una venta no son la misma confianza, y juntarlos obligaría a
+conceder una para dar la otra.
+
+⚠️ **Dónde vive la decisión.** Convex solo conoce el secreto compartido — no
+sabe quién inició sesión. Así que `eliminarPedido` recibe un `forzar` que
+**no es el permiso, es su consecuencia**: quien lo resuelve es
+`eliminarPedidoAction` en Next, leyendo la cookie firmada. Un formulario
+falsificado no consigue nada, porque sin `forzar` Convex sigue rechazando.
+Si algún día se llama a esa mutación desde otro sitio, ese sitio hereda la
+misma obligación.
+
+La mutación ahora **devuelve el estado** que tenía el pedido. Antes la acción
+volvía siempre a `/panel?estado=cancelado`, que borrando un pagado dejaba al
+usuario mirando una lista donde su pedido nunca estuvo.
+
+El aviso de confirmación **cambia con el estado**: sobre un pagado, enviado o
+entregado dice que Finanzas dejará de sumarlo y que los ingresos de ese mes
+van a bajar, y ofrece cancelar en su lugar. Un «¿estás seguro?» genérico ya
+no lo lee nadie.
+
+### Restablecer la clave de otra persona
+
+`setPasswordUsuario` + `cambiarClaveAction` + `CambiarClaveForm` en la pantalla
+de Equipo, plegado tras un botón.
+
+- **Solo el master.** No pide la clave anterior, así que no es «cambiar mi
+  clave» sino el restablecimiento de Administración. En manos de cualquiera
+  con sesión serviría para echar del panel a quien fuera.
+- **La clave en claro no sale de Next:** el scrypt se hace ahí y Convex recibe
+  hash + salt ya calculados, igual que al crear la persona.
+- El campo es `type="text"`, como al crear: quien la escribe se la va a tener
+  que dictar, y una clave en puntitos se dicta mal.
+
+### Cómo se verificó
+
+- Contra **producción**: `eliminarPedido` sin `forzar` sobre un pedido
+  pendiente → rechaza, y el pedido sigue ahí.
+- Contra **dev**, con un pedido pagado de pega creado por POS (sin correo y
+  sin tocar stock): sin `forzar` rechaza, con `forzar` borra y devuelve
+  `"pagado"`.
+- Cambio de clave: ida y vuelta completa — se guarda, se relee de la base y la
+  clave nueva valida mientras una equivocada se rechaza.
+- Las dos pantallas se pidieron con una sesión de Administración y traen los
+  botones nuevos.
+
+**Sin verificar:** el panel de confirmación del borrado solo aparece tras el
+clic, y no se llegó a ver renderizado en el navegador.
+
+### ⚠️ Dos cosas que quedan abiertas
+
+1. **`crearUsuarioAction` solo hace `requireAuth()`**, sin exigir master. Hoy
+   cualquiera con sesión puede crear personas. Las acciones de permisos y la
+   de clave sí piden master; esa no. Es anterior a este cambio.
+2. **Borrar un pedido no devuelve el stock.** Cancelar tampoco lo hacía, así
+   que no es nuevo, pero ahora se puede borrar un `enviado` —que sí descontó
+   inventario— y ese descuento se queda.
