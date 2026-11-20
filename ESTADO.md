@@ -1830,3 +1830,52 @@ para futuros marcos; lo que cambia es por dónde se mira.
 
 Las otras cinco recortadas se revisaron y están bien: el bolso queda entero.
 Verificado en el navegador que el `object-position` calculado es el del mapa.
+
+---
+
+## 32. Las fuentes ya no se bajan de Google al compilar (20 nov 2026)
+
+Cerrado el §28. **`next/font/google` fuera; los `.woff2` viven en el repo.**
+
+### Qué se hizo
+
+`scripts/bajar-fuentes.py` trae las cinco familias (subconjunto `latin`) a
+`apps/storefront/app/fuentes/`, y `layout.tsx` las declara con
+`next/font/local`. El build ya no abre una sola conexión a Google.
+
+El visitante recibe **exactamente lo mismo**: los mismos ficheros woff2 de
+Google, solo que servidos desde lamarquessa.co en vez de fonts.gstatic.com.
+
+### Las cinco son VARIABLES — 14 descargas, 7 ficheros
+
+Google sirve **un woff2 por familia y estilo** que ya trae dentro todo el
+rango de pesos, y devuelve esa misma URL para cada peso que le pidas.
+Comprobado por hash. Guardar uno por peso habría duplicado 240 KB en el repo
+para nada, así que el script agrupa por contenido y `layout.tsx` declara el
+**rango** (`weight: "300 500"`) en vez de un valor suelto.
+
+Total: **7 ficheros, 243 KB.**
+
+### Lo que NO se perdió
+
+- **`preload: false` en Jost, Cormorant y Pinyon.** Es la decisión medida del
+  §15: ninguna página pública las pinta, y precargarlas metía 264 KB por
+  delante del LCP. Verificado en el navegador: la home carga solo Fraunces,
+  Archivo y Queens, y **Cormorant aparece al marcar «Grabar iniciales»**, no
+  antes.
+- **Las métricas de respaldo.** `next/font/google` las calculaba solo; aquí se
+  nombra a mano con `adjustFontFallback` (`Arial` para las de palo seco,
+  `Times New Roman` para las serif) para que el cambio de fuente al cargar no
+  mueva el texto. Comprobado que Next genera las caras `… Fallback`.
+
+### Verificado
+
+- Build en frío (`.next` borrado): pasa, y **no queda ni una referencia a
+  `fonts.gstatic.com` ni a `fonts.googleapis.com` en la salida**.
+- 7 woff2 emitidos a `static/media`, los nuestros.
+- La home local y la de producción, lado a lado: misma tipografía.
+
+### Si algún día hay que añadir o cambiar una familia
+
+Se edita la lista `FAMILIAS` del script y se vuelve a correr. **No** volver a
+`next/font/google`: ese es el fallo del §28, y vuelve.

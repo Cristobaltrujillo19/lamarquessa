@@ -1,11 +1,5 @@
 import type { Metadata } from "next";
-import {
-  Jost,
-  Cormorant_Garamond,
-  Pinyon_Script,
-  Fraunces,
-  Archivo,
-} from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import "./globals-v2.css";
 import Header from "./Header";
@@ -53,23 +47,45 @@ import {
 //
 // El comentario que había más abajo decía que convivían "sin coste". La
 // medición dice que costaban 264 KB por delante del LCP.
-const jost = Jost({
-  subsets: ["latin"],
+// ⚠️ LAS FUENTES SON LOCALES, NO `next/font/google`, Y NO HAY QUE VOLVER
+// ATRÁS. Con Google el build se las descargaba en tiempo de compilación, y el
+// cargador de Next da por hecho que toda URL que saca de ese CSS termina en la
+// extensión (`exec(url)[1]`, sin comprobar): cuando Google respondía otra cosa
+// —cosa que hace desde una IP de datacenter, justo lo que es Vercel— el
+// despliegue moría con un TypeError. Dos de cada tres pushes. Ver §28 y §32.
+//
+// Los .woff2 de `app/fuentes/` son los MISMOS que servía Google, subconjunto
+// latin, bajados con `scripts/bajar-fuentes.py`. El visitante recibe lo mismo;
+// lo que cambia es que compilar ya no depende de que a Google le parezca bien.
+//
+// Las cinco son VARIABLES: un fichero por familia y estilo cubre todo el rango
+// de pesos, y por eso `weight` es un rango ("300 500") y no un valor suelto.
+//
+// `adjustFontFallback` lo calculaba Google solo; aquí se nombra a mano la
+// fuente de sistema con la que medir el respaldo, para que el salto al cargar
+// no mueva el texto (CLS).
+const jost = localFont({
+  src: [{ path: "./fuentes/jost.woff2", weight: "300 500", style: "normal" }],
   variable: "--font-jost",
-  weight: ["300", "400", "500"],
+  display: "swap",
+  adjustFontFallback: "Arial",
   preload: false,
 });
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
+const cormorant = localFont({
+  src: [
+    { path: "./fuentes/cormorant-garamond.woff2", weight: "400 500", style: "normal" },
+    { path: "./fuentes/cormorant-garamond-italic.woff2", weight: "400 500", style: "italic" },
+  ],
   variable: "--font-cormorant",
-  weight: ["400", "500"],
-  style: ["normal", "italic"],
+  display: "swap",
+  adjustFontFallback: "Times New Roman",
   preload: false,
 });
-const pinyon = Pinyon_Script({
-  subsets: ["latin"],
+const pinyon = localFont({
+  src: [{ path: "./fuentes/pinyon-script.woff2", weight: "400", style: "normal" }],
   variable: "--font-pinyon",
-  weight: "400",
+  display: "swap",
+  adjustFontFallback: "Times New Roman",
   preload: false,
 });
 
@@ -80,16 +96,20 @@ const pinyon = Pinyon_Script({
 //
 // Fraunces cubre además los glifos que a Queen Serif FREE le faltan (acentos,
 // eñe, comillas tipográficas) por fallback por-glifo.
-const fraunces = Fraunces({
-  subsets: ["latin"],
+const fraunces = localFont({
+  src: [
+    { path: "./fuentes/fraunces.woff2", weight: "400 500", style: "normal" },
+    { path: "./fuentes/fraunces-italic.woff2", weight: "400 500", style: "italic" },
+  ],
   variable: "--font-fraunces",
-  weight: ["400", "500"],
-  style: ["normal", "italic"],
+  display: "swap",
+  adjustFontFallback: "Times New Roman",
 });
-const archivo = Archivo({
-  subsets: ["latin"],
+const archivo = localFont({
+  src: [{ path: "./fuentes/archivo.woff2", weight: "400 500", style: "normal" }],
   variable: "--font-archivo",
-  weight: ["400", "500"],
+  display: "swap",
+  adjustFontFallback: "Arial",
 });
 
 export const metadata: Metadata = {
